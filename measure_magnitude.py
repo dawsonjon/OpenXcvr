@@ -8,17 +8,17 @@ from math import log, ceil
 from numpy import log10
 
 
-def measure_magnitude(clk, data_in, frame_size, frames):
+def measure_magnitude(clk, data_in, stb, frame_size, frames):
     frame_count, eop = counter(clk, 0, frame_size-1, 1)
     sop = frame_count == 0
 
     #find the largest value in a frame
     t_data = data_in.subtype     
-    maxval = t_data.register(clk, init=0)
-    minval = t_data.register(clk, init=0)
+    maxval = t_data.register(clk, init=0, en=stb)
+    minval = t_data.register(clk, init=0, en=stb)
     maxval.d(t_data.select(sop, t_data.select(data_in > maxval, maxval, data_in), data_in))
     minval.d(t_data.select(sop, t_data.select(data_in < minval, minval, data_in), data_in))
-    stb = Boolean().register(clk, d=eop, init=0)
+    stb = Boolean().register(clk, d=eop&stb, init=0)
 
     #store frames in a circular buffer
     en = Boolean().wire()
@@ -72,12 +72,13 @@ def measure_magnitude(clk, data_in, frame_size, frames):
 
     return dc, magnitude
 
-#make filter
-clk = Clock("clk")
-data_in = Signed(9).input("data_in")
-dc, magnitude = measure_magnitude(clk, data_in, 100, 4)
-
 if __name__ == "__main__" and "sim" in sys.argv:
+
+    clk = Clock("clk")
+    data_in = Signed(9).input("data_in")
+    stb_in = Boolean().input("stb_in")
+    dc, magnitude = measure_magnitude(clk, data_in, stb_in, 100, 4)
+
     stimulus = []
     for i in range(1000):
         stimulus.append(0)
@@ -105,12 +106,12 @@ if __name__ == "__main__" and "sim" in sys.argv:
     #simulate
     clk.initialise()
 
+    stb_in.set(1)
     i = 0
     for data in stimulus:
         data_in.set(data)
         clk.tick()
         response.append(magnitude.get())
-        print(i, magnitude.get(), dc.get())
         i+=1
 
     response = np.array(response)

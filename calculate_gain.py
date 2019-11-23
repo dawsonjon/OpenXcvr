@@ -47,19 +47,19 @@ def calculate_gain(clk, magnitude, lut_bits, lut_fraction_bits):
 
     return m, e
 
-#make filter
-clk = Clock("clk")
-data_in = Signed(8).input("data_in")
-m, e = calculate_gain(clk, data_in, 4, 8)
+if __name__ == "__main__" and "sim" in sys.argv:
 
-stimulus = [100, 127, 64, 64, 0x20, 0x40, 0x80]
-new_stimulus = []
-for i in stimulus:
-    for j in range(10):
-        new_stimulus.append(i)
-stimulus = new_stimulus
+    clk = Clock("clk")
+    data_in = Signed(8).input("data_in")
+    m, e = calculate_gain(clk, data_in, 4, 8)
 
-if "sim" in sys.argv:
+    stimulus = [100, 127, 64, 64, 0x20, 0x40, 0x80]
+    new_stimulus = []
+    for i in stimulus:
+        for j in range(10):
+            new_stimulus.append(i)
+    stimulus = new_stimulus
+
 
     #simulate
     clk.initialise()
