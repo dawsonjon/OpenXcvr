@@ -1,61 +1,120 @@
 from baremetal import *
+from baremetal.signed import number_of_bits_needed
 from math import log, pi
 from matplotlib import pyplot as plt
 import numpy as np
 import sys
 from math import log, ceil
+from numpy import log10
 
 
-def measure_magnitude(clk, data_in, stb_in, leakage_in):
+def measure_magnitude(clk, data_in, frame_size, frames):
+    frame_count, eop = counter(clk, 0, frame_size-1, 1)
+    sop = frame_count == 0
 
-    #sign extend input by 4 bits
-    extra_bits = 17
-    input_bits = data_in.subtype.bits
-    data_in = data_in.resize(input_bits + extra_bits) << extra_bits
-    
-    #capture largest and smallest values
-    t_data = data_in.subtype
-    maxval = t_data.register(clk, init=0, en=stb_in)
-    minval = t_data.register(clk, init=0, en=stb_in)
-    leakage = t_data.register(clk, init=0)
+    #find the largest value in a frame
+    t_data = data_in.subtype     
+    maxval = t_data.register(clk, init=0)
+    minval = t_data.register(clk, init=0)
+    maxval.d(t_data.select(sop, t_data.select(data_in > maxval, maxval, data_in), data_in))
+    minval.d(t_data.select(sop, t_data.select(data_in < minval, minval, data_in), data_in))
+    stb = Boolean().register(clk, d=eop, init=0)
 
-    maxval.d(t_data.select(data_in > maxval, maxval-leakage, data_in))
-    minval.d(t_data.select(data_in < minval, minval+leakage, data_in))
+    #store frames in a circular buffer
+    en = Boolean().wire()
+    count, _ = counter(clk, 0, frames, 1, en)
+    address, _ = counter(clk, 0, frames-1, 1, en)
+    write = (count == frames)
+    en.drive(~write|stb)#wait for a strobe
+    sop = count == 0
+    eop = count == frames-1
 
-    #calculate dc
-    dc = (maxval + minval) >> extra_bits + 1
-    dc = dc.resize(input_bits-1)
+    #create RAM
+    bufmax = t_data.ram(clk=clk, depth=frames)
+    bufmin = t_data.ram(clk=clk, depth=frames)
+
+    #write data into RAM
+    bufmax.write(address, maxval, write & stb) 
+    bufmin.write(address, minval, write & stb) 
+
+    #read_data_from_RAM
+    maxval = bufmax.read(address)
+    minval = bufmin.read(address)
+
+    ###################################################
+    minval = minval.subtype.register(clk, d=minval)
+    maxval = maxval.subtype.register(clk, d=maxval)
+    write = write.subtype.register(clk, d=write, init=0)
+    sop = sop.subtype.register(clk, d=sop, init=0)
+    eop = eop.subtype.register(clk, d=eop, init=0)
+    ###################################################
+
+    #apply weighting to profile
+    weighted_maxval = maxval
+    weighted_minval = minval
+
+    #find the largest value in the stored frames
+    maxval = t_data.register(clk, init=0, en=~write)
+    minval = t_data.register(clk, init=0, en=~write)
+    maxval.d(t_data.select(sop, t_data.select(weighted_maxval > maxval, maxval, weighted_maxval), weighted_maxval))
+    minval.d(t_data.select(sop, t_data.select(weighted_minval < minval, minval, weighted_minval), weighted_minval))
+    stb = Boolean().register(clk, d=eop, init=0)
+    maxval = t_data.register(clk, d=maxval, en=stb)
+    minval = t_data.register(clk, d=minval, en=stb)
 
     #calculate magnitude
+    maxval = maxval.resize(t_data.bits+1)
     magnitude = (maxval - minval) >> 1
-    leakage.d(magnitude >> leakage_in) #scale leakage
-    magnitude = magnitude >> extra_bits
-    magnitude = magnitude.resize(input_bits-1)
+    dc = (maxval + minval) >> 1
+    magnitude = magnitude.resize(t_data.bits)
+    dc = dc.resize(t_data.bits)
 
-    return magnitude, dc
+
+    return dc, magnitude
 
 #make filter
 clk = Clock("clk")
 data_in = Signed(9).input("data_in")
-stb_in = Boolean().input("data_in")
-leakage = Signed(6).input("leakage")
-magnitude, dc = measure_magnitude(clk, data_in, stb_in, leakage)
+dc, magnitude = measure_magnitude(clk, data_in, 100, 4)
 
-stimulus = [100, -60, 100, -60] + [0 for i in range(200000)]
+if __name__ == "__main__" and "sim" in sys.argv:
+    stimulus = []
+    for i in range(1000):
+        stimulus.append(0)
+    for i in range(100):
+        stimulus.append(0)
+        stimulus.append(22)
+        stimulus.append(-18)
+    for i in range(300):
+        stimulus.append(0)
+    for i in range(100):
+        stimulus.append(0)
+        stimulus.append(22)
+        stimulus.append(-18)
+    for i in range(1000):
+        stimulus.append(0)
+    for i in range(100):
+        stimulus.append(0)
+        stimulus.append(200)
+        stimulus.append(-200)
+    for i in range(1000):
+        stimulus.append(0)
 
-
-if "sim" in sys.argv:
+    response = []
 
     #simulate
     clk.initialise()
-    stb_in.set(1)
-    leakage.set(17)
 
     i = 0
     for data in stimulus:
         data_in.set(data)
         clk.tick()
+        response.append(magnitude.get())
         print(i, magnitude.get(), dc.get())
-        if magnitude.get() < 40:
-            break
         i+=1
+
+    response = np.array(response)
+
+    plt.plot(response)
+    plt.plot(stimulus)
+    plt.show()

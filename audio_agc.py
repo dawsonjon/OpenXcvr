@@ -8,10 +8,10 @@ from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
 
 
-def audio_agc(clk, audio, leakage, lut_bits, fraction_bits):
+def audio_agc(clk, audio, squelch, lut_bits, fraction_bits, frame_size, frames):
 
     #calculate magnitude and DC
-    magnitude, dc = measure_magnitude(clk, audio, leakage)
+    dc, magnitude = measure_magnitude(clk, audio, frame_size, frames)
 
     #remove DC
     audio = audio - dc
@@ -19,6 +19,12 @@ def audio_agc(clk, audio, leakage, lut_bits, fraction_bits):
 
     #rescale the data 
     gain_m, gain_e = calculate_gain(clk, magnitude, lut_bits, fraction_bits)
+
+    #squelch
+    mute = magnitude < squelch
+    mute = mute.subtype.register(clk, d=mute)
+    audio = audio.subtype.select(mute, audio, 0)
+    audio = audio.subtype.register(clk, d=audio)
 
     #scale by 2**e
     audio = audio << gain_e
@@ -34,22 +40,37 @@ def audio_agc(clk, audio, leakage, lut_bits, fraction_bits):
 
     return audio
 
-#make filter
-clk = Clock("clk")
-data_in = Signed(8).input("data_in")
-leakage = Signed(8).input("leakage")
-magnitude, dc = measure_magnitude(clk, data_in, leakage)
+if __name__ == "__main__" and "sim" in sys.argv:
+    clk = Clock("clk")
+    data_in = Signed(16).input("data_in")
+    squelch_in = Signed(16).input("squelch")
+    audio = audio_agc(clk, data_in, squelch_in, 7, 8, 100, 4)
 
-stimulus = [20, -20, 20, -20, 0, 0, 0, 0, 0, 0, 0, 0]
+    stimulus = []
+    for k in range(2):
+        for j in [1, 3, 6, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 32767]:
+            for i in range(100):
+                stimulus.append(j)
+                stimulus.append(-j)
+                stimulus.append(0)
+        for j in reversed([1, 3, 6, 25, 50, 100, 200, 400, 800, 1600, 3200, 6400, 12800, 25600, 32767]):
+            for i in range(200):
+                stimulus.append(j)
+                stimulus.append(-j)
+                stimulus.append(0)
 
-
-if "sim" in sys.argv:
+    response = []
 
     #simulate
     clk.initialise()
-    leakage.set(16)
+    squelch_in.set(100)
 
     for data in stimulus:
         data_in.set(data)
         clk.tick()
-        print(magnitude.get(), dc.get(), maxval.get(), minval.get())
+        response.append(audio.get())
+
+    response = np.array(response)
+    plt.plot(response)
+    plt.plot(stimulus)
+    plt.show()
