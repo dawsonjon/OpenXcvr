@@ -1,11 +1,12 @@
 from baremetal import *
+from settings import Settings
 from math import log, pi
 from matplotlib import pyplot as plt
 import numpy as np
 import sys
 from math import log, ceil, floor
 
-def calculate_gain(clk, magnitude, lut_bits, lut_fraction_bits):
+def calculate_gain(clk, magnitude, settings):
 
     """Calculate the required gain needed to give full scale signal
     given the magnitude of the signal.
@@ -25,7 +26,7 @@ def calculate_gain(clk, magnitude, lut_bits, lut_fraction_bits):
     unsigned_bits = signed_bits - 1
     magnitude = Unsigned(unsigned_bits).constant(0) + magnitude.resize(unsigned_bits)
 
-    shift_bits = magnitude.subtype.bits - lut_bits
+    shift_bits = magnitude.subtype.bits - settings.agc_lut_bits
     m_type = magnitude.subtype
     e_type = Signed(1+int(ceil(log(shift_bits+1, 2))))
 
@@ -36,22 +37,24 @@ def calculate_gain(clk, magnitude, lut_bits, lut_fraction_bits):
     m.d(m_type.select(last_count, m_type.select(msb_high, m<<1, m), magnitude))
     e.d(e_type.select(last_count, e_type.select(msb_high, e+1, e), 0))
 
-    m = m[m_type.bits-1:m_type.bits-(lut_bits)]
+    m = m[m_type.bits-1:m_type.bits-(settings.agc_lut_bits)]
     m = m.subtype.register(clk, d=m, en=last_count)
     e = e_type.register(clk, d=e, en=last_count)
 
-    lut_depth = 2**lut_bits
-    scaling_factor = lut_depth*(2**lut_fraction_bits)
+    lut_depth = 2**settings.agc_lut_bits
+    scaling_factor = lut_depth*(2**settings.agc_lut_fraction_bits)
     lookup_table = [(scaling_factor-1)/i for i in range(1, lut_depth+1)]
-    m = Signed(lut_bits+lut_fraction_bits+1).rom(m, *lookup_table)
+    m = Signed(settings.agc_lut_bits+settings.agc_lut_fraction_bits+1).rom(m, *lookup_table)
 
     return m, e
 
 if __name__ == "__main__" and "sim" in sys.argv:
-
+    settings = Settings()
+    settings.agc_lut_bits = 4
+    settings.agc_lut_fraction_bits = 8
     clk = Clock("clk")
     data_in = Signed(8).input("data_in")
-    m, e = calculate_gain(clk, data_in, 4, 8)
+    m, e = calculate_gain(clk, data_in, settings)
 
     stimulus = [100, 127, 64, 64, 0x20, 0x40, 0x80]
     new_stimulus = []

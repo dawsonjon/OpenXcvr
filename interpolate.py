@@ -1,7 +1,7 @@
 from baremetal import *
 from baremetal.unsigned import number_of_bits_needed
 from accumulator import accumulator
-from math import log
+from math import log, ceil
 
 def interpolate(clk, sample, interpolation_factor, channels):
     t=sample.subtype
@@ -11,7 +11,7 @@ def interpolate(clk, sample, interpolation_factor, channels):
     registered_sample = t.register(clk, en=en, d=sample, init=0)
     last_sample = t.register(clk, en=en, d=registered_sample, init=0)
     delta = registered_sample - last_sample
-    output_bits = t.bits + log(interpolation_factor, 2)
+    output_bits = t.bits + ceil(log(interpolation_factor, 2))
     delta = delta.resize(output_bits)
 
     #integrator

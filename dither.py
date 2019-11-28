@@ -5,7 +5,8 @@ from random import randint
 
 def dither(clk, x, lite=False):
     bits = x.subtype.bits
-    return Boolean().register(clk, d=x>prng(clk, bits, randint(0, 2**60), lite))
+    signed_prng = Signed(bits).constant(0)+prng(clk, bits, randint(0, 2**60), lite)
+    return Boolean().register(clk, d=x>signed_prng)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 from baremetal import *
+from math import ceil, log
 
 def accumulator(clk, delta, channels):
     t = delta.subtype
@@ -10,7 +11,8 @@ def accumulator(clk, delta, channels):
         else:
             return tree(delta, x, n//2) + tree(delta, xn, n//2)
     counter = t.register(clk, init=0)
-    counter.d(counter+(delta*int(channels)))
+    shifts = int(ceil(log(channels))) 
+    counter.d(counter+(delta<<shifts))
     counters = tree(delta, counter, channels//2)
     return counters
 

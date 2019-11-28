@@ -8,7 +8,7 @@ from math import sin, cos, pi
 def nco(clk, frequency, lut_bits, channels):
     bits = frequency.subtype.bits
     lut_depth = 2**lut_bits
-    scaling_factor = (lut_depth * 0.5-1) * 0.707
+    scaling_factor = (lut_depth * 0.5-1)
     sin_lookup_table = [sin(2.0*pi*i/lut_depth) for i in range(lut_depth)]
     sin_lookup_table = [int(round(i*scaling_factor)) for i in sin_lookup_table]
     cos_lookup_table = [cos(2.0*pi*i/lut_depth) for i in range(lut_depth)]
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     spectrum = np.abs(np.fft.fftshift(np.fft.fft(i + 1.0j*q)))
     spectrum = 20.0 * np.log10(spectrum, out=np.zeros_like(spectrum), where=(spectrum!=0))
 
-    plt.plot(spectrum)
+    plt.plot(i)
     plt.show()
 
     outputs = [Unsigned(10).output("lo_i_%u"%i, x) for i, x in enumerate(lo_i)]
