@@ -21,8 +21,8 @@ def tx(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor, lut_bi
     audio_q = [i.label("audio_q_%s"%idx) for idx, i in enumerate(audio_q)]
 
     product_bits = audio_bits + lut_bits - 1
-    rf_i = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_i, dlo_i)]
-    rf_q = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_q, dlo_q)]
+    rf_i = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits+1) for a, l in zip(audio_i, dlo_i)]
+    rf_q = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits+1) for a, l in zip(audio_q, dlo_q)]
     rf_i = [i.subtype.register(clk, d=i) for i in rf_i]
     rf_q = [i.subtype.register(clk, d=i) for i in rf_q]
     rf_i = [i.label("rf_i_%s"%idx) for idx, i in enumerate(rf_i)]

@@ -8,7 +8,7 @@ from math import sin, cos, pi
 def nco(clk, frequency, lut_bits, channels):
     bits = frequency.subtype.bits
     lut_depth = 2**lut_bits
-    scaling_factor = (lut_depth * 0.5-1)
+    scaling_factor = (lut_depth * 0.5-1) * 0.7
     sin_lookup_table = [sin(2.0*pi*i/lut_depth) for i in range(lut_depth)]
     sin_lookup_table = [int(round(i*scaling_factor)) for i in sin_lookup_table]
     cos_lookup_table = [cos(2.0*pi*i/lut_depth) for i in range(lut_depth)]
@@ -16,8 +16,12 @@ def nco(clk, frequency, lut_bits, channels):
 
     lo = accumulator(clk, frequency, channels)
     lo = [i[bits-1:bits-lut_bits] for i in lo]
+    lo = [i.subtype.register(clk, d=i) for i in lo]
+    lo = [i.subtype.register(clk, d=i) for i in lo]
     lo_i = [Signed(lut_bits).rom(i, *cos_lookup_table) for i in lo]
     lo_q = [Signed(lut_bits).rom(i, *sin_lookup_table) for i in lo]
+    lo_i = [i.subtype.register(clk, d=i) for i in lo_i]
+    lo_q = [i.subtype.register(clk, d=i) for i in lo_q]
     lo_i = [i.subtype.register(clk, d=i) for i in lo_i]
     lo_q = [i.subtype.register(clk, d=i) for i in lo_q]
 

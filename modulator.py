@@ -9,9 +9,11 @@ from settings import *
 def modulator(clk, audio, audio_stb, settings):
 
     #generating I and Q for am and FM are fairly trivial
-    am_i = audio
-    am_q = audio
-    ssb_i = audio
+    audio_bits = audio.subtype.bits
+    dc = (2**(audio_bits-2))-1
+    am_i = (audio >> 1) + dc
+    am_q = (audio >> 1) + dc
+    ssb_i = audio.resize(audio_bits+1)<<1
     ssb_q = audio.subtype.constant(0)
 
     #FM is generated using a phase accumulator driving a look-up table
@@ -21,7 +23,7 @@ def modulator(clk, audio, audio_stb, settings):
     extra_bits = 8
     frequency = scale(audio, 5.0/100, extra_bits, False)
     frequency_wideband = frequency
-    frequency_narrowband = frequency>>1
+    frequency_narrowband = (frequency>>1)
     frequency = frequency_wideband.subtype.select(settings.mode==NBFM, frequency_wideband, frequency_narrowband)
     frequency = frequency.subtype.register(clk, d=frequency, en=audio_stb)
     frequency_stb = Boolean().register(clk, d=audio_stb, init=0)
@@ -45,8 +47,8 @@ def modulator(clk, audio, audio_stb, settings):
     fm_q = fm_q.subtype.register(clk, d=fm_q)
     fm_stb = Boolean().register(clk, d=frequency_stb, init=0)
 
-    i = audio.subtype.select(settings.mode, ssb_i, am_i, fm_i, fm_i)
-    q = audio.subtype.select(settings.mode, ssb_q, am_q, fm_q, fm_q)
+    i = ssb_i.subtype.select(settings.mode, ssb_i, am_i, fm_i, fm_i)
+    q = ssb_q.subtype.select(settings.mode, ssb_q, am_q, fm_q, fm_q)
     stb = Boolean().select(settings.mode, audio_stb, audio_stb, fm_stb, fm_stb)
 
     return i, q, stb
@@ -90,7 +92,7 @@ if __name__ == "__main__" and "sim" in sys.argv:
 
     #mode am stim am
     stimulus=(
-        np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
+        np.sin(np.arange(10000)*2.0*pi*0.01)*
         ((2**7)-1)#scale to 16 bits
     )
     test_modulator(stimulus, AM)

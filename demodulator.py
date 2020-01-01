@@ -11,7 +11,7 @@ def demodulator(clk, i, q, stb, settings):
     ssb  = i.subtype.register(clk, d=i, en=stb)
     ssb_stb = Boolean().register(clk, d=stb, init=0)
 
-    audio     = i.subtype.select(settings.filter_mode, ssb, am, fm, fm)
-    audio_stb = Boolean().select(settings.filter_mode, ssb_stb, am_fm_stb, am_fm_stb, am_fm_stb)
+    audio     = i.subtype.select(settings.mode, ssb, am, fm, fm)
+    audio_stb = Boolean().select(settings.mode, ssb_stb, am_fm_stb, am_fm_stb, am_fm_stb)
 
     return audio, audio_stb

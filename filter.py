@@ -1,5 +1,5 @@
 from baremetal import *
-from settings import Settings
+from settings import *
 
 from math import log, pi, ceil
 from matplotlib import pyplot as plt
@@ -73,12 +73,19 @@ def filter(clk, data_i, data_q, stb, settings):
     buf_q = data_q.subtype.ram(clk=clk, depth=taps)
 
     #write data into RAM
-    buf_i.write(address, data_i, ~read & stb) 
-    buf_q.write(address, data_q, ~read & stb) 
+    address = address.label("write_address")
+    data_i = data_i.label("write_data_i")
+    data_q = data_q.label("write_data_q")
+    write_enable = (~read & stb).label("write_enable")
+    buf_i.write(address, data_i, write_enable) 
+    buf_q.write(address, data_q, write_enable) 
 
     #read_data_from_RAM
     data_i = buf_i.read(address)
     data_q = buf_q.read(address)
+    count = count.label("read_address")
+    data_i = data_i.label("read_data_i")
+    data_q = data_q.label("read_data_q")
     kernel_i = kernel_type.rom(settings.mode.cat(count), *kernel_i)
     kernel_q = kernel_type.rom(settings.mode.cat(count), *kernel_q)
 
@@ -92,8 +99,8 @@ def filter(clk, data_i, data_q, stb, settings):
     #select sideband
     #0=lsb
     #1=usb
-    t_i = kernel_type.select(settings.filter_sideband, kernel_i, kernel_q)
-    t_q = kernel_type.select(settings.filter_sideband, kernel_q, kernel_i)
+    t_i = kernel_type.select(settings.sideband, kernel_i, kernel_q)
+    t_q = kernel_type.select(settings.sideband, kernel_q, kernel_i)
     kernel_i = t_i
     kernel_q = t_q
 
@@ -133,12 +140,12 @@ def filter(clk, data_i, data_q, stb, settings):
     accumulator_q = (accumulator_q>>(settings.filter_kernel_bits)).resize(data_q.subtype.bits)
     return  accumulator_i, accumulator_q, eop
 
-def test_filter(stimulus, filt, filter_sideband):
+def test_filter(stimulus, filt, sideband):
 
     settings = Settings()
     settings.filter_kernel_bits = 18 
     settings.mode   = Unsigned(2).input("mode")
-    settings.filter_sideband               = Unsigned(2).input("sideband_select")
+    settings.sideband               = Unsigned(2).input("sideband_select")
 
     taps = 255
 
@@ -149,7 +156,7 @@ def test_filter(stimulus, filt, filter_sideband):
     data_i_out, data_q_out, stb_out = filter(clk, data_i_in, data_q_in, stb_in, settings)
 
     settings.mode.set(filt)
-    settings.filter_sideband.set(filter_sideband)
+    settings.sideband.set(sideband)
 
     plt.plot(np.real(stimulus))
     plt.plot(np.imag(stimulus))
@@ -202,6 +209,34 @@ def test_filter(stimulus, filt, filter_sideband):
 if __name__ == "__main__":
 
     if "sim" in sys.argv:
+
+        #mode wbfm
+        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+        frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
+        phase = np.cumsum(frequency)
+        stimulus = (
+            np.exp(1.0j*phase)*
+            ((2**7)-1)#scale to 16 bits
+        )
+        test_filter(stimulus, FM, USB)
+
+        #mode nfm
+        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+        frequency = audio * 0.025 * pi#0.1*+/-50kHZ = +/-5KHz
+        phase = np.cumsum(frequency)
+        stimulus = (
+            np.exp(1.0j*phase)*
+            ((2**7)-1)#scale to 16 bits
+        )
+        test_filter(stimulus, NBFM, LSB)
+
+        #mode usb stim dsb
+        stimulus=(
+            (np.sin(np.arange(4000)*2.0*pi*0.01)+1j*np.sin(np.arange(4000)*2.0*pi*0.01))*
+            ((2**7)-1)#scale to 16 bits
+        )
+        test_filter(stimulus, SSB, USB)
+
         #mode am stim am
         stimulus=(
             np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
