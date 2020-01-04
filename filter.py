@@ -9,10 +9,10 @@ import sys
 def make_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
-    usb_response_0 = np.concatenate([np.zeros(256), 1*np.ones(16), np.zeros(240)]) #3.125KHz SSB
-    usb_response_1 = np.concatenate([np.zeros(240), 1*np.ones(32), np.zeros(240)]) #6.25KHz  AM
-    usb_response_2 = np.concatenate([np.zeros(218), 0.9*np.ones(76), np.zeros(218)]) #~15KHz   FM
-    usb_response_3 = np.concatenate([np.zeros(233), 1*np.ones(46), np.zeros(233)]) #~9KHz    NFM
+    usb_response_0 = np.concatenate([np.zeros(256), 0.9*np.ones(15), np.zeros(240)]) #2.929KHz SSB
+    usb_response_1 = np.concatenate([np.zeros(240), 1*np.ones(31), np.zeros(240)]) #6.25KHz  AM
+    usb_response_2 = np.concatenate([np.zeros(218), 0.9*np.ones(75), np.zeros(218)]) #~15KHz   FM
+    usb_response_3 = np.concatenate([np.zeros(233), 1*np.ones(45), np.zeros(233)]) #~9KHz    NFM
 
     #In Max10 9k block ram supports 512*18 so 1 BRAM can store 128
     return np.concatenate([
@@ -136,8 +136,8 @@ def filter(clk, data_i, data_q, stb, settings):
     eop = eop.subtype.register(clk, d=eop)
 
     #remove excess bits
-    accumulator_i = (accumulator_i>>(settings.filter_kernel_bits)).resize(data_i.subtype.bits)
-    accumulator_q = (accumulator_q>>(settings.filter_kernel_bits)).resize(data_q.subtype.bits)
+    accumulator_i = (accumulator_i>>(settings.filter_kernel_bits+1)).resize(data_i.subtype.bits)
+    accumulator_q = (accumulator_q>>(settings.filter_kernel_bits+1)).resize(data_q.subtype.bits)
     return  accumulator_i, accumulator_q, eop
 
 def test_filter(stimulus, filt, sideband):

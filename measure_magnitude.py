@@ -12,6 +12,7 @@ from numpy import log10
 def measure_magnitude(clk, data_in, stb, settings):
     frame_size = settings.agc_frame_size
     frames = settings.agc_frames
+
     frame_count, eop = counter(clk, 0, frame_size-1, 1)
     sop = frame_count == 0
 
@@ -23,53 +24,15 @@ def measure_magnitude(clk, data_in, stb, settings):
     minval.d(t_data.select(sop, t_data.select(data_in < minval, minval, data_in), data_in))
     stb = Boolean().register(clk, d=stb&eop, init=0)
 
-    #store frames in a circular buffer
-    en = Boolean().wire()
-    count, _ = counter(clk, 0, frames, 1, en)
-    address, _ = counter(clk, 0, frames-1, 1, en)
-    write = (count == frames)
-    en.drive(~write|stb)#wait for a strobe
-    sop = count == 0
-    eop = count == frames-1
-
-    #create RAM
-    bufmax = t_data.ram(clk=clk, depth=frames)
-    bufmin = t_data.ram(clk=clk, depth=frames)
-
-    #write data into RAM
-    bufmax.write(address, maxval, write & stb) 
-    bufmin.write(address, minval, write & stb) 
-
-    #read_data_from_RAM
-    maxval = bufmax.read(address)
-    minval = bufmin.read(address)
-
-    ###################################################
-    minval = minval.subtype.register(clk, d=minval)
-    maxval = maxval.subtype.register(clk, d=maxval)
-    write = write.subtype.register(clk, d=write, init=0)
-    sop = sop.subtype.register(clk, d=sop, init=0)
-    eop = eop.subtype.register(clk, d=eop, init=0)
-    ###################################################
-
-    #apply weighting to profile
-    weighted_maxval = maxval
-    weighted_minval = minval
-
-    #find the largest value in the stored frames
-    maxval = t_data.register(clk, init=0, en=~write)
-    minval = t_data.register(clk, init=0, en=~write)
-    maxval.d(t_data.select(sop, t_data.select(weighted_maxval > maxval, maxval, weighted_maxval), weighted_maxval))
-    minval.d(t_data.select(sop, t_data.select(weighted_minval < minval, minval, weighted_minval), weighted_minval))
-    stb = Boolean().register(clk, d=eop, init=0)
-    maxval = t_data.register(clk, d=maxval, en=stb)
-    minval = t_data.register(clk, d=minval, en=stb)
+    maxval.subtype.register(clk, d=maxval, en=stb, init=0)
+    minval.subtype.register(clk, d=minval, en=stb, init=0)
+    
 
     #calculate magnitude
     maxval = maxval.resize(t_data.bits+1)
     magnitude = (maxval - minval) >> 1
     dc = (maxval + minval) >> 1
-    magnitude = magnitude.resize(t_data.bits)
+    #magnitude = magnitude.resize(t_data.bits)
     dc = dc.resize(t_data.bits)
 
 

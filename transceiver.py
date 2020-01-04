@@ -1,187 +1,202 @@
-from baremetal import *
-from math import log, pi
-from matplotlib import pyplot as plt
-import numpy as np
 import sys
-from math import log, ceil
-from audio_agc import audio_agc
-from filter import filter
-from demodulator import demodulator
-from modulator import modulator
+from math import pi, sin
+
+from baremetal import *
+from af_section import af_section
+from rf_section import rf_section
+from max10adc import max_adc
+from audio_dac import audio_dac
 from settings import *
 
-def transceiver(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
+def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
+    speaker, speaker_stb, tx_i, tx_q, tx_stb = af_section(
+        clk, 
+        rx_i, 
+        rx_q, 
+        iq_stb, 
+        mic, 
+        mic_stb, 
+        settings,
+    )
+    rf, lo_i, lo_q = rf_section(
+        clk, 
+        frequency = frequency, 
+        audio_i = tx_i,
+        audio_q = tx_q,
+        audio_stb = tx_stb,
+        interpolation_factor = 3000, #from 300000000 to 9180
+        lut_bits = 10,
+        channels = 2
+    )
 
-    tx_bits = tx_audio.subtype.bits
-    t_rx = rx_i.subtype
+    return speaker, speaker_stb, rx_i, rx_q, iq_stb, rf, lo_i, lo_q
 
-    #declare signals
-    modulator_out_i = Signed(tx_bits+1).wire()
-    modulator_out_q = Signed(tx_bits+1).wire()
-    modulator_out_stb = Boolean().wire()
-
-    #filter
-    filter_in_i = t_rx.select(settings.rx_tx, rx_i, modulator_out_i)
-    filter_in_q = t_rx.select(settings.rx_tx, rx_q, modulator_out_q)
-    filter_in_stb = Boolean().select(settings.rx_tx, rx_stb, modulator_out_stb)
-    filter_out_i, filter_out_q, filter_out_stb = filter(clk, filter_in_i, filter_in_q, filter_in_stb, settings)
-
-    filter_out_i = filter_out_i.label("filter_out_i")
-    filter_out_q = filter_out_q.label("filter_out_q")
-    filter_out_stb = filter_out_stb.label("filter_out_stb")
-
-    #demodulator
-    demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
-
-    #agc
-    agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
-    agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
-    agc_out, agc_out_stb = audio_agc(clk, agc_in, agc_in_stb, settings)
-
-    #modulator
-    #i, q, stb = modulator(clk, agc_out.resize(tx_bits), agc_out_stb, settings)
-    i, q, stb = modulator(clk, tx_audio, tx_audio_stb, settings)
-    modulator_out_i.drive(i)
-    modulator_out_q.drive(q)
-    modulator_out_stb.drive(stb)
-
-
-    #rx audio
-    rx_audio = agc_out
-    rx_audio_stb = agc_out_stb
-
-    #resize tx
-
-    tx_i = filter_out_i.resize(tx_bits)
-    tx_q = filter_out_q.resize(tx_bits)
-    tx_stb = filter_out_stb
-
-    debug["audio"] = tx_audio
-    debug["audio_stb"] = tx_audio_stb
-    debug["modulator_out_i"] = modulator_out_i
-    debug["modulator_out_q"] = modulator_out_q
-    debug["modulator_out_stb"] = modulator_out_stb
-    debug["filter_out_i"] = filter_out_i
-    debug["filter_out_q"] = filter_out_q
-    debug["filter_out_stb"] = filter_out_stb
-
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb
-
-def test_transceiver(stimulus, sideband, mode, rx_tx):
+def generate():
     settings = Settings()
     settings.filter_kernel_bits = 18
-    settings.agc_frame_size = 800
-    settings.agc_frames = 2
+    settings.agc_frame_size = 65536
+    settings.agc_frames = 10
     settings.agc_lut_bits = 7
     settings.agc_lut_fraction_bits = 8
-    settings.squelch = Signed(16).input("squelch")
-    settings.mode = Unsigned(2).input("filter_mode")
-    settings.sideband = Unsigned(2).input("filter_sideband")
-    settings.rx_tx = Boolean().input("rx_tx")
+
+    # Create IP inputs
+    ##################
+
+    clk = Clock("clk")
+    adc_clk = Clock("adc_clk")
+    cpu_clk = Clock("cpu_clk")
+
+    #control settings
+    settings.mode     = Unsigned(2).input("filter_mode_in")
+    settings.sideband = Unsigned(2).input("filter_sideband_in")
+    settings.rx_tx    = Boolean().input("rx_tx_in")
+    #settings.squelch = Signed(16).input("squelch")
+    settings.squelch  = Signed(16).constant(0)
+    frequency         = Unsigned(32).input("frequency_in")
+
+    #adc interface inputs
+    response_channel  = Unsigned(5).input("response_channel_in")
+    response_data     = Unsigned(12).input("response_data_in")
+    response_valid    = Unsigned(1).input("response_valid_in")
+    command_ready     = Unsigned(1).input("command_ready_in")
+
+    # USE MAX10 built in ADC
+    ########################
+    (
+        command_channel, 
+        command_startofpacket, 
+        command_endofpacket, 
+        mic, 
+        mic_stb, 
+        rx_i, 
+        rx_q, 
+        iq_stb
+    ) = max_adc(
+        clk, 
+        adc_clk, 
+        settings.rx_tx,
+        command_ready, 
+        response_valid, 
+        response_channel, 
+        response_data
+    )
+
+    rx_i = rx_i.resize(16)
+    rx_q = rx_q.resize(16)
+
+    print rx_i.subtype
+
+    # Implement transceiver
+    ########################
+    speaker, speaker_stb, rx_i, rx_q, iq_stb, rf, lo_i, lo_q = transceiver(
+            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
+
+    # Create Audio DAC
+    ##################
+
+    clk = Clock("clk")
+    capture = speaker
+    speaker = audio_dac(clk, speaker, speaker_stb) 
+    
+    #audio capture
+    ##############
+
+    #extend stb
+    speaker_stb = speaker_stb | speaker_stb.subtype.register(clk, d=speaker_stb, init=0)
+    speaker_stb = speaker_stb | speaker_stb.subtype.register(clk, d=speaker_stb, init=0)
+    speaker_stb = speaker_stb | speaker_stb.subtype.register(clk, d=speaker_stb, init=0)
+    speaker_stb = speaker_stb | speaker_stb.subtype.register(clk, d=speaker_stb, init=0)
+    capture     = capture.subtype.register(clk, d=capture, en=speaker_stb)
+    capture_stb = speaker_stb.subtype.register(clk, d=speaker_stb, init = 0)
+
+    #edge detect strobe in target clock domain
+    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
+    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
+    capture_stb = capture_stb & ~Boolean().register(cpu_clk, d=capture_stb, init=0)
+    capture = capture.subtype.register(cpu_clk, d=capture, en=capture_stb)
+    capture = capture.resize(32)
+    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
     
 
-    taps = 255
-    clk = Clock("clk")
-    rx_i_in = Signed(16).input("i_data_in")
-    rx_q_in = Signed(16).input("q_data_in")
-    rx_stb_in = Boolean().input("stb_in")
-    tx_audio_in = Signed(8).input("tx_audio_in")
-    tx_audio_stb_in = Boolean().input("stb_in")
+    # Create Device Outputs
+    #######################
 
-    rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb = transceiver(clk, rx_i_in, rx_q_in, rx_stb_in, tx_audio_in, tx_audio_stb_in, settings) 
+    #ADC interface outputs
+    command_channel = command_channel.subtype.output("command_channel_out", command_channel)
+    command_startofpacket = command_startofpacket.subtype.output("command_startofpacket_out", command_startofpacket)
+    command_endofpacket = command_endofpacket.subtype.output("command_endofpacket_out", command_endofpacket)
+    capture = capture.subtype.output("capture_out", capture)
+    capture_stb = capture.subtype.output("capture_stb_out", capture_stb)
 
-    plt.plot(np.real(stimulus))
-    plt.plot(np.imag(stimulus))
-    plt.show()
+    #RF outputs
+    rf = [i.subtype.output("rf_%u_out"%idx, i) for idx, i in enumerate(rf)]
+    lo_i = [i.subtype.output("lo_i_%u_out"%idx, i) for idx, i in enumerate(lo_i)]
+    lo_q = [i.subtype.output("lo_q_%u_out"%idx, i) for idx, i in enumerate(lo_q)]
 
-    #simulate
-    clk.initialise()
-    settings.squelch.set(0)
-    settings.rx_tx.set(rx_tx)
-    settings.mode.set(mode)
-    settings.sideband.set(sideband)
+    #speaker output
+    speaker = speaker.subtype.output("speaker_out", speaker)
 
-    tx_audio_in.set(0)
-    tx_audio_stb_in.set(0)
+    #generate netlist and output
+    netlist = Netlist(
+        "transceiver",
+        #clocks
+        [
+            clk, 
+            adc_clk,
+            cpu_clk
+        ], 
 
-    response = []
-    for data in stimulus:
-        for j in range(taps+2):
-            rx_stb_in.set(j==taps+1)
-            rx_i_in.set(np.real(data))
-            rx_q_in.set(np.imag(data))
-            tx_audio_in.set(np.real(data))
-            tx_audio_stb_in.set(j==taps+1)
+        #inputs
+        [
+            settings.mode,
+            settings.sideband,
+            settings.rx_tx,
+            frequency,
+            response_channel,
+            response_data,
+            response_valid,
+            command_ready
+        ],
+
+        #outputs
+        rf + lo_i + lo_q + [
+            command_channel,
+            command_startofpacket,
+            command_endofpacket,
+            speaker,
+            capture,
+            capture_stb
+        ]
+    )
+    f = open("transceiver.v", "w")
+    f.write(netlist.generate())
+
+if __name__ == "__main__":
+
+    if "sim" in sys.argv:
+        import numpy as np
+        from matplotlib import pyplot as plt
+        monitor = Monitor(debug)
+        clk.initialise()
+        response = []
+        frequency.set(0x00000000)
+        for i in range(256*1500*2):
             clk.tick()
-            if rx_audio_stb.get() and rx_tx==0:
-                print rx_audio.get()
-                response.append(rx_audio.get())
-            if tx_stb.get() and rx_tx==1:
-                print tx_i.get(), tx_q.get()
-                if tx_i.get() is not None and tx_q.get() is not None:
-                    response.append(tx_i.get()+1j*tx_q.get())
+            monitor.monitor()
+            for channel in rf:
+                print(tx_audio.get(), tx_i.get(), tx_q.get(), channel.get())
+                if channel.get():
+                    response.append(channel.get()-0.5)
 
-    response = np.array(response)
-    #plt.plot(np.real(stimulus))
-    #plt.plot(np.imag(stimulus))
-    plt.plot(np.real(response))
-    plt.plot(np.imag(response))
-    plt.show()
-    plt.plot(20*np.log10(abs(np.fft.fftshift(np.fft.fft(response)))))
-    plt.show()
+        #response = response-np.mean(response)
+        spectrum = np.abs(np.fft.fftshift(np.fft.fft(response)))
+        #spectrum = 20.0 * np.log10(spectrum, out=np.zeros_like(spectrum), where=(spectrum!=0))
+        plt.plot(spectrum)
+        plt.show()
+
+    if "gen" in sys.argv:
+        generate()
 
 
-if __name__ == "__main__" and "sim" in sys.argv:
 
-    #TX
-    ##############################################
-
-    #mode am stim tx
-    stimulus=(
-        np.sin(np.arange(1000)*2.0*pi*0.01)*
-        ((2**7)-1)#scale to 16 bits
-    )
-    #test_transceiver(stimulus, USB, AM, 1)#lsb AM
-
-    #mode SSB stim tx
-    stimulus=(
-        np.sin(np.arange(1000)*2.0*pi*0.01)*
-        ((2**7)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, USB, SSB, 1)#lsb AM
-
-    #mode nfm
-    stimulus=(
-        np.sin(np.arange(1000)*2.0*pi*0.01)*
-        ((2**7)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, USB, NBFM, 1)#usb NBFM
-
-    #RX
-    ###############################################
-
-    #mode am stim am
-    stimulus=(
-        np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
-        (np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)* #The signal a tone
-        ((2**15)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, 0, 1)#lsb AM
-
-    #mode usb stim dsb
-    stimulus=(
-        np.sin(np.arange(4000)*2.0*pi*0.01)*
-        ((2**15)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, 1, 0)#usb SSB
-
-    #mode fm
-    audio=np.sin(np.arange(4000)*2.0*pi*0.01)
-    frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
-    phase = np.cumsum(frequency)
-    stimulus = (
-        np.exp(1.0j*phase)*
-        ((2**15)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, 1, 2)#usb FM

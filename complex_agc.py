@@ -23,26 +23,26 @@ def audio_agc(clk, audio, audio_stb, settings):
     gain_m, gain_e = calculate_gain(clk, magnitude, settings)
 
     #squelch
-    #mute = magnitude < settings.squelch
-    #mute = mute.subtype.register(clk, d=mute)
-    #audio = audio.subtype.select(mute, audio, 0)
-    #audio = audio.subtype.register(clk, d=audio)
-    #audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
+    mute = magnitude < settings.squelch
+    mute = mute.subtype.register(clk, d=mute)
+    audio = audio.subtype.select(mute, audio, 0)
+    audio = audio.subtype.register(clk, d=audio)
+    audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
 
     #scale by 2**e
-    audio = audio << (gain_e-1)
+    audio = audio << gain_e
     audio = audio.subtype.register(clk, d=audio)
     audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
 
     #scale by m
-    #input_bits = audio.subtype.bits
-    #audio = audio.resize(input_bits + 
-            #settings.agc_lut_bits + settings.agc_lut_fraction_bits)
-    #audio = audio * gain_m
-    #audio >>= settings.agc_lut_fraction_bits
-    #audio = audio.resize(input_bits)
-    #audio = audio.subtype.register(clk, d=audio)
-    #audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
+    input_bits = audio.subtype.bits
+    audio = audio.resize(input_bits + 
+            settings.agc_lut_bits + settings.agc_lut_fraction_bits)
+    audio = audio * gain_m
+    audio >>= settings.agc_lut_fraction_bits
+    audio = audio.resize(input_bits)
+    audio = audio.subtype.register(clk, d=audio)
+    audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
 
     return audio, audio_stb
 

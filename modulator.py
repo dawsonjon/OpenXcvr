@@ -17,7 +17,6 @@ def modulator(clk, audio, audio_stb, settings):
     ssb_q = audio.subtype.constant(0)
 
     #FM is generated using a phase accumulator driving a look-up table
-
     #scale audio to give correct frequency deviation depending on mode
     audio_bits = audio.subtype.bits
     extra_bits = 8
@@ -47,6 +46,7 @@ def modulator(clk, audio, audio_stb, settings):
     fm_q = fm_q.subtype.register(clk, d=fm_q)
     fm_stb = Boolean().register(clk, d=frequency_stb, init=0)
 
+
     i = ssb_i.subtype.select(settings.mode, ssb_i, am_i, fm_i, fm_i)
     q = ssb_q.subtype.select(settings.mode, ssb_q, am_q, fm_q, fm_q)
     stb = Boolean().select(settings.mode, audio_stb, audio_stb, fm_stb, fm_stb)
@@ -59,7 +59,7 @@ from matplotlib import pyplot as plt
 def test_modulator(stimulus, mode):
 
     settings = Settings()
-    settings.mode = Unsigned(2).input("filter_mode")
+    settings.mode = Unsigned(3).input("filter_mode")
 
     clk = Clock("clk")
     audio_in = Signed(8).input("i_data_in")
@@ -95,6 +95,7 @@ if __name__ == "__main__" and "sim" in sys.argv:
         np.sin(np.arange(10000)*2.0*pi*0.01)*
         ((2**7)-1)#scale to 16 bits
     )
+    test_modulator(stimulus, TEST)
     test_modulator(stimulus, AM)
     test_modulator(stimulus, FM)
     test_modulator(stimulus, NBFM)

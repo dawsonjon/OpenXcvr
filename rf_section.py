@@ -7,7 +7,7 @@ from prng import prng
 from math import sin
 from random import randint
 
-def tx(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor, lut_bits, channels):
+def rf_section(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor, lut_bits, channels):
     dlo_i, dlo_q = nco(clk, frequency, lut_bits, channels)
     dlo_i = [i.label("nco_i_%s"%idx) for idx, i in enumerate(dlo_i)]
     dlo_q = [i.label("nco_q_%s"%idx) for idx, i in enumerate(dlo_q)]
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     audio_i = Signed(8).input("audio_i")
     audio_q = Signed(8).input("audio_q")
     stb = Boolean().input("audio_stb")
-    rf, i, q = tx(clk, 
+    rf, i, q = rf_section(clk, 
             frequency = frequency, 
             audio_i = audio_i,
             audio_q = audio_q,

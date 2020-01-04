@@ -2,7 +2,7 @@
 LSB = 0
 USB = 1
 
-#Mmodes
+#modes
 SSB = 0
 AM = 1
 FM = 2

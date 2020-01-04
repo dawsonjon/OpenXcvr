@@ -1,4 +1,4 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs232_rx);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx);
 
   input clk_in;
   input reset_in;
@@ -6,7 +6,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
   output rf;
   output lo_i;
   output lo_q;
-  output audio_out;
+  output speaker;
   output [7:0] leds;
   output rs232_tx;
 
@@ -63,29 +63,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
   assign command_valid = 1;
   assign response_ready = 1;
 
-  //adc interface
-  //
-  wire [11:0] tx_audio;
-  wire tx_audio_stb;
-
-  adc_test u_adc_test(
-      .adc_clk(clk_10), 
-      .clk(clk), 
-      .response_channel(response_channel), 
-      .response_data(response_data), 
-      .response_valid(response_valid),
-      .command_ready(command_ready), 
-      .command_channel(command_channel), 
-      .command_startofpacket(command_startofpacket), 
-      .command_endofpacket(command_endofpacket),
-	   .tx_audio(tx_audio),
-	   .tx_audio_stb(tx_audio_stb)
-  );
-
-  assign leds[7:1] = response_data[11:4];
-  assign leds[0] = response_valid;
-  
-
 ////////////////////////////////////////////////////////////////////////////////
 //Software Control
 //
@@ -107,6 +84,12 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
     reg [31:0] control;
     wire control_ack;
     wire control_stb;
+	 
+    wire [31:0] capture_bus;
+    wire capture_ack;
+    wire capture_stb;
+
+	 
 
     //implement compiled C program
     main_0 control_sw_0(
@@ -127,7 +110,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
 
         .output_control_out(control_bus),
         .output_control_out_ack(control_ack),
-        .output_control_out_stb(control_stb)
+        .output_control_out_stb(control_stb),
+		  
+		  .input_capture_in(capture_bus),
+        .input_capture_in_ack(capture_ack),
+        .input_capture_in_stb(capture_stb)
         //exception
     );
 
@@ -175,12 +162,9 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
         .out1_ack(debug_rx_ack)
     );
 
-////////////////////////////////////////////////////////////////////////////////
-//Transceiver
-//
-  //add rf
-  wire [7:0] audio_i;
-  wire [7:0] audio_q;
+  ////////////////////////////////////////////////////////////////////////////////
+  //Transceiver
+  //
 
   wire rf_0;
   wire rf_1;
@@ -188,8 +172,50 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, audio_out, rs232_tx, rs2
   wire lo_i_1;
   wire lo_q_0;
   wire lo_q_1;
-
-  transceiver tx_0(clk, frequency, tx_audio[11:4], tx_audio_stb, control[1:0], control[2], rf_0, rf_1, lo_i_0, lo_i_1, lo_q_0, lo_q_1);
+  
+  transceiver transceiver_u0(
+  
+  .clk(clk), 
+  .adc_clk(clk_10),
+  .cpu_clk(clk_50),
+  
+  //Transceiver Control
+  .filter_mode_in(control[1:0]), 
+  .filter_sideband_in(control[2]), 
+  .rx_tx_in(0), 
+  .frequency_in(frequency), 
+  
+  //ADC INTERFACE
+  .response_channel_in(response_channel), 
+  .response_data_in(response_data), 
+  .response_valid_in(response_valid), 
+  .command_ready_in(command_ready), 
+  .command_channel_out(command_channel),
+  .command_startofpacket_out(command_startofpacket),
+  .command_endofpacket_out(command_endofpacket),
+  
+  //CPU capture interface
+  .capture_out(capture_bus),
+  .capture_stb_out(capture_stb),
+  
+  //RF INTERFACE
+  .rf_0_out(rf_0), 
+  .rf_1_out(rf_1), 
+  .lo_i_0_out(lo_i_0), 
+  .lo_i_1_out(lo_i_1), 
+  .lo_q_0_out(lo_q_0), 
+  .lo_q_1_out(lo_q_1),
+  
+  //AUDIO OUTPUT
+  .speaker_out(speaker)
+  );
+  
+  assign leds[4:0] = command_channel;
+  assign leds[5] = capture_stb;
+  assign leds[6] = capture_ack;
+  
+  //use double data rate buffers for rf signals
+  
   output_buffer output_buffer_0(
 		clk,           
 		{rf_1, rf_0}, 
