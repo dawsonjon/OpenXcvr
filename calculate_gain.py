@@ -6,68 +6,53 @@ import numpy as np
 import sys
 from math import log, ceil, floor
 
-def calculate_gain(clk, magnitude, settings):
+def calculate_gain(clk, magnitude, setpoint):
 
-    """Calculate the required gain needed to give full scale signal
-    given the magnitude of the signal.
-    
-    For efficiency the gain is split into two parts:
-        e the number of bits to shift the signal right by.
-        m a value to multiply the signal by.
+    width = magnitude.subtype.bits
+    t_data = magnitude.subtype
+    setpoint_constant = t_data.constant(setpoint)
 
-    A lookup table is used to calculate m, the lookup table has
-    2**lut_bits entries.
-    The m output has lut_bits integer bits and lut_fraction_bits 
-    fraction bits"""
+    count, last = counter(clk, 0, width-1, 1)
+    first = (count==0)
+    magnitude = t_data.register(clk, init=2**(width-2), en=last, d=magnitude)
 
-    #assuming input is a signed number with a positive value, lose the MSB
-    #and convert to signed
-    signed_bits = magnitude.subtype.bits
-    unsigned_bits = signed_bits - 1
-    magnitude = Unsigned(unsigned_bits).constant(0) + magnitude.resize(unsigned_bits)
+    remainder = t_data.register(clk, init=0)
+    gain      = t_data.register(clk, init=0)
+    setpoint  = t_data.register(clk, init=0)
 
-    shift_bits = magnitude.subtype.bits - settings.agc_lut_bits
-    m_type = magnitude.subtype
-    e_type = Signed(1+int(ceil(log(shift_bits+1, 2))))
+    shifter = remainder[width-2:0].cat(setpoint[width-2])
+    difference = shifter - magnitude
+    shifter_gt_magnitude = ~difference[width-1]
 
-    count, last_count = counter(clk, 0, shift_bits, 1)
-    m = m_type.register(clk)
-    e = e_type.register(clk)
-    msb_high = m[m_type.bits-1]
-    m.d(m_type.select(last_count, m_type.select(msb_high, m<<1, m), magnitude))
-    e.d(e_type.select(last_count, e_type.select(msb_high, e+1, e), 0))
+    next_remainder = t_data.select(shifter_gt_magnitude, shifter, difference)
+    next_gain      = t_data.select(shifter_gt_magnitude, gain<<1, (gain<<1)|1)
+    next_setpoint  = setpoint << 1
 
-    m = m[m_type.bits-1:m_type.bits-(settings.agc_lut_bits)]
-    m = m.subtype.register(clk, d=m, en=last_count)
-    e = e_type.register(clk, d=e, en=last_count)
+    next_remainder = t_data.select(first, next_remainder, 0)
+    next_gain      = t_data.select(first, next_gain, 0)
+    next_setpoint  = t_data.select(first, next_setpoint, setpoint_constant)
 
-    lut_depth = 2**settings.agc_lut_bits
-    scaling_factor = lut_depth*(2**settings.agc_lut_fraction_bits)
-    lookup_table = [(scaling_factor-1)/i for i in range(1, lut_depth+1)]
-    m = Signed(settings.agc_lut_bits+settings.agc_lut_fraction_bits+1).rom(m, *lookup_table)
+    remainder.d(next_remainder)
+    gain.d(next_gain)
+    setpoint.d(next_setpoint)
 
-    return m, e
+    gain = t_data.register(clk, init=0, en=first, d=gain)
+
+    return gain
 
 if __name__ == "__main__" and "sim" in sys.argv:
-    settings = Settings()
-    settings.agc_lut_bits = 4
-    settings.agc_lut_fraction_bits = 8
+
     clk = Clock("clk")
-    data_in = Signed(8).input("data_in")
-    m, e = calculate_gain(clk, data_in, settings)
+    magnitude = Signed(16).input("magnitude")
 
-    stimulus = [100, 127, 64, 64, 0x20, 0x40, 0x80]
-    new_stimulus = []
-    for i in stimulus:
-        for j in range(10):
-            new_stimulus.append(i)
-    stimulus = new_stimulus
+    gain = calculate_gain(clk, magnitude, 100)
+    magnitude.set(5)
 
-
-    #simulate
     clk.initialise()
-
-    for data in stimulus:
-        data_in.set(data)
+    for i in range(50):
         clk.tick()
-        print(m.get(), e.get())
+        print gain.get()
+    magnitude.set(10)
+    for i in range(50):
+        clk.tick()
+        print gain.get()

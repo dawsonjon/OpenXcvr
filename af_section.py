@@ -4,10 +4,12 @@ from matplotlib import pyplot as plt
 import numpy as np
 import sys
 from math import log, ceil
-from audio_agc import audio_agc
+from complex_agc import complex_agc
+from dc_removal import dc_removal
 from filter import filter
 from demodulator import demodulator
 from modulator import modulator
+from downsample import downsample
 from downconverter import downconverter
 from settings import *
 
@@ -15,14 +17,20 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     tx_bits = tx_audio.subtype.bits
     t_rx = rx_i.subtype
+    
+    #remove DC from both I and Q channel
+    rx_i, stb = dc_removal(clk, rx_i, rx_stb)
+    rx_q, _   = dc_removal(clk, rx_q, rx_stb)
+    rx_stb = stb
 
     #rx agc
-    rx_i, stb = audio_agc(clk, rx_i, rx_stb, settings)
-    rx_q, _   = audio_agc(clk, rx_q, rx_stb, settings)
-    rx_stb = stb
+    rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings)
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
+
+    #decimate by 2 to 50KHz
+    #rx_i, rx_q, rx_stb = downsample(clk, rx_i, rx_q, stb)
 
     #declare signals
     modulator_out_i = Signed(tx_bits+1).wire()
@@ -39,9 +47,9 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
 
     #agc
-    agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
-    agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
-    agc_out, agc_out_stb = audio_agc(clk, agc_in, agc_in_stb, settings)
+    #agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
+    #agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
+    #agc_out, agc_out_stb = audio_agc(clk, agc_in, agc_in_stb, settings)
 
     #modulator
     #i, q, stb = modulator(clk, agc_out.resize(tx_bits), agc_out_stb, settings)
@@ -51,8 +59,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     modulator_out_stb.drive(stb)
 
     #rx audio
-    rx_audio = agc_out
-    rx_audio_stb = agc_out_stb
+    rx_audio, rx_audio_stb = rx_i, rx_stb
 
     #resize tx
 
@@ -60,7 +67,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return demodulator_out, demodulator_out_stb, tx_i, tx_q, tx_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, rx_i, rx_q, rx_stb
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()

@@ -41,7 +41,7 @@ void main(){
                 puts("frequency: ");
                 print_uhex(frequency);
                 puts("\n");
-                fputc(convert_to_steps(frequency-25000), frequency_out);
+                fputc(convert_to_steps(frequency-18311), frequency_out);
                 break;
 
             case 'm':
@@ -63,7 +63,9 @@ void main(){
                     capture[i] = fgetc(capture_in);
                 }
                 for(i=0;i<1000;i++){
-                    print_uhex(capture[i]);
+                    print_uhex(capture[i]&0xffff);
+                    puts("\n");
+                    print_uhex((capture[i]>>16)&0xffff);
                     puts("\n");
                 }
                 break;

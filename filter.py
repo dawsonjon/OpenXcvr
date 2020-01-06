@@ -9,10 +9,10 @@ import sys
 def make_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
-    usb_response_0 = np.concatenate([np.zeros(256), 0.9*np.ones(15), np.zeros(240)]) #2.929KHz SSB
-    usb_response_1 = np.concatenate([np.zeros(240), 1*np.ones(31), np.zeros(240)]) #6.25KHz  AM
-    usb_response_2 = np.concatenate([np.zeros(218), 0.9*np.ones(75), np.zeros(218)]) #~15KHz   FM
-    usb_response_3 = np.concatenate([np.zeros(233), 1*np.ones(45), np.zeros(233)]) #~9KHz    NFM
+    usb_response_0 = np.concatenate([np.zeros(256), np.ones(28), np.zeros(226)]) #~3KHz SSB
+    usb_response_1 = np.concatenate([np.zeros(225), 1*np.ones(62), np.zeros(225)]) #~6KHz  AM
+    usb_response_2 = np.concatenate([np.zeros(179), 0.9*np.ones(154), np.zeros(179)]) #~15KHz   FM
+    usb_response_3 = np.concatenate([np.zeros(209), 1*np.ones(94), np.zeros(209)]) #~9KHz    NFM
 
     #In Max10 9k block ram supports 512*18 so 1 BRAM can store 128
     return np.concatenate([
@@ -33,14 +33,10 @@ def create_filter(frequency_response, taps=511, kernel_bits=18):
     impulse_response = np.concatenate([impulse_response[-taps/2:], impulse_response[0:taps/2]])
     kernel = impulse_response * np.blackman(taps)
 
-
     #quantise kernel
     kernel = np.round(kernel*(2**kernel_bits - 1)) 
-    padded_kernel = np.concatenate([np.zeros(1024), kernel, np.zeros(1024)])
-
-
-
-    #plt.plot(np.linspace(-48000, 48000, len(padded_kernel)), 20*np.log10(abs(np.fft.fftshift(np.fft.fft(padded_kernel)))))
+    #padded_kernel = np.concatenate([np.zeros(1024), kernel, np.zeros(1024)])
+    #plt.plot(np.linspace(-25000, 25000, len(padded_kernel)), 20*np.log10(abs(np.fft.fftshift(np.fft.fft(padded_kernel)))))
     #plt.show()
 
     return kernel

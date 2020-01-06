@@ -9,34 +9,23 @@ from math import log, ceil
 from numpy import log10
 
 
-def measure_magnitude(clk, data_in, stb, settings):
-    frame_size = settings.agc_frame_size
-    frames = settings.agc_frames
+def measure_magnitude(clk, audio, audio_stb):
 
-    frame_count, eop = counter(clk, 0, frame_size-1, 1)
-    sop = frame_count == 0
+    #use a leaky max hold
+    factor = 16 #T=~0.5s @ fs=100e-3
+    audio_bits = audio.subtype.bits
 
-    #find the largest value in a frame
-    t_data = data_in.subtype     
-    maxval = t_data.register(clk, init=0, en=stb)
-    minval = t_data.register(clk, init=0, en=stb)
-    maxval.d(t_data.select(sop, t_data.select(data_in > maxval, maxval, data_in), data_in))
-    minval.d(t_data.select(sop, t_data.select(data_in < minval, minval, data_in), data_in))
-    stb = Boolean().register(clk, d=stb&eop, init=0)
+    #add extra bits for decay calculation
+    audio = audio.resize(audio_bits+factor) << factor
 
-    maxval.subtype.register(clk, d=maxval, en=stb, init=0)
-    minval.subtype.register(clk, d=minval, en=stb, init=0)
-    
+    #implement leaky max/min hold
+    max_hold = audio.subtype.register(clk, init=0, en=audio_stb)
+    max_hold.d(audio.subtype.select(audio > max_hold, max_hold - (max_hold >> factor), audio))
 
-    #calculate magnitude
-    maxval = maxval.resize(t_data.bits+1)
-    magnitude = (maxval - minval) >> 1
-    dc = (maxval + minval) >> 1
-    #magnitude = magnitude.resize(t_data.bits)
-    dc = dc.resize(t_data.bits)
+    #remove extra bits (except one to allow for addition)
+    max_hold = (max_hold >> factor).resize(audio_bits)
 
-
-    return dc, magnitude
+    return max_hold
 
 if __name__ == "__main__" and "sim" in sys.argv:
 

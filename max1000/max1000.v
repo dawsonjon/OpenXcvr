@@ -1,8 +1,12 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out);
 
   input clk_in;
   input reset_in;
   input rs232_rx;
+  input bclk_in;
+  input lrclk_in;
+  input dout_in;
+  output sclk_out;
   output rf;
   output lo_i;
   output lo_q;
@@ -194,6 +198,14 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .command_startofpacket_out(command_startofpacket),
   .command_endofpacket_out(command_endofpacket),
   
+  //External ADC interface
+  .bclk_in(bclk_in),
+  .lrclk_in(lrclk_in),
+  .dout_in(dout_in),
+  .ext_adc_in(1),
+  .sclk_out(sclk_out),
+  .leds(leds),
+  
   //CPU capture interface
   .capture_out(capture_bus),
   .capture_stb_out(capture_stb),
@@ -209,11 +221,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   //AUDIO OUTPUT
   .speaker_out(speaker)
   );
-  
-  assign leds[4:0] = command_channel;
-  assign leds[5] = capture_stb;
-  assign leds[6] = capture_ack;
-  
+
   //use double data rate buffers for rf signals
   
   output_buffer output_buffer_0(

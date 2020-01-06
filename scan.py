@@ -15,17 +15,19 @@ import threading
 def get_data_value():
     value = port.readline()
     value = int(value, 16)
-    if value > 0xffff:
+    if value & 0x8000:
         value |= (~0xffff)
     return value
 
 def capture():
     port.flush()
     port.write("c\n")
-    values = []
+    i_values = []
+    q_values = []
     for i in range(1000):
-        values.append(float(get_data_value()))
-    return values
+        i_values.append(float(get_data_value()))
+        q_values.append(float(get_data_value()))
+    return i_values, q_values
 
 def set_frequency(frequency):
     port.flush()
@@ -43,15 +45,16 @@ def set_mode(mode):
 device = "/dev/ttyUSB2"
 port = serial.Serial(device, 115200, timeout=2)
 
-set_frequency(1.215e6)
-set_mode(0)
-values = capture()
-plt.plot(values)
+set_frequency(1.2151e6-7e3)
+set_mode(1)
+i_values, q_values = capture()
+values = np.array(i_values)+1.0j*np.array(q_values)
+plt.plot(range(len(i_values)), i_values, range(len(q_values)), q_values)
 plt.show()
 
 values = np.array(values)*np.hamming(len(values))
-spectrum = abs(np.fft.fftshift(np.fft.fft(values)))
-frequency_range = np.linspace(-50e3, 50e3,  len(spectrum))
+spectrum = 20*np.log10(abs(np.fft.fftshift(np.fft.fft(values))))
+frequency_range = np.linspace(-18.311e3*2, 18.311e3*2,  len(spectrum))
 plt.plot(frequency_range, spectrum)
 #plt.xlim(-50e3, 50e3)
 plt.show()

@@ -3,8 +3,7 @@ from baremetal import *
 def downconverter(clk, i, q, stb):
     phase, _ = counter(clk, 0, 3, 1, en=stb)
 
-    i = i.subtype.select(phase, q, i, -q, -i)
-    q = q.subtype.select(phase, i, -q, -i, q)
+    i, q = i.subtype.select(phase, q, i, -q, -i), q.subtype.select(phase, -i, q, i, -q)
 
     i = i.subtype.register(clk, d=i, init=0)
     q = q.subtype.register(clk, d=q, init=0)
