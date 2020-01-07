@@ -42,10 +42,10 @@ def set_mode(mode):
     print port.readline()
     print port.readline()
 
-device = "/dev/ttyUSB2"
+device = "/dev/ttyUSB0"
 port = serial.Serial(device, 115200, timeout=2)
 
-set_frequency(1.2151e6-7e3)
+set_frequency(1.215e6)
 set_mode(1)
 i_values, q_values = capture()
 values = np.array(i_values)+1.0j*np.array(q_values)

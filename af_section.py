@@ -5,15 +5,28 @@ import numpy as np
 import sys
 from math import log, ceil
 from complex_agc import complex_agc
+from audio_agc import audio_agc
 from dc_removal import dc_removal
 from filter import filter
 from demodulator import demodulator
 from modulator import modulator
-from downsample import downsample
 from downconverter import downconverter
 from settings import *
 
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
+
+
+    #          +-----------+ +---------+ +-------------+ +--------+ +-------------+ +-------+
+    #RX I/Q----+ DC        +-+ Complex +-+ Fs/4        +-+ filter +-+ demodulator +-+ Audio +-- Audio Out
+    #          | removal   | | AGC     | | Downconvert | +--------+ +-------------+ | AGC   |                
+    #          +-----------+ +---------+ +-------------+                            +-------+
+
+    #          +-----------+ +---------+ +-------------+ +--------+ 
+    #TX Audio -+ DC        +-+ Audio   +-+ Modulator   +-+ filter +-- Audio Out
+    #          | removal   | | AGC     | +-------------+ +--------+                
+    #          +-----------+ +---------+
+
+
 
     tx_bits = tx_audio.subtype.bits
     t_rx = rx_i.subtype
@@ -28,9 +41,6 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
-
-    #decimate by 2 to 50KHz
-    #rx_i, rx_q, rx_stb = downsample(clk, rx_i, rx_q, stb)
 
     #declare signals
     modulator_out_i = Signed(tx_bits+1).wire()
@@ -47,11 +57,16 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
 
     #agc
-    #agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
-    #agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
-    #agc_out, agc_out_stb = audio_agc(clk, agc_in, agc_in_stb, settings)
+    #===
+    agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
+    agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
+    dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
+    agc_out, agc_out_stb = audio_agc(clk, dc_removed, dc_removed_stb)
 
     #modulator
+    ##########
+    #using microphone preamp with built in AGC ATM
+
     #i, q, stb = modulator(clk, agc_out.resize(tx_bits), agc_out_stb, settings)
     i, q, stb = modulator(clk, tx_audio, tx_audio_stb, settings)
     modulator_out_i.drive(i)
@@ -59,15 +74,14 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     modulator_out_stb.drive(stb)
 
     #rx audio
-    rx_audio, rx_audio_stb = rx_i, rx_stb
+    rx_audio, rx_audio_stb = agc_out, agc_out_stb
 
     #resize tx
-
     tx_i = filter_out_i.resize(tx_bits)
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, rx_i, rx_q, rx_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, filter_out_i, filter_out_q, filter_out_stb
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()
