@@ -91,7 +91,6 @@ def generate():
     #external PCM1802 ADC
     #####################
     rx_i, rx_q, iq_stb, sclk, leds = pcm1802(clk, bclk, lrclk, dout)
-    print rx_i.subtype.bits
 
     # Implement transceiver
     ########################
@@ -123,9 +122,7 @@ def generate():
     capture_i = capture_i.subtype.register(cpu_clk, d=capture_i, en=capture_stb)
     capture_q = capture_q.subtype.register(cpu_clk, d=capture_q, en=capture_stb)
     capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture = capture_i.cat(capture_q)
-
-    print capture.subtype.bits 
+    capture = capture_i[15:0].cat(capture_q[15:0])
 
     # Create Device Outputs
     #######################
