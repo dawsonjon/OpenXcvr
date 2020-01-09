@@ -31,7 +31,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         channels = 2
     )
 
-    return speaker, speaker_stb, rx_i, rx_q, iq_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb
+    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb
 
 def generate():
     settings = Settings()
@@ -87,19 +87,15 @@ def generate():
         response_data
     )
 
-    rx_i = rx_i.resize(16)
-    rx_q = rx_q.resize(16)
 
     #external PCM1802 ADC
     #####################
-    ext_rx_i, ext_rx_q, ext_iq_stb, sclk, leds = pcm1802(clk, bclk, lrclk, dout)
-    rx_i   = rx_i.subtype.select(ext_adc, rx_i, ext_rx_i[23:8])
-    rx_q   = rx_q.subtype.select(ext_adc, rx_q, ext_rx_q[23:8])
-    iq_stb = Boolean().select(ext_adc, iq_stb, ext_iq_stb)
+    rx_i, rx_q, iq_stb, sclk, leds = pcm1802(clk, bclk, lrclk, dout)
+    print rx_i.subtype.bits
 
     # Implement transceiver
     ########################
-    speaker, speaker_stb, rx_i, rx_q, iq_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb = transceiver(
+    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb = transceiver(
             clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
 
     # Create Audio DAC

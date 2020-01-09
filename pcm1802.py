@@ -43,11 +43,10 @@ def pcm1802(clk, bclk, lrclk, dout):
     right.d(right << 1 | dout)
 
     #register left and right channel after each sample
-    left  = Signed(32).register(clk, d=left[31:8],  en=bclk_rising & lrclk_rising)
-    right = Signed(32).register(clk, d=right[31:8], en=bclk_rising & lrclk_rising)
+    left  = Signed(24).register(clk, d=left[31:8],  en=bclk_rising & lrclk_rising)
+    right = Signed(24).register(clk, d=right[31:8], en=bclk_rising & lrclk_rising)
     stb = Boolean().register(clk, d=bclk_rising & lrclk_rising, init=0)
-    leds = left[31:24]
 
-
+    leds = Unsigned(8).constant(0x55)
 
     return left, right, stb, sclk, leds

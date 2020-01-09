@@ -38,6 +38,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     #rx agc
     rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings)
+    cpature_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
@@ -81,7 +82,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, gain, magnitude, dc_removed_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, rx_i, rx_q, rx_stb
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()

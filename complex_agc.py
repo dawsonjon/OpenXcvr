@@ -11,23 +11,33 @@ from calculate_gain import calculate_gain
 
 def complex_agc(clk, i, q, stb, settings):
 
-    #calculate magnitude and DC
-    i_magnitude = measure_magnitude(clk, i, stb)
-    q_magnitude = measure_magnitude(clk, q, stb)
+    """
+    The ADC has 24 bits, but to reduce the number of multipliers only
+    keep 18 bits for the rest of the DSP processing. 18 bits still
+    gives 108dB dynamic range
 
-    #rescale the data 
-    i_gain = calculate_gain(clk, i_magnitude, 11000) #approx 2/3 full scale
-    q_gain = calculate_gain(clk, q_magnitude, 11000)
+    """
 
-    #squelch
-    #mute = magnitude < settings.squelch
-    #mute = mute.subtype.register(clk, d=mute)
-    #audio = audio.subtype.select(mute, audio, 0)
-    #audio = audio.subtype.register(clk, d=audio)
-    #audio_stb = audio_stb.subtype.register(clk, d=audio_stb)
+    assert i.subtype.bits == 24
+    assert q.subtype.bits == 24
+
+    #calculate magnitude
+    magnitude = measure_magnitude(clk, i, stb)
+
+    #calculate gain
+    setpoint = 0.67 * (2**23)
+    gain = calculate_gain(clk, magnitude, setpoint)
+    gain = gain.subtype.register(clk, d=gain, init=0, en=stb)
+    gain = gain.subtype.select(gain > 256, gain, 256)
+    gain = gain.subtype.select(gain < 1, gain, 1)
+    gain = gain.subtype.register(clk, d=gain, init=0, en=stb)
+    gain.resize(9)
 
     #scale by 2**e
-    i = i * i_gain
-    q = q * q_gain
+    i = i * gain
+    q = q * gain
+    i = i.subtype.register(clk, d=i, init=0, en=stb)
+    q = i.subtype.register(clk, d=q, init=0, en=stb)
+    stb = stb.subtype.register(clk, d=stb)
 
-    return i, q, stb
+    return i[23:6], q[23:6], stb
