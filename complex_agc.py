@@ -27,13 +27,13 @@ def complex_agc(clk, i, q, stb, settings):
     #calculate gain
     setpoint = 0.67 * (2**23)
     gain = calculate_gain(clk, magnitude, setpoint)
-    gain = gain.subtype.register(clk, d=gain, init=0, en=stb)
-    gain = gain.subtype.select(gain > 256, gain, 256)
     gain = gain.subtype.select(gain < 1, gain, 1)
     gain = gain.subtype.register(clk, d=gain, init=0, en=stb)
-    gain.resize(9)
 
     #scale by 2**e
+
+    #room for improvement here, could use one multiplier to calculate I
+    #and Q in turn
     i = i * gain
     q = q * gain
     i = i.subtype.register(clk, d=i, init=0, en=stb)

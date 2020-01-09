@@ -15,8 +15,7 @@ def audio_agc(clk, data, stb):
     magnitude = measure_magnitude(clk, data, stb)
 
     #rescale the data 
-    assert data.subtype.bits == 18
-    setpoint = (2**17) * 0.67
+    setpoint = (2**(data.subtype.bits-1)) * 0.67
     gain = calculate_gain(clk, magnitude, setpoint)
     gain = gain.subtype.select(gain < 1, gain, 1)
 
