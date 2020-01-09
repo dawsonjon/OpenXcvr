@@ -1,0 +1,106 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2019  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
+# Date created = 15:23:34  November 29, 2019
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		xcvr_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "MAX 10"
+set_global_assignment -name DEVICE 10M08SAU169C8G
+set_global_assignment -name TOP_LEVEL_ENTITY max1000
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 19.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:23:34  NOVEMBER 29, 2019"
+set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 Lite Edition"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_H6 -to clk_in
+set_location_assignment PIN_E6 -to reset_in
+set_global_assignment -name VCCA_USER_VOLTAGE 3.3V
+set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 3.0V
+set_global_assignment -name ENABLE_OCT_DONE ON
+set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_location_assignment PIN_L12 -to rf
+set_location_assignment PIN_D8 -to leds[7]
+set_location_assignment PIN_C10 -to leds[6]
+set_location_assignment PIN_C9 -to leds[5]
+set_location_assignment PIN_B10 -to leds[4]
+set_location_assignment PIN_A10 -to leds[3]
+set_location_assignment PIN_A11 -to leds[2]
+set_location_assignment PIN_A9 -to leds[1]
+set_location_assignment PIN_A8 -to leds[0]
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE stp2.stp
+set_location_assignment PIN_J1 -to lo_i
+set_location_assignment PIN_J2 -to lo_q
+set_location_assignment PIN_A4 -to rs232_rx
+set_location_assignment PIN_B4 -to rs232_tx
+set_global_assignment -name QIP_FILE adc/adc/synthesis/adc.qip
+set_global_assignment -name VHDL_FILE ../fifo.vhd
+set_global_assignment -name VHDL_FILE ../serial_out.vhd
+set_global_assignment -name VHDL_FILE ../serial_in.vhd
+set_global_assignment -name VERILOG_FILE ../main_0.v
+set_global_assignment -name VERILOG_FILE ../transceiver.v
+set_global_assignment -name VERILOG_FILE max1000.v
+set_global_assignment -name QIP_FILE xcvr_pll.qip
+set_global_assignment -name SDC_FILE timing_constraints.sdc
+set_global_assignment -name SOURCE_FILE db/xcvr.cmp.rdb
+set_global_assignment -name QIP_FILE io.qip
+set_global_assignment -name SIP_FILE io.sip
+set_global_assignment -name QIP_FILE output_buffer.qip
+set_global_assignment -name SIP_FILE output_buffer.sip
+set_global_assignment -name SIGNALTAP_FILE stp2.stp
+set_location_assignment PIN_J12 -to speaker
+set_location_assignment PIN_H4 -to sclk_out
+set_location_assignment PIN_H5 -to lrclk_in
+set_location_assignment PIN_K10 -to bclk_in
+set_location_assignment PIN_H8 -to dout_in
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

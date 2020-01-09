@@ -20,7 +20,7 @@ def measure_magnitude(clk, audio, audio_stb):
 
     #implement leaky max/min hold
     max_hold = audio.subtype.register(clk, init=0, en=audio_stb)
-    max_hold.d(audio.subtype.select(audio > max_hold, max_hold - (max_hold >> factor), audio))
+    max_hold.d(audio.subtype.select(audio >= max_hold, max_hold - (max_hold >> factor), audio))
 
     #remove extra bits (except one to allow for addition)
     max_hold = (max_hold >> factor).resize(audio_bits)
@@ -33,9 +33,9 @@ if __name__ == "__main__" and "sim" in sys.argv:
     settings.agc_frame_size = 100
     settings.agc_frames = 4
     clk = Clock("clk")
-    data_in = Signed(9).input("data_in")
+    data_in = Signed(16).input("data_in")
     stb_in = Boolean().input("stb_in")
-    dc, magnitude = measure_magnitude(clk, data_in, stb_in, settings)
+    magnitude = measure_magnitude(clk, data_in, stb_in)
 
     stimulus = []
     for i in range(1000):
@@ -58,19 +58,26 @@ if __name__ == "__main__" and "sim" in sys.argv:
         stimulus.append(-200)
     for i in range(1000):
         stimulus.append(0)
+    for i in range(100):
+        stimulus.append(0)
+        stimulus.append(1000)
+        stimulus.append(-1000)
+    for i in range(1000):
+        stimulus.append(0)
 
     response = []
 
     #simulate
     clk.initialise()
 
-    stb_in.set(1)
     i = 0
     for data in stimulus:
         data_in.set(data)
-        clk.tick()
-        response.append(magnitude.get())
-        i+=1
+        for i in range(10):
+            stb_in.set(i==9)
+            response.append(magnitude.get())
+            clk.tick()
+            i+=1
 
     response = np.array(response)
 

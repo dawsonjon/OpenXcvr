@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+!*.qpf
+!*.qsf
+!*.bdf
+!*.bsf
+!*.vhd
+!*.pin
+!*.sdc
+!*.qip
+!*.sip
+!*.v
+
+!*/
+

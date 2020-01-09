@@ -45,14 +45,23 @@ if __name__ == "__main__" and "sim" in sys.argv:
     clk = Clock("clk")
     magnitude = Signed(16).input("magnitude")
 
-    gain = calculate_gain(clk, magnitude, 100)
+    gain = calculate_gain(clk, magnitude, 1000)
     magnitude.set(5)
 
     clk.initialise()
+    magnitude.set(0)
     for i in range(50):
         clk.tick()
         print gain.get()
-    magnitude.set(10)
+    magnitude.set(100)
+    for i in range(50):
+        clk.tick()
+        print gain.get()
+    magnitude.set(1200)
+    for i in range(50):
+        clk.tick()
+        print gain.get()
+    magnitude.set(1000)
     for i in range(50):
         clk.tick()
         print gain.get()

@@ -61,7 +61,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
     agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
-    agc_out, agc_out_stb = audio_agc(clk, dc_removed, dc_removed_stb)
+    agc_out, agc_out_stb, gain, magnitude = audio_agc(clk, dc_removed, dc_removed_stb)
 
     #modulator
     ##########
@@ -81,7 +81,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, filter_out_i, filter_out_q, filter_out_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, gain, magnitude, dc_removed_stb
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()

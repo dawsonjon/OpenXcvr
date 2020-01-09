@@ -13,7 +13,7 @@ def complex_agc(clk, i, q, stb, settings):
 
     #calculate magnitude and DC
     i_magnitude = measure_magnitude(clk, i, stb)
-    q_magnitude = measure_magnitude(clk, i, stb)
+    q_magnitude = measure_magnitude(clk, q, stb)
 
     #rescale the data 
     i_gain = calculate_gain(clk, i_magnitude, 11000) #approx 2/3 full scale

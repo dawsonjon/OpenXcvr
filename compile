@@ -1,0 +1,5 @@
+#!/bin/sh
+
+c2verilog control_sw.c
+python transceiver.py gen
+
