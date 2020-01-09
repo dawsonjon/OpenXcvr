@@ -26,10 +26,13 @@ void main(){
     unsigned int cmd, frequency, control, i;
     unsigned int capture[1000];
 
+    fputc(convert_to_steps(1215000-18311), frequency_out);
+
     puts("FPGA transceiver v 0.01\n");
     puts("fxxxxxxxx: frequency\n");
     puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
     puts("c: capture\n");
+
 
     while(1){
 

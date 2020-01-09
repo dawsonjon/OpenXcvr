@@ -45,7 +45,7 @@ def set_mode(mode):
 device = "/dev/ttyUSB1"
 port = serial.Serial(device, 115200, timeout=2)
 
-set_frequency(1.215e6)
+set_frequency(0.198e6)
 set_mode(0)
 i_values, q_values = capture()
 values = np.array(i_values)+1.0j*np.array(q_values)
