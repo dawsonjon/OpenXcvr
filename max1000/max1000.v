@@ -92,9 +92,16 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     wire [31:0] capture_bus;
     wire capture_ack;
     wire capture_stb;
+	 
+	 wire [31:0] power_bus;
+    wire power_ack;
+    wire power_stb;
+	 
+	 wire [31:0] gain_bus;
+    wire gain_ack;
+    wire gain_stb;
 
 	 
-
     //implement compiled C program
     main_0 control_sw_0(
         .clk(clk_50),
@@ -118,7 +125,15 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		  
 		  .input_capture_in(capture_bus),
         .input_capture_in_ack(capture_ack),
-        .input_capture_in_stb(capture_stb)
+        .input_capture_in_stb(capture_stb),
+		  
+		  .input_power_in(power_bus),
+        .input_power_in_ack(power_ack),
+        .input_power_in_stb(power_stb),
+		  
+		  .input_gain_in(gain_bus),
+        .input_gain_in_ack(gain_ack),
+        .input_gain_in_stb(gain_stb)
         //exception
     );
 
@@ -137,6 +152,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 
     assign frequency_ack = 1;
     assign control_ack = 1;
+	 assign power_stb = 1;
+	 assign gain_stb = 1;
 
     serial_output #(
         .clock_frequency(50000000),
@@ -188,6 +205,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .filter_sideband_in(control[2]), 
   .rx_tx_in(0), 
   .frequency_in(frequency), 
+  .power_out(power_bus),
+  .gain_out(gain_bus),
   
   //ADC INTERFACE
   .response_channel_in(response_channel), 

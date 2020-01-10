@@ -9,7 +9,7 @@ from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
 
 
-def complex_agc(clk, i, q, stb, settings):
+def complex_agc(clk, i, q, stb):
 
     """
     The ADC has 24 bits, but to reduce the number of multipliers only
@@ -40,4 +40,4 @@ def complex_agc(clk, i, q, stb, settings):
     q = i.subtype.register(clk, d=q, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
-    return i[23:6], q[23:6], stb
+    return i[23:6], q[23:6], stb, gain

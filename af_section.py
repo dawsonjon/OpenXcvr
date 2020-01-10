@@ -11,6 +11,7 @@ from filter import filter
 from demodulator import demodulator
 from modulator import modulator
 from downconverter import downconverter
+from measure_magnitude import measure_magnitude
 from settings import *
 
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
@@ -37,8 +38,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     rx_stb = stb
 
     #rx agc
-    rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings)
-    cpature_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
+    rx_i, rx_q, rx_stb, gain = complex_agc(clk, rx_i, rx_q, rx_stb)
+    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
@@ -53,6 +54,9 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     filter_in_q = t_rx.select(settings.rx_tx, rx_q, modulator_out_q)
     filter_in_stb = Boolean().select(settings.rx_tx, rx_stb, modulator_out_stb)
     filter_out_i, filter_out_q, filter_out_stb = filter(clk, filter_in_i, filter_in_q, filter_in_stb, settings)
+
+    #power measurement for s-meter is after filter, so that close-by signals don't distort measurement
+    power = measure_magnitude(clk, filter_out_i, filter_out_stb)
 
     #demodulator
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
@@ -82,7 +86,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, rx_i, rx_q, rx_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, gain, capture_i, capture_q, capture_stb
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()

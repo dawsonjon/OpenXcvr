@@ -11,7 +11,18 @@ from pcm1802 import pcm1802
 
 def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
-    speaker, speaker_stb, tx_i, tx_q, tx_stb, capture_i, capture_q, capture_stb = af_section(
+    (
+        speaker, 
+        speaker_stb, 
+        tx_i, 
+        tx_q, 
+        tx_stb, 
+        power, 
+        gain, 
+        capture_i, 
+        capture_q, 
+        capture_stb 
+    ) = af_section(
         clk, 
         rx_i, 
         rx_q, 
@@ -31,7 +42,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         channels = 2
     )
 
-    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb
+    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, gain
 
 def generate():
     settings = Settings()
@@ -94,7 +105,7 @@ def generate():
 
     # Implement transceiver
     ########################
-    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb = transceiver(
+    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, gain = transceiver(
             clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
 
     # Create Audio DAC
@@ -133,6 +144,8 @@ def generate():
     command_endofpacket = command_endofpacket.subtype.output("command_endofpacket_out", command_endofpacket)
     capture = capture.subtype.output("capture_out", capture)
     capture_stb = capture.subtype.output("capture_stb_out", capture_stb)
+    power = power.subtype.output("power_out", power)
+    gain = gain.subtype.output("gain_out", gain)
     sclk = sclk.subtype.output("sclk_out", sclk)
     leds = leds.subtype.output("leds", leds)
 
@@ -179,7 +192,9 @@ def generate():
             capture,
             capture_stb,
             sclk,
-            leds
+            leds,
+            power,
+            gain
         ]
     )
     f = open("transceiver.v", "w")

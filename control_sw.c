@@ -3,6 +3,8 @@ unsigned control_out = output("control_out");
 unsigned debug_out = output("debug_out");
 unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
+unsigned power_in = input("power_in");
+unsigned gain_in = input("gain_in");
 
 #include <stdio.h>
 #include <scan.h>
@@ -23,15 +25,12 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control, i;
+    unsigned int cmd, frequency, control, gain, power, i;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-18311), frequency_out);
 
     puts("FPGA transceiver v 0.01\n");
-    puts("fxxxxxxxx: frequency\n");
-    puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
-    puts("c: capture\n");
 
 
     while(1){
@@ -40,6 +39,7 @@ void main(){
         cmd = getc();
         switch(cmd){
             case 'f':
+            //set frequency, reduce by fs/4
                 frequency = scan_udecimal();
                 puts("frequency: ");
                 print_uhex(frequency);
@@ -48,6 +48,7 @@ void main(){
                 break;
 
             case 'm':
+            //set mode/sideband
                 control = scan_uhex();
                 puts("mode : ");
                 print_uhex(control);
@@ -56,8 +57,25 @@ void main(){
                 break;
 
             case 'h':
+            //print help
                 puts("fxxxxxxxx: frequency\n");
                 puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
+                puts("g: read gain (hex)\n");
+                puts("p: read power (hex)\n");
+                puts("\n");
+                break;
+
+            case 'g':
+            //print rx gain
+                gain = fgetc(gain_in);
+                print_uhex(gain);
+                puts("\n");
+                break;
+
+            case 'p':
+            //print rx magnitude (post filter)
+                power = fgetc(power_in);
+                print_uhex(power);
                 puts("\n");
                 break;
 
