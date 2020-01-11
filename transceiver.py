@@ -9,7 +9,7 @@ from audio_dac import audio_dac
 from settings import *
 from pcm1802 import pcm1802
 
-def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
+def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, gain, frequency, settings):
 
     (
         speaker, 
@@ -18,10 +18,10 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         tx_q, 
         tx_stb, 
         power, 
-        gain, 
         capture_i, 
         capture_q, 
-        capture_stb 
+        capture_stb,
+        overflow
     ) = af_section(
         clk, 
         rx_i, 
@@ -29,6 +29,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         iq_stb, 
         mic, 
         mic_stb, 
+        gain,
         settings,
     )
     rf, lo_i, lo_q = rf_section(
@@ -42,7 +43,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         channels = 2
     )
 
-    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, gain
+    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
 
 def generate():
     settings = Settings()
@@ -66,6 +67,7 @@ def generate():
     #settings.squelch = Signed(16).input("squelch")
     settings.squelch  = Signed(16).constant(0)
     frequency         = Unsigned(32).input("frequency_in")
+    gain              = Signed(4).input("gain_in")
 
     #adc interface inputs
     response_channel  = Unsigned(5).input("response_channel_in")
@@ -105,8 +107,10 @@ def generate():
 
     # Implement transceiver
     ########################
-    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, gain = transceiver(
-            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
+    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
+            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, gain, frequency, settings)
+
+    leds = overflow
 
     # Create Audio DAC
     ##################
@@ -133,7 +137,7 @@ def generate():
     capture_i = capture_i.subtype.register(cpu_clk, d=capture_i, en=capture_stb)
     capture_q = capture_q.subtype.register(cpu_clk, d=capture_q, en=capture_stb)
     capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture = capture_i[15:0].cat(capture_q[15:0])
+    capture = capture_i[17:2].cat(capture_q[17:2])
 
     # Create Device Outputs
     #######################
@@ -145,7 +149,6 @@ def generate():
     capture = capture.subtype.output("capture_out", capture)
     capture_stb = capture.subtype.output("capture_stb_out", capture_stb)
     power = power.subtype.output("power_out", power)
-    gain = gain.subtype.output("gain_out", gain)
     sclk = sclk.subtype.output("sclk_out", sclk)
     leds = leds.subtype.output("leds", leds)
 
@@ -172,6 +175,7 @@ def generate():
             settings.mode,
             settings.sideband,
             settings.rx_tx,
+            gain, 
             frequency,
             response_channel,
             response_data,
@@ -194,7 +198,6 @@ def generate():
             sclk,
             leds,
             power,
-            gain
         ]
     )
     f = open("transceiver.v", "w")

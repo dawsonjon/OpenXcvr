@@ -15,16 +15,44 @@ def audio_agc(clk, data, stb):
     magnitude = measure_magnitude(clk, data, stb)
 
     #rescale the data 
-    setpoint = (2**(data.subtype.bits-1)) * 0.67
+    setpoint = int((2**(data.subtype.bits-1)) * 0.5)
     gain = calculate_gain(clk, magnitude, setpoint)
     gain = gain.subtype.select(gain < 1, gain, 1)
 
-    #scale by 2**e
-    data = data * gain
+    #keep all the bits so we can handle overflowing values
+    bits = data.subtype.bits
+    data = data.resize(bits*2)
+    data *= gain
     data = data.subtype.register(clk, d=data, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
-    return data, stb, gain, magnitude
+    #soft clip any signals that have escaped the AGC
+    maxval = setpoint
+    minval = -setpoint
+    positive_overflow = data > maxval
+    positive_excess = (data - maxval) >> 1
+    data = data.subtype.select(positive_overflow, data, positive_excess+maxval)
+    negative_overflow = data < minval
+    negative_excess = (data.subtype.constant(minval) - data) >> 1
+    data = data.subtype.select(negative_overflow, data, -negative_excess+minval)
+    data = data.subtype.register(clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(clk, d=stb)
+
+    #hard clamp signals that we couldn't clip
+    maxval = (2**(bits-1))
+    minval = -maxval
+    positive_overflow = data > maxval
+    data = data.subtype.select(positive_overflow, data, maxval)
+    negative_overflow = data < minval
+    data = data.subtype.select(negative_overflow, data, minval)
+    data = data.subtype.register(clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(clk, d=stb)
+
+    data = data[bits-1:0]
+    data = data.subtype.register(clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(clk, d=stb)
+
+    return data, stb, gain, magnitude, positive_overflow | negative_overflow
 
 if __name__ == "__main__" and "sim" in sys.argv:
 
@@ -41,19 +69,11 @@ if __name__ == "__main__" and "sim" in sys.argv:
         for i in range(100):
             stb_in.set(i==0)
             clk.tick()
-            print magnitude.get(), gain.get(), audio_out.get(), stb_out.get()
+            if stb_out.get():
+                print magnitude.get(), gain.get(), audio_out.get()
         audio_in.set(-100)
         for i in range(100):
             stb_in.set(i==0)
             clk.tick()
-            print magnitude.get(), gain.get(), audio_out.get(), stb_out.get()
-        audio_in.set(0)
-        for i in range(100):
-            stb_in.set(i==0)
-            clk.tick()
-            print magnitude.get(), gain.get(), audio_out.get(), stb_out.get()
-        audio_in.set(-100)
-        for i in range(0):
-            stb_in.set(i==0)
-            clk.tick()
-            print magnitude.get(), gain.get(), audio_out.get(), stb_out.get()
+            if stb_out.get():
+                print magnitude.get(), gain.get(), audio_out.get()

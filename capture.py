@@ -46,7 +46,7 @@ device = "/dev/ttyUSB1"
 port = serial.Serial(device, 115200, timeout=2)
 
 set_frequency(0.198e6)
-set_mode(0)
+set_mode(1)
 i_values, q_values = capture()
 values = np.array(i_values)+1.0j*np.array(q_values)
 plt.plot(range(len(i_values)), i_values, range(len(q_values)), q_values)
@@ -55,9 +55,9 @@ plt.show()
 values = np.array(values)*np.hamming(len(values))
 spectrum = 20*np.log10(abs(np.fft.fftshift(np.fft.fft(values))))
 frequency_range = np.linspace(-18.311e3*2, 18.311e3*2,  len(spectrum))
-plt.plot(frequency_range, spectrum)
+#plt.plot(frequency_range, spectrum)
 #plt.xlim(-50e3, 50e3)
-plt.show()
+#plt.show()
 
 port.close()
 

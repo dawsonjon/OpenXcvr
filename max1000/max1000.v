@@ -131,9 +131,9 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .input_power_in_ack(power_ack),
         .input_power_in_stb(power_stb),
 		  
-		  .input_gain_in(gain_bus),
-        .input_gain_in_ack(gain_ack),
-        .input_gain_in_stb(gain_stb)
+		  .output_gain_out(gain_bus[5:0]),
+        .output_gain_out_ack(gain_ack),
+        .output_gain_out_stb(gain_stb)
         //exception
     );
 
@@ -153,7 +153,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     assign frequency_ack = 1;
     assign control_ack = 1;
 	 assign power_stb = 1;
-	 assign gain_stb = 1;
+	 assign gain_ack = 1;
 
     serial_output #(
         .clock_frequency(50000000),
@@ -206,7 +206,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .rx_tx_in(0), 
   .frequency_in(frequency), 
   .power_out(power_bus),
-  .gain_out(gain_bus),
+  .gain_in(gain_bus),
   
   //ADC INTERFACE
   .response_channel_in(response_channel), 

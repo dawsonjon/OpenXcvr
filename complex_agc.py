@@ -9,7 +9,7 @@ from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
 
 
-def complex_agc(clk, i, q, stb):
+def complex_agc(clk, i, q, stb, gain):
 
     """
     The ADC has 24 bits, but to reduce the number of multipliers only
@@ -21,23 +21,23 @@ def complex_agc(clk, i, q, stb):
     assert i.subtype.bits == 24
     assert q.subtype.bits == 24
 
-    #calculate magnitude
-    magnitude = measure_magnitude(clk, i, stb)
+    maxval = (2**23)-1
+    minval = -(2**23)
 
-    #calculate gain
-    setpoint = 0.67 * (2**23)
-    gain = calculate_gain(clk, magnitude, setpoint)
-    gain = gain.subtype.select(gain < 1, gain, 1)
-    gain = gain.subtype.register(clk, d=gain, init=0, en=stb)
+    i = i.resize(30)
+    i <<= gain
+    i = i.subtype.select(i > maxval, i, maxval)
+    i = i.subtype.select(i < minval, i, minval)
+    i = i[23:6]
 
-    #scale by 2**e
+    q = q.resize(30)
+    q <<= gain
+    q = q.subtype.select(q > maxval, q, maxval)
+    q = q.subtype.select(q < minval, q, minval)
+    q = q[23:6]
 
-    #room for improvement here, could use one multiplier to calculate I
-    #and Q in turn
-    i = i * gain
-    q = q * gain
     i = i.subtype.register(clk, d=i, init=0, en=stb)
-    q = i.subtype.register(clk, d=q, init=0, en=stb)
+    q = q.subtype.register(clk, d=q, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
-    return i[23:6], q[23:6], stb, gain
+    return i, q, stb

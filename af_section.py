@@ -14,7 +14,7 @@ from downconverter import downconverter
 from measure_magnitude import measure_magnitude
 from settings import *
 
-def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
+def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, gain, settings, debug={}):
 
 
     #          +-----------+ +---------+ +-------------+ +--------+ +-------------+ +-------+
@@ -32,13 +32,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_bits = tx_audio.subtype.bits
     t_rx = rx_i.subtype
     
-    #remove DC from both I and Q channel
-    rx_i, stb = dc_removal(clk, rx_i, rx_stb)
-    rx_q, _   = dc_removal(clk, rx_q, rx_stb)
-    rx_stb = stb
-
     #rx agc
-    rx_i, rx_q, rx_stb, gain = complex_agc(clk, rx_i, rx_q, rx_stb)
+    rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, gain)
     capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #downconvert rx by fs/4
@@ -56,7 +51,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     filter_out_i, filter_out_q, filter_out_stb = filter(clk, filter_in_i, filter_in_q, filter_in_stb, settings)
 
     #power measurement for s-meter is after filter, so that close-by signals don't distort measurement
-    power = measure_magnitude(clk, filter_out_i, filter_out_stb)
+    #The measurement uses a much faster decay than the AGC, so that squelch/scanning can update power estimate rapidly
+    power = measure_magnitude(clk, filter_out_i, filter_out_stb, 4, 12)
 
     #demodulator
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
@@ -66,10 +62,11 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
     agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
-    agc_out, agc_out_stb, gain, magnitude = audio_agc(clk, dc_removed, dc_removed_stb)
+    agc_out, agc_out_stb, gain, magnitude, overflow = audio_agc(clk, dc_removed, dc_removed_stb)
+    capture_i, capture_q, capture_stb = agc_out, gain, agc_out_stb
 
     #modulator
-    ##########
+    #=========
     #using microphone preamp with built in AGC ATM
 
     #i, q, stb = modulator(clk, agc_out.resize(tx_bits), agc_out_stb, settings)
@@ -86,7 +83,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = filter_out_q.resize(tx_bits)
     tx_stb = filter_out_stb
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, gain, capture_i, capture_q, capture_stb
+    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()
