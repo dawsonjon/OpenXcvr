@@ -34,7 +34,6 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     
     #rx agc
     rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings.gain)
-    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
@@ -49,10 +48,11 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     filter_in_q = t_rx.select(settings.rx_tx, rx_q, modulator_out_q)
     filter_in_stb = Boolean().select(settings.rx_tx, rx_stb, modulator_out_stb)
     filter_out_i, filter_out_q, filter_out_stb = filter(clk, filter_in_i, filter_in_q, filter_in_stb, settings)
+    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #power measurement for s-meter is after filter, so that close-by signals don't distort measurement
     #The measurement uses a much faster decay than the AGC, so that squelch/scanning can update power estimate rapidly
-    power = measure_magnitude(clk, filter_out_i, filter_out_stb, 4, 12)
+    power = measure_magnitude(clk, filter_out_i, filter_out_stb, 4, 12, 100)
 
     #demodulator
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)

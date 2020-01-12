@@ -7,12 +7,17 @@ from math import log, ceil
 from settings import Settings
 from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
+from iir_lowpass import iir_lowpass
 
 
 def audio_agc(clk, data, stb, audio_attenuation):
 
+    #when squelch is active blank the input to the AGC, so that the
+    #noise in FM mode doesn't turn down the gain
+    squelch_active = (audio_attenuation == 17)
+
     #calculate magnitude and DC
-    magnitude = measure_magnitude(clk, data, stb)
+    magnitude = measure_magnitude(clk, data, stb, reset=squelch_active)
 
     #rescale the data 
     setpoint = int((2**(data.subtype.bits-1)) * 0.5)
@@ -52,6 +57,9 @@ def audio_agc(clk, data, stb, audio_attenuation):
     data = data[bits-1:0]
     data = data.subtype.register(clk, d=data, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
+
+    #apply simple low pass filter
+    data, stb = iir_lowpass(clk, data, stb)
 
     #apply additional attenuation (digital volume)
     data >>= audio_attenuation;
