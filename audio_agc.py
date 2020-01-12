@@ -9,7 +9,7 @@ from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
 
 
-def audio_agc(clk, data, stb):
+def audio_agc(clk, data, stb, audio_attenuation):
 
     #calculate magnitude and DC
     magnitude = measure_magnitude(clk, data, stb)
@@ -48,11 +48,17 @@ def audio_agc(clk, data, stb):
     data = data.subtype.register(clk, d=data, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
+    #discard the extra bits
     data = data[bits-1:0]
     data = data.subtype.register(clk, d=data, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
-    return data, stb, gain, magnitude, positive_overflow | negative_overflow
+    #apply additional attenuation (digital volume)
+    data >>= audio_attenuation;
+    data = data.subtype.register(clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(clk, d=stb)
+
+    return data, stb, positive_overflow | negative_overflow
 
 if __name__ == "__main__" and "sim" in sys.argv:
 

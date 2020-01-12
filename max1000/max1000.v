@@ -203,7 +203,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   //Transceiver Control
   .filter_mode_in(control[1:0]), 
   .filter_sideband_in(control[2]), 
-  .rx_tx_in(0), 
+  .rx_tx_in(0),
+  .volume_in(control[13:8]),
   .frequency_in(frequency), 
   .power_out(power_bus),
   .gain_in(gain_bus),

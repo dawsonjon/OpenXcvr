@@ -9,7 +9,7 @@ from audio_dac import audio_dac
 from settings import *
 from pcm1802 import pcm1802
 
-def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, gain, frequency, settings):
+def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
     (
         speaker, 
@@ -29,7 +29,6 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, gain, frequency, settings
         iq_stb, 
         mic, 
         mic_stb, 
-        gain,
         settings,
     )
     rf, lo_i, lo_q = rf_section(
@@ -64,10 +63,9 @@ def generate():
     settings.mode     = Unsigned(2).input("filter_mode_in")
     settings.sideband = Unsigned(2).input("filter_sideband_in")
     settings.rx_tx    = Boolean().input("rx_tx_in")
-    #settings.squelch = Signed(16).input("squelch")
-    settings.squelch  = Signed(16).constant(0)
+    settings.gain     = Signed(4).input("gain_in")
+    settings.volume   = Signed(6).input("volume_in")
     frequency         = Unsigned(32).input("frequency_in")
-    gain              = Signed(4).input("gain_in")
 
     #adc interface inputs
     response_channel  = Unsigned(5).input("response_channel_in")
@@ -108,7 +106,7 @@ def generate():
     # Implement transceiver
     ########################
     speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
-            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, gain, frequency, settings)
+            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
 
     leds = overflow
 
@@ -175,7 +173,8 @@ def generate():
             settings.mode,
             settings.sideband,
             settings.rx_tx,
-            gain, 
+            settings.gain,
+            settings.volume,
             frequency,
             response_channel,
             response_data,

@@ -14,7 +14,7 @@ from downconverter import downconverter
 from measure_magnitude import measure_magnitude
 from settings import *
 
-def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, gain, settings, debug={}):
+def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
 
 
     #          +-----------+ +---------+ +-------------+ +--------+ +-------------+ +-------+
@@ -33,7 +33,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, gain, settings, 
     t_rx = rx_i.subtype
     
     #rx agc
-    rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, gain)
+    rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings.gain)
     capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #downconvert rx by fs/4
@@ -61,9 +61,9 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, gain, settings, 
     #===
     agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
     agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
+    agc_setpoint = Signed(5).select(settings.rx_tx, settings.volume, 15)
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
-    agc_out, agc_out_stb, gain, magnitude, overflow = audio_agc(clk, dc_removed, dc_removed_stb)
-    capture_i, capture_q, capture_stb = agc_out, gain, agc_out_stb
+    agc_out, agc_out_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, agc_setpoint)
 
     #modulator
     #=========
