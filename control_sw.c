@@ -77,8 +77,15 @@ void set_mode(unsigned mode, unsigned * control){
     fputc(*control, control_out);
 }
 
-void toggle_tx(unsigned * control){
+void toggle_tx(frequency, unsigned * control){
     *control ^= 0x00000008u;
+    if(*control & 0x8){
+        //RX has an FS/4 IF
+        fputc(convert_to_steps(frequency), frequency_out);
+    } else {
+        //TX is direct conversion
+        fputc(convert_to_steps(frequency-18311), frequency_out);
+    }
     fputc(*control, control_out);
 }
 
@@ -124,7 +131,7 @@ void main(){
                 case 't':
                 //set tx
                     mode = scan_udecimal();
-                    toggle_tx(&control);
+                    toggle_tx(frequency, &control);
                     puts("control : ");
                     print_uhex(control);
                     puts("\n");

@@ -20,8 +20,8 @@ def complex_agc(clk, i, q, stb, gain):
     i = i.resize(30)
     q = q.resize(30)
 
-    i, _   = slow_barrel_shifter(clk, i, gain, stb, "right")
-    q, stb = slow_barrel_shifter(clk, q, gain, stb, "right")
+    i, _   = slow_barrel_shifter(clk, i, gain, stb, "left")
+    q, stb = slow_barrel_shifter(clk, q, gain, stb, "left")
 
     i = i.subtype.select(i > maxval, i, maxval)
     i = i.subtype.select(i < minval, i, minval)
