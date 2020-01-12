@@ -1,12 +1,5 @@
 from baremetal import *
-from math import log, pi
-from matplotlib import pyplot as plt
-import numpy as np
-import sys
-from math import log, ceil
-from settings import Settings
-from measure_magnitude import measure_magnitude
-from calculate_gain import calculate_gain
+from slow_barrel_shifter import slow_barrel_shifter
 
 
 def complex_agc(clk, i, q, stb, gain):
@@ -25,13 +18,14 @@ def complex_agc(clk, i, q, stb, gain):
     minval = -(2**23)
 
     i = i.resize(30)
-    i <<= gain
+    q = q.resize(30)
+
+    i, _   = slow_barrel_shifter(clk, i, gain, stb, "right")
+    q, stb = slow_barrel_shifter(clk, q, gain, stb, "right")
+
     i = i.subtype.select(i > maxval, i, maxval)
     i = i.subtype.select(i < minval, i, minval)
     i = i[23:6]
-
-    q = q.resize(30)
-    q <<= gain
     q = q.subtype.select(q > maxval, q, maxval)
     q = q.subtype.select(q < minval, q, minval)
     q = q[23:6]

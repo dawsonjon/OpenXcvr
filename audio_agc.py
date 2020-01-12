@@ -58,9 +58,6 @@ def audio_agc(clk, data, stb, audio_attenuation):
     data = data.subtype.register(clk, d=data, init=0, en=stb)
     stb = stb.subtype.register(clk, d=stb)
 
-    #apply simple low pass filter
-    data, stb = iir_lowpass(clk, data, stb)
-
     #apply additional attenuation (digital volume)
     data >>= audio_attenuation;
     data = data.subtype.register(clk, d=data, init=0, en=stb)

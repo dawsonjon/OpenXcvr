@@ -70,12 +70,24 @@ void set_volume(unsigned volume, unsigned * control){
     fputc(*control, control_out);
 }
 
+void set_mode(unsigned mode, unsigned * control){
+    mode &= 0x7;
+    *control &= 0xfffffff8u;
+    *control |= mode;
+    fputc(*control, control_out);
+}
+
+void toggle_tx(unsigned * control){
+    *control ^= 0x00000008u;
+    fputc(*control, control_out);
+}
+
 void main(){
 
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=17, squelch=0;
+    unsigned int cmd, frequency, control=0x1108, gain=0, power, i, smeter, volume=17, squelch=0, mode;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-18311), frequency_out);
@@ -102,11 +114,20 @@ void main(){
 
                 case 'm':
                 //set mode/sideband
-                    control = scan_uhex();
-                    puts("mode : ");
+                    mode = scan_udecimal();
+                    set_mode(mode, &control);
+                    puts("control : ");
                     print_uhex(control);
                     puts("\n");
-                    fputc(control, control_out);
+                    break;
+
+                case 't':
+                //set tx
+                    mode = scan_udecimal();
+                    toggle_tx(&control);
+                    puts("control : ");
+                    print_uhex(control);
+                    puts("\n");
                     break;
 
                 case 'h':
@@ -118,6 +139,7 @@ void main(){
                     puts("s: read smeter\n");
                     puts("v: set volume (0-17)\n");
                     puts("q: set squelch (0-12)\n");
+                    puts("t: toggle TX\n");
                     puts("\n");
                     break;
 

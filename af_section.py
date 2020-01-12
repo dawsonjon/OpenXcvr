@@ -12,6 +12,7 @@ from demodulator import demodulator
 from modulator import modulator
 from downconverter import downconverter
 from measure_magnitude import measure_magnitude
+from test_tone import test_tone
 from settings import *
 
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
@@ -28,6 +29,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #          +-----------+ +---------+
 
 
+    #tx_audio, tx_audio_stb = test_tone(clk)
 
     tx_bits = tx_audio.subtype.bits
     t_rx = rx_i.subtype
@@ -39,8 +41,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
 
     #declare signals
-    modulator_out_i = Signed(tx_bits+1).wire()
-    modulator_out_q = Signed(tx_bits+1).wire()
+    modulator_out_i = t_rx.wire()
+    modulator_out_q = t_rx.wire()
     modulator_out_stb = Boolean().wire()
 
     #filter
@@ -48,7 +50,6 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     filter_in_q = t_rx.select(settings.rx_tx, rx_q, modulator_out_q)
     filter_in_stb = Boolean().select(settings.rx_tx, rx_stb, modulator_out_stb)
     filter_out_i, filter_out_q, filter_out_stb = filter(clk, filter_in_i, filter_in_q, filter_in_stb, settings)
-    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     #power measurement for s-meter is after filter, so that close-by signals don't distort measurement
     #The measurement uses a much faster decay than the AGC, so that squelch/scanning can update power estimate rapidly
@@ -65,23 +66,48 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
     agc_out, agc_out_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, agc_setpoint)
 
+
     #modulator
     #=========
     #using microphone preamp with built in AGC ATM
 
     #i, q, stb = modulator(clk, agc_out.resize(tx_bits), agc_out_stb, settings)
     i, q, stb = modulator(clk, tx_audio, tx_audio_stb, settings)
-    modulator_out_i.drive(i)
-    modulator_out_q.drive(q)
+    modulator_out_i.drive(i.resize(i.subtype.bits+1)<<1)
+    modulator_out_q.drive(q.resize(q.subtype.bits+1)<<1)
     modulator_out_stb.drive(stb)
+
+    #generate stream of zeros
+    #========================
+
+    _, zero_stb = counter(clk, 0, 1499, 1)
+    zero = t_rx.constant(0)
+
+    #output to speaker
+    #=================
 
     #rx audio
     rx_audio, rx_audio_stb = agc_out, agc_out_stb
 
+    #rx_audio_stb
+    #rx_audio = rx_audio.subtype.select(settings.rx_tx, rx_audio, zero)
+    #rx_audio_stb = Boolean().select(settings.rx_tx, rx_audio_stb, zero_stb)
+
+    #output to transmitter
+    #=====================
+
+    #blank transmitter input when in receive
+    tx_i = t_rx.select(settings.rx_tx, zero, filter_out_i)
+    tx_q = t_rx.select(settings.rx_tx, zero, filter_out_q)
+    tx_stb = Boolean().select(settings.rx_tx, zero_stb, filter_out_stb)
+
     #resize tx
-    tx_i = filter_out_i.resize(tx_bits)
-    tx_q = filter_out_q.resize(tx_bits)
-    tx_stb = filter_out_stb
+    tx_i = tx_i.resize(tx_bits)
+    tx_q = tx_q.resize(tx_bits)
+    tx_stb = tx_stb
+
+    capture_i, capture_q, capture_stb = tx_i.resize(18)<<2, tx_q.resize(18)<<2, tx_stb
+
 
     return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow
 

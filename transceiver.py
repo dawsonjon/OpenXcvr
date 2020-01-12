@@ -39,7 +39,8 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         audio_stb = tx_stb,
         interpolation_factor = 3000, #from 300000000 to 9180
         lut_bits = 10,
-        channels = 2
+        channels = 2, 
+        settings = settings
     )
 
     return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
