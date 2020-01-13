@@ -6,13 +6,24 @@ from matplotlib import pyplot as plt
 import numpy as np
 import sys
 
+def make_response(fs, f1, f2=None):
+    if f2 is not None:
+        high = int(ceil(512*(f2-f1)/fs))
+        low1 = int(ceil(512*f1/fs))
+        low2 = (256-high-low1)
+        return np.concatenate([np.zeros(256+low1), np.ones(high), np.zeros(low2)])
+    else:
+        high = int(ceil(1024*f1/fs))/2
+        low = (512-high)/2
+        return np.concatenate([np.zeros(low), np.ones(high), np.zeros(low)])
+
 def make_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
-    usb_response_0 = np.concatenate([np.zeros(256), np.ones(28), np.zeros(226)]) #~3KHz SSB
-    usb_response_1 = np.concatenate([np.zeros(225), 1*np.ones(62), np.zeros(225)]) #~6KHz  AM
-    usb_response_2 = np.concatenate([np.zeros(179), 0.9*np.ones(154), np.zeros(179)]) #~15KHz   FM
-    usb_response_3 = np.concatenate([np.zeros(209), 1*np.ones(94), np.zeros(209)]) #~9KHz    NFM
+    usb_response_0 = make_response(100e3, 200, 3.4e3)#SSB
+    usb_response_1 = make_response(100e3, 6e3)  #AM
+    usb_response_2 = make_response(100e3, 15e3) #FM
+    usb_response_3 = make_response(100e3, 9e3)  #NFM
 
     #In Max10 9k block ram supports 512*18 so 1 BRAM can store 128
     return np.concatenate([
@@ -36,7 +47,7 @@ def create_filter(frequency_response, taps=511, kernel_bits=18):
     #quantise kernel
     kernel = np.round(kernel*(2**kernel_bits - 1)) 
     #padded_kernel = np.concatenate([np.zeros(1024), kernel, np.zeros(1024)])
-    #plt.plot(np.linspace(-25000, 25000, len(padded_kernel)), 20*np.log10(abs(np.fft.fftshift(np.fft.fft(padded_kernel)))))
+    #plt.plot(np.linspace(-50000, 50000, len(padded_kernel)), 20*np.log10(abs(np.fft.fftshift(np.fft.fft(padded_kernel)))))
     #plt.show()
 
     return kernel
