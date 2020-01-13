@@ -4,10 +4,9 @@ from math import ceil, log
 def slow_barrel_shifter(clk, x, shift_amount, stb, left_right):
 
     bits = x.subtype.bits 
-    shift_bits = int(ceil(log(bits, 2)))+1
 
     x_shifted = x.subtype.register(clk, init=0)
-    shift_amount_reg = (shift_bits).register(clk, init=0)
+    shift_amount_reg = shift_amount.subtype.register(clk, init=0)
 
     done = (shift_amount_reg==0)
     if left_right == "left":

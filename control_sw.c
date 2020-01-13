@@ -84,7 +84,7 @@ void toggle_tx(frequency, unsigned * control){
         fputc(convert_to_steps(frequency), frequency_out);
     } else {
         //TX is direct conversion
-        fputc(convert_to_steps(frequency-18311), frequency_out);
+        fputc(convert_to_steps(frequency-24414), frequency_out);
     }
     fputc(*control, control_out);
 }
@@ -94,10 +94,10 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1108, gain=0, power, i, smeter, volume=17, squelch=0, mode;
+    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=17, squelch=0, mode;
     unsigned int capture[1000];
 
-    fputc(convert_to_steps(1215000-18311), frequency_out);
+    fputc(convert_to_steps(1215000-24414), frequency_out);
     fputc(control, control_out);
     fputc(gain, gain_out);
 
@@ -116,7 +116,7 @@ void main(){
                     puts("frequency: ");
                     print_uhex(frequency);
                     puts("\n");
-                    fputc(convert_to_steps(frequency-18311), frequency_out);
+                    fputc(convert_to_steps(frequency-24414), frequency_out);
                     break;
 
                 case 'm':

@@ -8,8 +8,9 @@ from max10adc import max_adc
 from audio_dac import audio_dac
 from settings import *
 from pcm1802 import pcm1802
+from cdc import meta_chain, slow_to_fast
 
-def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
+def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
     (
         speaker, 
@@ -23,7 +24,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         capture_stb,
         overflow
     ) = af_section(
-        clk, 
+        cpu_clk, 
         rx_i, 
         rx_q, 
         iq_stb, 
@@ -31,6 +32,19 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         mic_stb, 
         settings,
     )
+
+    ###########################################################################
+    ## Clock Domain Crossing from 50 to 150 MHz                                
+    ###########################################################################
+
+    frequency, _ = slow_to_fast(cpu_clk, clk, frequency)
+    data_bits = tx_i.subtype.bits
+    data, tx_stb = slow_to_fast(cpu_clk, clk, tx_i.cat(tx_q), tx_stb)
+    tx_i, tx_q = data[2*data_bits-1:data_bits], data[data_bits-1:0]
+    rx_tx = meta_chain(clk, settings.rx_tx)
+
+    ###########################################################################
+
     rf, lo_i, lo_q = rf_section(
         clk, 
         frequency = frequency, 
@@ -40,7 +54,7 @@ def transceiver(clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
         interpolation_factor = 3000, #from 300000000 to 9180
         lut_bits = 10,
         channels = 2, 
-        settings = settings
+        rx_tx = rx_tx
     )
 
     return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
@@ -76,7 +90,6 @@ def generate():
     bclk              = Unsigned(1).input("bclk_in")
     lrclk             = Unsigned(1).input("lrclk_in")
     dout              = Unsigned(1).input("dout_in")
-    ext_adc           = Unsigned(1).input("ext_adc_in")
 
     # MAX10 built in ADC
     ####################
@@ -90,7 +103,7 @@ def generate():
         rx_q, 
         iq_stb
     ) = max_adc(
-        clk, 
+        cpu_clk, 
         adc_clk, 
         settings.rx_tx,
         command_ready, 
@@ -102,12 +115,13 @@ def generate():
 
     #external PCM1802 ADC
     #####################
-    rx_i, rx_q, iq_stb, sclk, leds = pcm1802(clk, bclk, lrclk, dout)
+    rx_i, rx_q, iq_stb, sclk, leds = pcm1802(cpu_clk, bclk, lrclk, dout)
 
     # Implement transceiver
     ########################
     speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
-            clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
+            cpu_clk, clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
+    capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
     leds = overflow
 
@@ -115,28 +129,8 @@ def generate():
     ##################
 
     clk = Clock("clk")
-    speaker = audio_dac(clk, speaker, speaker_stb) 
+    speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
     
-    #audio capture
-    ##############
-
-    #extend stb
-    capture_stb = capture_stb | capture_stb.subtype.register(clk, d=capture_stb, init=0)
-    capture_stb = speaker_stb | speaker_stb.subtype.register(clk, d=capture_stb, init=0)
-    capture_stb = speaker_stb | speaker_stb.subtype.register(clk, d=capture_stb, init=0)
-    capture_stb = speaker_stb | speaker_stb.subtype.register(clk, d=capture_stb, init=0)
-    capture_i     = capture_i.subtype.register(clk, d=capture_i, en=capture_stb)
-    capture_q     = capture_q.subtype.register(clk, d=capture_q, en=capture_stb)
-    capture_stb = capture_stb.subtype.register(clk, d=capture_stb, init = 0)
-
-    #edge detect strobe in target clock domain
-    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture_stb = capture_stb & ~Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture_i = capture_i.subtype.register(cpu_clk, d=capture_i, en=capture_stb)
-    capture_q = capture_q.subtype.register(cpu_clk, d=capture_q, en=capture_stb)
-    capture_stb = Boolean().register(cpu_clk, d=capture_stb, init=0)
-    capture = capture_i[17:2].cat(capture_q[17:2])
 
     # Create Device Outputs
     #######################
@@ -184,7 +178,6 @@ def generate():
             bclk,
             lrclk, 
             dout,
-            ext_adc
         ],
 
         #outputs

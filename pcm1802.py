@@ -21,9 +21,8 @@ def pcm1802(clk, bclk, lrclk, dout):
 
     #create a divided down clock to drive sclk
     fs = 96000
-    clk_frequency = 150000000
+    clk_frequency = 50000000
     clock_divide = int(ceil(clk_frequency/(512*fs)))
-    clock_divide = 4
 
     print (clk_frequency/clock_divide)/512.0/4
     _, last = counter(clk, 0, clock_divide-1, 1)

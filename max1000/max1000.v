@@ -222,7 +222,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .bclk_in(bclk_in),
   .lrclk_in(lrclk_in),
   .dout_in(dout_in),
-  .ext_adc_in(1),
   .sclk_out(sclk_out),
   .leds(leds),
   
