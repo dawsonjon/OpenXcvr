@@ -1,4 +1,4 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out, pps_in);
 
   input clk_in;
   input reset_in;
@@ -6,6 +6,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   input bclk_in;
   input lrclk_in;
   input dout_in;
+  input pps_in;
   output sclk_out;
   output rf;
   output lo_i;
@@ -100,6 +101,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 wire [31:0] gain_bus;
     wire gain_ack;
     wire gain_stb;
+	 
+	 wire [31:0] pps_count_bus;
+    wire pps_count_ack;
+    wire pps_count_stb;
 
 	 
     //implement compiled C program
@@ -131,6 +136,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .input_power_in_ack(power_ack),
         .input_power_in_stb(power_stb),
 		  
+		  .input_pps_count_in(pps_count_bus),
+        .input_pps_count_in_ack(pps_count_ack),
+        .input_pps_count_in_stb(pps_count_stb),
+		  
 		  .output_gain_out(gain_bus[5:0]),
         .output_gain_out_ack(gain_ack),
         .output_gain_out_stb(gain_stb)
@@ -154,6 +163,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     assign control_ack = 1;
 	 assign power_stb = 1;
 	 assign gain_ack = 1;
+	 assign pps_count_stb = 1;
 
     serial_output #(
         .clock_frequency(50000000),
@@ -200,6 +210,9 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .adc_clk(clk_10),
   .cpu_clk(clk_50),
   
+  //GPS 1pps counter input
+  .pps_in(pps_in),
+  
   //Transceiver Control
   .filter_mode_in(control[1:0]), 
   .filter_sideband_in(control[2]), 
@@ -228,6 +241,9 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   //CPU capture interface
   .capture_out(capture_bus),
   .capture_stb_out(capture_stb),
+  
+  //GPS 1PPS counter interface
+  .pps_count_out(pps_count_bus),
   
   //RF INTERFACE
   .rf_0_out(rf_0), 

@@ -7,7 +7,7 @@ from math import log, ceil
 from settings import Settings
 from measure_magnitude import measure_magnitude
 from calculate_gain import calculate_gain
-from iir_lowpass import iir_lowpass
+from slow_barrel_shifter import slow_barrel_shifter
 
 
 def audio_agc(clk, data, stb, audio_attenuation):
@@ -59,9 +59,7 @@ def audio_agc(clk, data, stb, audio_attenuation):
     stb = stb.subtype.register(clk, d=stb)
 
     #apply additional attenuation (digital volume)
-    data >>= audio_attenuation;
-    data = data.subtype.register(clk, d=data, init=0, en=stb)
-    stb = stb.subtype.register(clk, d=stb)
+    data, stb = slow_barrel_shifter(clk, data, audio_attenuation, stb, "right")
 
     return data, stb, positive_overflow | negative_overflow
 

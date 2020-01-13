@@ -20,15 +20,10 @@ def max_adc(clk, adc_clk, rx_tx, command_ready, response_valid, response_channel
     q = Unsigned(12).register(adc_clk, d=response_data, en=((response_channel==5) & response_valid), init=0)
     iq_stb = Boolean().register(adc_clk, d=((response_channel==5)&response_valid), init=0)#trigger strobe on access to last channel
 
-    #average 10 mic samples together
-    mic = Signed(mic.subtype.bits).register(adc_clk, d=mic-2048, init=0)
-    mic_stb = Boolean().register(adc_clk, d=mic_stb, init=0)
-    #count, last = counter(adc_clk, 0, 9, 1, en=mic_stb)
-    #first = (count == 0)
-    #mic_accumulator = Signed(16).register(adc_clk, init=0, en=mic_stb)
-    #mic_accumulator.d(mic_accumulator.subtype.select(count==0, mic_accumulator + mic, mic))
-    #mic = mic_accumulator
-    #mic_stb = Boolean().register(adc_clk, d=mic_stb&last, init=0)
+    #take 1 in 10 samples to give 100kHz sample rate
+    count, last = counter(adc_clk, 0, 9, 1, en=mic_stb)
+    mic = Signed(mic.subtype.bits).register(adc_clk, d=mic-2048, init=0, en=mic_stb&last)
+    mic_stb = Boolean().register(adc_clk, d=mic_stb&last, init=0)
 
     #take every 5th sample i/q samples together
     i = Signed(i.subtype.bits).register(adc_clk, d=i-2048, init=0)

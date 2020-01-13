@@ -9,6 +9,7 @@ from audio_dac import audio_dac
 from settings import *
 from pcm1802 import pcm1802
 from cdc import meta_chain, slow_to_fast
+from pps_counter import pps_counter
 
 def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
@@ -91,6 +92,10 @@ def generate():
     lrclk             = Unsigned(1).input("lrclk_in")
     dout              = Unsigned(1).input("dout_in")
 
+    #GPS interface inputs
+    pps              = Unsigned(1).input("pps_in")
+    
+
     # MAX10 built in ADC
     ####################
     (
@@ -131,6 +136,9 @@ def generate():
     clk = Clock("clk")
     speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
     
+    # 1pps counter
+    ##############
+    pps_count = pps_counter(clk, pps)
 
     # Create Device Outputs
     #######################
@@ -152,6 +160,9 @@ def generate():
 
     #speaker output
     speaker = speaker.subtype.output("speaker_out", speaker)
+
+    #pps counter output
+    pps_count = pps_count.subtype.output("pps_count_out", pps_count)
 
     #generate netlist and output
     netlist = Netlist(
@@ -178,6 +189,7 @@ def generate():
             bclk,
             lrclk, 
             dout,
+            pps,
         ],
 
         #outputs
@@ -191,6 +203,7 @@ def generate():
             sclk,
             leds,
             power,
+            pps_count,
         ]
     )
     f = open("transceiver.v", "w")

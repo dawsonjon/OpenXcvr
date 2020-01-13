@@ -4,6 +4,7 @@ unsigned debug_out = output("debug_out");
 unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
 unsigned power_in = input("power_in");
+unsigned pps_count_in = input("pps_count_in");
 unsigned gain_out = output("gain_out");
 
 #include <stdio.h>
@@ -63,10 +64,21 @@ int read_smeter(unsigned gain){
 }
 
 void set_volume(unsigned volume, unsigned * control){
-    if(volume > 17) volume = 17;
-    volume = 17 - volume;
+    unsigned attenuation; 
+    switch(volume){
+        case 9: attenuation = 0; break;
+        case 8: attenuation = 1; break;
+        case 7: attenuation = 2; break;
+        case 6: attenuation = 3; break;
+        case 5: attenuation = 4; break;
+        case 4: attenuation = 5; break;
+        case 3: attenuation = 6; break;
+        case 2: attenuation = 7; break;
+        case 1: attenuation = 8; break;
+        case 0: attenuation = 17; break;
+    }
     *control &= 0xffff00ffu;
-    *control |= (volume << 8);
+    *control |= (attenuation << 8);
     fputc(*control, control_out);
 }
 
@@ -94,7 +106,7 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=17, squelch=0, mode;
+    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-24414), frequency_out);
@@ -144,9 +156,16 @@ void main(){
                     puts("g: set gain (decimal)\n");
                     puts("p: read power (hex)\n");
                     puts("s: read smeter\n");
-                    puts("v: set volume (0-17)\n");
+                    puts("v: set volume (0-9)\n");
                     puts("q: set squelch (0-12)\n");
                     puts("t: toggle TX\n");
+                    puts("x: get GPS 1pps count\n");
+                    puts("\n");
+                    break;
+
+                case 'x':
+                    pps_count = fgetc(pps_count_in);
+                    print_uhex(pps_count);
                     puts("\n");
                     break;
 
