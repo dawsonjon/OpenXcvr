@@ -115,7 +115,7 @@ def generate():
 
     #external PCM1802 ADC
     #####################
-    rx_i, rx_q, iq_stb, sclk, leds = pcm1802(cpu_clk, bclk, lrclk, dout)
+    rx_i, rx_q, iq_stb, sclk = pcm1802(cpu_clk, bclk, lrclk, dout)
 
     # Implement transceiver
     ########################

@@ -1,4 +1,5 @@
 from baremetal import *
+from cdc import slow_to_fast
 
 def max_adc(clk, adc_clk, rx_tx, command_ready, response_valid, response_channel, response_data):
 
@@ -47,17 +48,9 @@ def max_adc(clk, adc_clk, rx_tx, command_ready, response_valid, response_channel
     iq_stb = Boolean().register(adc_clk, d=iq_stb&last, init=0)
 
     #move to fast clock domain
-    mic_stb = Boolean().register(clk, d=mic_stb, init=0)
-    mic_stb = Boolean().register(clk, d=mic_stb, init=0)
-    mic_stb = mic_stb & ~Boolean().register(clk, d=mic_stb, init=0)
-    mic = mic.subtype.register(clk, d=mic, en=mic_stb)
-    mic_stb = Boolean().register(clk, d=mic_stb, init=0)
-
-    iq_stb = Boolean().register(clk, d=iq_stb, init=0)
-    iq_stb = Boolean().register(clk, d=iq_stb, init=0)
-    iq_stb = iq_stb & ~Boolean().register(clk, d=iq_stb, init=0)
-    i = i.subtype.register(clk, d=i, en=iq_stb)
-    q = q.subtype.register(clk, d=q, en=iq_stb)
-    iq_stb = Boolean().register(clk, d=iq_stb, init=0)
+    mic, mic_stb = slow_to_fast(adc_clk, clk, mic, mic_stb)
+    iq_bits = i.subtype.bits
+    iq, iq_stb = slow_to_fast(adc_clk, clk, i.cat(q), iq_stb)
+    i, q = iq[iq_bits*2-1:iq_bits], iq[iq_bits-1:0]
 
     return command_channel, command_startofpacket, command_endofpacket, mic, mic_stb, i, q, iq_stb

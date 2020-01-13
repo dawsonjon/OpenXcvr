@@ -1,5 +1,6 @@
 from baremetal import *
 from math import ceil
+from cdc import meta_chain
 
 
 #PCM1802 DAC configuration
@@ -30,9 +31,7 @@ def pcm1802(clk, bclk, lrclk, dout):
     sclk.d(~sclk)
 
     #double register clock input
-    bclk = Boolean().register(clk, d=bclk, init=0)
-    bclk = Boolean().register(clk, d=bclk, init=0)
-    bclk_rising  = bclk  & ~Boolean().register(clk, d=bclk, init=0)
+    bclk_rising = meta_chain(clk, bclk, "rising")
     lrclk_rising = lrclk & ~Boolean().register(clk, init=0, d=lrclk, en=bclk_rising)
 
     #shift bits into a register msb first
@@ -46,6 +45,4 @@ def pcm1802(clk, bclk, lrclk, dout):
     right = Signed(24).register(clk, d=right[31:8], en=bclk_rising & lrclk_rising)
     stb = Boolean().register(clk, d=bclk_rising & lrclk_rising, init=0)
 
-    leds = Unsigned(8).constant(0x55)
-
-    return left, right, stb, sclk, leds
+    return left, right, stb, sclk

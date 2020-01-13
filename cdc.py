@@ -34,6 +34,7 @@ def slow_to_fast(slow_clk, fast_clk, data, stb=None):
 
     stb = meta_chain(fast_clk, stb, "rising")
     data = data.subtype.register(fast_clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(fast_clk, d=stb, init=0)
 
     return data, stb
 
