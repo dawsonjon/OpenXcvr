@@ -24,15 +24,15 @@ module adc_modular_adc_0 (
 	);
 
 	altera_modular_adc_control #(
-		.clkdiv                          (2),
-		.tsclkdiv                        (1),
+		.clkdiv                          (3),
+		.tsclkdiv                        (0),
 		.tsclksel                        (1),
 		.hard_pwd                        (0),
 		.prescalar                       (0),
 		.refsel                          (1),
 		.device_partname_fivechar_prefix ("10M08"),
 		.is_this_first_or_second_adc     (1),
-		.analog_input_pin_mask           (146),
+		.analog_input_pin_mask           (151),
 		.dual_adc_mode                   (0),
 		.enable_usr_sim                  (0),
 		.reference_voltage_sim           (65536),

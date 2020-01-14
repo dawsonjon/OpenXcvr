@@ -14,7 +14,7 @@ def meta_chain(clk, data, edge_detect=None):
         data = ~data & data.subtype.register(clk, d=data, init=0)
 
     elif edge_detect == "both":
-        data = ~data & data.subtype.register(clk, d=data, init=0)
+        data = data != data.subtype.register(clk, d=data, init=0)
 
     return data
 
@@ -39,3 +39,19 @@ def slow_to_fast(slow_clk, fast_clk, data, stb=None):
     return data, stb
 
 
+def slow_to_fast2(slow_clk, fast_clk, data):
+    """Transfer a vector from a slow to a fast clock domain strobe is optional"""
+
+    stb, _ = counter(slow_clk, 0, 1, 1)
+    data = data.subtype.register(slow_clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(slow_clk, d=stb, init=0)
+
+    #######################################################################
+    # Clock Domain Crossing
+    #######################################################################
+
+    stb = meta_chain(fast_clk, stb, "both")
+    data = data.subtype.register(fast_clk, d=data, init=0, en=stb)
+    stb = stb.subtype.register(fast_clk, d=stb, init=0)
+
+    return data, stb

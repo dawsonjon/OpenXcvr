@@ -5,6 +5,7 @@ unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
+unsigned adc_in = input("adc_in");
 unsigned gain_out = output("gain_out");
 
 #include <stdio.h>
@@ -106,7 +107,7 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count;
+    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-24414), frequency_out);
@@ -160,6 +161,7 @@ void main(){
                     puts("q: set squelch (0-12)\n");
                     puts("t: toggle TX\n");
                     puts("x: get GPS 1pps count\n");
+                    puts("a: adc\n");
                     puts("\n");
                     break;
 
@@ -167,6 +169,16 @@ void main(){
                     pps_count = fgetc(pps_count_in);
                     print_uhex(pps_count);
                     puts("\n");
+                    break;
+
+                case 'a':
+                    for(i=0; i<5; i++){
+                        capture[i] = fgetc(adc_in);
+                    }
+                    for(i=0; i<5; i++){
+                        print_uhex(capture[i]);
+                        puts("\n");
+                    }
                     break;
 
                 case 'g':

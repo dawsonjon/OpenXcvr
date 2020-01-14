@@ -104,13 +104,11 @@ def generate():
         command_endofpacket, 
         mic, 
         mic_stb, 
-        rx_i, 
-        rx_q, 
-        iq_stb
+        adc, 
+        adc_stb
     ) = max_adc(
         cpu_clk, 
         adc_clk, 
-        settings.rx_tx,
         command_ready, 
         response_valid, 
         response_channel, 
@@ -128,7 +126,7 @@ def generate():
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
-    leds = overflow
+    leds = adc_stb.cat(mic_stb)
 
     # Create Audio DAC
     ##################
@@ -163,6 +161,10 @@ def generate():
 
     #pps counter output
     pps_count = pps_count.subtype.output("pps_count_out", pps_count)
+
+    #adc output
+    adc = adc.subtype.output("adc_out", adc)
+    adc_stb = adc_stb.subtype.output("adc_stb_out", adc_stb)
 
     #generate netlist and output
     netlist = Netlist(
@@ -204,6 +206,8 @@ def generate():
             leds,
             power,
             pps_count,
+            adc,
+            adc_stb
         ]
     )
     f = open("transceiver.v", "w")

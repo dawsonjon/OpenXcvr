@@ -105,6 +105,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 wire [31:0] pps_count_bus;
     wire pps_count_ack;
     wire pps_count_stb;
+	 
+	 wire [31:0] adc_bus;
+    wire adc_ack;
+    wire adc_stb;
 
 	 
     //implement compiled C program
@@ -142,7 +146,12 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		  
 		  .output_gain_out(gain_bus[5:0]),
         .output_gain_out_ack(gain_ack),
-        .output_gain_out_stb(gain_stb)
+        .output_gain_out_stb(gain_stb),
+		  
+		  .input_adc_in(adc_bus),
+        .input_adc_in_ack(adc_ack),
+        .input_adc_in_stb(adc_stb)
+		  
         //exception
     );
 
@@ -244,6 +253,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   
   //GPS 1PPS counter interface
   .pps_count_out(pps_count_bus),
+  
+  //GPS Route spare ADC channels to CPU
+  .adc_out(adc_bus),
+  .adc_stb_out(adc_stb),
   
   //RF INTERFACE
   .rf_0_out(rf_0), 
