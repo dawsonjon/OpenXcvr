@@ -90,6 +90,13 @@ void set_mode(unsigned mode, unsigned * control){
     fputc(*control, control_out);
 }
 
+void set_agc_speed(unsigned agc_speed, unsigned * control){
+    agc_speed &= 0x3;
+    *control &= 0xffffffcfu;
+    *control |= (agc_speed << 4);
+    fputc(*control, control_out);
+}
+
 void toggle_tx(frequency, unsigned * control){
     *control ^= 0x00000008u;
     if(*control & 0x8){
@@ -107,7 +114,7 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc;
+    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc, agc_speed;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-24414), frequency_out);
@@ -141,6 +148,15 @@ void main(){
                     puts("\n");
                     break;
 
+                case 'A':
+                //set mode/sideband
+                    agc_speed = scan_udecimal();
+                    set_agc_speed(agc_speed, &control);
+                    puts("control : ");
+                    print_uhex(control);
+                    puts("\n");
+                    break;
+
                 case 't':
                 //set tx
                     mode = scan_udecimal();
@@ -162,6 +178,7 @@ void main(){
                     puts("t: toggle TX\n");
                     puts("x: get GPS 1pps count\n");
                     puts("a: adc\n");
+                    puts("A: AGC speed (0-3)\n");
                     puts("\n");
                     break;
 
@@ -182,7 +199,6 @@ void main(){
                     break;
 
                 case 'g':
-                //print rx gain
                     gain = scan_udecimal();
                     fputc(gain, gain_out);
                     print_uhex(gain);

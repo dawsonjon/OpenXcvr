@@ -10,14 +10,14 @@ from calculate_gain import calculate_gain
 from slow_barrel_shifter import slow_barrel_shifter
 
 
-def audio_agc(clk, data, stb, audio_attenuation):
+def audio_agc(clk, data, stb, audio_attenuation, agc_speed):
 
     #when squelch is active blank the input to the AGC, so that the
     #noise in FM mode doesn't turn down the gain
     squelch_active = (audio_attenuation == 17)
 
     #calculate magnitude and DC
-    magnitude = measure_magnitude(clk, data, stb, reset=squelch_active)
+    magnitude = measure_magnitude(clk, data, stb, agc_speed, reset=squelch_active)
 
     #rescale the data 
     setpoint = int((2**(data.subtype.bits-1)) * 0.5)

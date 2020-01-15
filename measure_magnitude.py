@@ -14,16 +14,19 @@ from numpy import log10
 # med     25000(250ms)   4(1ms)   12(250ms)
 # slow    100000(1s)     4(1ms)   13(500ms)
 # long    200000(2s)     4(1ms)   15(2s)
-# vlong   300000(3s)     4(1ms)   16(4s)
 
 
-def measure_magnitude(clk, audio, audio_stb, attack_factor=4, decay_factor=16, hang=300000, reset=0):
+def measure_magnitude(clk, audio, audio_stb, agc_speed, reset=0):
+    attack_factor = 4
+    max_factor = 15
+    decay_factor = Signed(5).select(agc_speed, 10, 12, 13, 15)
+    hang = Unsigned(19).select(agc_speed, 10000, 25000, 100000, 200000)
 
     #use a leaky max hold
     audio_bits = audio.subtype.bits
 
     #add extra bits for decay calculation
-    audio = audio.resize(audio_bits+decay_factor) << decay_factor
+    audio = audio.resize(audio_bits+max_factor) << max_factor
     max_hold = audio.subtype.register(clk, init=0, en=audio_stb)
     counter = Unsigned(19).register(clk, en=audio_stb, init=0)
 
@@ -37,7 +40,7 @@ def measure_magnitude(clk, audio, audio_stb, attack_factor=4, decay_factor=16, h
     max_hold.d(audio.subtype.select(reset, max_hold_new_val, 0))
 
     #remove extra bits (except one to allow for addition)
-    max_hold = (max_hold >> decay_factor).resize(audio_bits)
+    max_hold = (max_hold >> max_factor).resize(audio_bits)
 
     return max_hold
 

@@ -226,6 +226,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .filter_mode_in(control[1:0]), 
   .filter_sideband_in(control[2]), 
   .rx_tx_in(control[3]),
+  .agc_speed_in(control[5:4]),
   .volume_in(control[13:8]),
   .frequency_in(frequency), 
   .power_out(power_bus),

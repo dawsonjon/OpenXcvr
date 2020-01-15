@@ -53,7 +53,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     #power measurement for s-meter is after filter, so that close-by signals don't distort measurement
     #The measurement uses a much faster decay than the AGC, so that squelch/scanning can update power estimate rapidly
-    power = measure_magnitude(clk, filter_out_i, filter_out_stb, 4, 12, 100)
+    power = measure_magnitude(clk, filter_out_i, filter_out_stb, 0) #fast
 
     #demodulator
     demodulator_out, demodulator_out_stb = demodulator(clk, filter_out_i, filter_out_q, filter_out_stb, settings)
@@ -62,9 +62,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #===
     agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
     agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
-    agc_setpoint = Signed(5).select(settings.rx_tx, settings.volume, 15)
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
-    agc_out, agc_out_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, agc_setpoint)
+    agc_out, agc_out_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, settings.volume, settings.agc_speed)
 
 
     #modulator
@@ -90,8 +89,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     rx_audio, rx_audio_stb = agc_out, agc_out_stb
 
     #rx_audio_stb
-    #rx_audio = rx_audio.subtype.select(settings.rx_tx, rx_audio, zero)
-    #rx_audio_stb = Boolean().select(settings.rx_tx, rx_audio_stb, zero_stb)
+    rx_audio = rx_audio.subtype.select(settings.rx_tx, rx_audio, zero)
+    rx_audio_stb = Boolean().select(settings.rx_tx, rx_audio_stb, zero_stb)
 
     #output to transmitter
     #=====================
