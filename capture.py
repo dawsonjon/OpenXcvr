@@ -8,53 +8,15 @@ from numpy import array, zeros, ones, around, unwrap, log10, angle, mean
 from scipy.signal import lfilter, freqz, remez
 from scipy import signal
 import matplotlib.pyplot as plt
-import time
-import sys
-import threading
+from openxcvr import Xcvr
 
-def get_data_value():
-    value = port.readline()
-    value = int(value, 16)
-    if value & 0x8000:
-        value |= (~0xffff)
-    return value
+xcvr = Xcvr("/dev/ttyUSB1")
 
-def capture():
-    port.flush()
-    port.write("c\n")
-    i_values = []
-    q_values = []
-    for i in range(1000):
-        i_values.append(float(get_data_value()))
-        q_values.append(float(get_data_value()))
-    return i_values, q_values
+xcvr.set_frequency(10.0e6)
+xcvr.set_mode(0)
+xcvr.set_squelch(0)
 
-def set_frequency(frequency):
-    port.flush()
-    port.write("f%u\n"%frequency)
-    print "f%u\n"%frequency
-    print port.readline()
-    print port.readline()
-
-def set_mode(mode):
-    port.flush()
-    port.write("m%u\n"%mode)
-    print port.readline()
-    print port.readline()
-
-def set_squelch(squelch):
-    port.flush()
-    port.write("q%u\n"%squelch)
-    print port.readline()
-    print port.readline()
-
-device = "/dev/ttyUSB2"
-port = serial.Serial(device, 115200, timeout=2)
-
-set_frequency(10.0e6)
-set_mode(0)
-set_squelch(0)
-i_values, q_values = capture()
+i_values, q_values = xcvr.capture()
 values = np.array(i_values)+1.0j*np.array(q_values)
 plt.plot(range(len(i_values)), i_values, range(len(q_values)), q_values)
 plt.show()

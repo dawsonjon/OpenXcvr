@@ -1,4 +1,4 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out, pps_in);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, test);
 
   input clk_in;
   input reset_in;
@@ -7,6 +7,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   input lrclk_in;
   input dout_in;
   input pps_in;
+  output test;
   output sclk_out;
   output rf;
   output lo_i;
@@ -176,7 +177,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 
     serial_output #(
         .clock_frequency(50000000),
-        .baud_rate(115200)
+        .baud_rate(500000)
     )
     serial_output_0(
         .clk(clk_50),
@@ -190,7 +191,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 
     serial_input #(
         .clock_frequency(50000000),
-        .baud_rate(115200)
+        .baud_rate(500000)
     )
     serial_input_0(
         .clk(clk_50),
@@ -212,6 +213,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   wire lo_i_1;
   wire lo_q_0;
   wire lo_q_1;
+  wire test_0;
+  wire test_1;
   
   transceiver transceiver_u0(
   
@@ -227,6 +230,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .filter_sideband_in(control[2]), 
   .rx_tx_in(control[3]),
   .agc_speed_in(control[5:4]),
+  .enable_test_signal_in(control[6]),
   .volume_in(control[13:8]),
   .frequency_in(frequency), 
   .power_out(power_bus),
@@ -266,6 +270,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .lo_i_1_out(lo_i_1), 
   .lo_q_0_out(lo_q_0), 
   .lo_q_1_out(lo_q_1),
+  .test_signal_0_out(test_0),
+  .test_signal_1_out(test_1),
   
   //AUDIO OUTPUT
   .speaker_out(speaker)
@@ -287,6 +293,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		clk,           
 		{lo_q_1, lo_q_0}, 
       lo_q
+  );
+  output_buffer output_buffer_3(
+		clk,           
+		{test_1, test_0}, 
+      test
   );
 
 endmodule

@@ -43,10 +43,11 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
     data, tx_stb = slow_to_fast(cpu_clk, clk, tx_i.cat(tx_q), tx_stb)
     tx_i, tx_q = data[2*data_bits-1:data_bits], data[data_bits-1:0]
     rx_tx = meta_chain(clk, settings.rx_tx)
+    enable_test_signal = meta_chain(clk, settings.enable_test_signal)
 
     ###########################################################################
 
-    rf, lo_i, lo_q = rf_section(
+    rf, lo_i, lo_q, test_signal = rf_section(
         clk, 
         frequency = frequency, 
         audio_i = tx_i,
@@ -55,10 +56,11 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
         interpolation_factor = 3000, #from 300000000 to 9180
         lut_bits = 10,
         channels = 2, 
-        rx_tx = rx_tx
+        rx_tx = rx_tx,
+        enable_test_signal = enable_test_signal
     )
 
-    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
+    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow, test_signal
 
 def generate():
     settings = Settings()
@@ -82,6 +84,7 @@ def generate():
     settings.gain      = Signed(4).input("gain_in")
     settings.volume    = Signed(6).input("volume_in")
     settings.agc_speed = Unsigned(2).input("agc_speed_in")
+    settings.enable_test_signal = Boolean().input("enable_test_signal_in")
     frequency          = Unsigned(32).input("frequency_in")
 
     #adc interface inputs
@@ -123,11 +126,11 @@ def generate():
 
     # Implement transceiver
     ########################
-    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
+    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow, test_signal = transceiver(
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
-    leds = adc_stb.cat(mic_stb)
+    leds =settings.enable_test_signal.cat(adc_stb.cat(mic_stb))
 
     # Create Audio DAC
     ##################
@@ -156,6 +159,7 @@ def generate():
     rf = [i.subtype.output("rf_%u_out"%idx, i) for idx, i in enumerate(rf)]
     lo_i = [i.subtype.output("lo_i_%u_out"%idx, i) for idx, i in enumerate(lo_i)]
     lo_q = [i.subtype.output("lo_q_%u_out"%idx, i) for idx, i in enumerate(lo_q)]
+    test_signal = [i.subtype.output("test_signal_%u_out"%idx, i) for idx, i in enumerate(test_signal)]
 
     #speaker output
     speaker = speaker.subtype.output("speaker_out", speaker)
@@ -185,6 +189,7 @@ def generate():
             settings.gain,
             settings.volume,
             settings.agc_speed,
+            settings.enable_test_signal,
             frequency,
             response_channel,
             response_data,
@@ -197,7 +202,7 @@ def generate():
         ],
 
         #outputs
-        rf + lo_i + lo_q + [
+        rf + lo_i + lo_q + test_signal + [
             command_channel,
             command_startofpacket,
             command_endofpacket,

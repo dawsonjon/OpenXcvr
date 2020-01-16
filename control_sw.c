@@ -109,6 +109,11 @@ void toggle_tx(frequency, unsigned * control){
     fputc(*control, control_out);
 }
 
+void toggle_test_signal(unsigned * control){
+    *control ^= 0x00000040u;
+    fputc(*control, control_out);
+}
+
 void main(){
 
     stdout = debug_out;
@@ -166,6 +171,15 @@ void main(){
                     puts("\n");
                     break;
 
+                case 'T':
+                //set tx
+                    mode = scan_udecimal();
+                    toggle_test_signal(&control);
+                    puts("control : ");
+                    print_uhex(control);
+                    puts("\n");
+                    break;
+
                 case 'h':
                 //print help
                     puts("fxxxxxxxx: frequency\n");
@@ -179,6 +193,7 @@ void main(){
                     puts("x: get GPS 1pps count\n");
                     puts("a: adc\n");
                     puts("A: AGC speed (0-3)\n");
+                    puts("T: toggle test signal\n");
                     puts("\n");
                     break;
 

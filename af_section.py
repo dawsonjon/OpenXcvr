@@ -13,6 +13,7 @@ from modulator import modulator
 from downconverter import downconverter
 from measure_magnitude import measure_magnitude
 from test_tone import test_tone
+from test_signal import test_signal
 from settings import *
 
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
@@ -95,10 +96,14 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #output to transmitter
     #=====================
 
-    #blank transmitter input when in receive
-    tx_i = t_rx.select(settings.rx_tx, zero, filter_out_i)
-    tx_q = t_rx.select(settings.rx_tx, zero, filter_out_q)
-    tx_stb = Boolean().select(settings.rx_tx, zero_stb, filter_out_stb)
+    #in receive mode, send a test tone to the transmitter.
+    #if the test tone is enabled in the transmitter, the tone
+    #is swept at the receive frequency and can be used as a crude
+    #analyser.
+    test_i, test_q, test_stb = test_signal(clk, rx_audio_stb)
+    tx_i = t_rx.select(settings.rx_tx, test_i, filter_out_i)
+    tx_q = t_rx.select(settings.rx_tx, test_q, filter_out_q)
+    tx_stb = Boolean().select(settings.rx_tx, test_stb, filter_out_stb)
 
     #resize tx
     tx_i = tx_i.resize(tx_bits)
