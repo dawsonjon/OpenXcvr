@@ -6,7 +6,6 @@ unsigned capture_in = input("capture_in");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");
-unsigned gain_out = output("gain_out");
 
 #include <stdio.h>
 #include <scan.h>
@@ -97,20 +96,39 @@ void set_agc_speed(unsigned agc_speed, unsigned * control){
     fputc(*control, control_out);
 }
 
-void toggle_tx(frequency, unsigned * control){
-    *control ^= 0x00000008u;
-    if(*control & 0x8){
+void set_gain(unsigned gain, unsigned * control){
+    gain &= 0xf;
+    *control &= 0xfff0ffffu;
+    *control |= (gain << 16);
+    fputc(*control, control_out);
+}
+
+void set_tx(unsigned tx, unsigned frequency, unsigned * control){
+
+    if(tx){
+        *control |= 0x00000008u;
+    } else {
+        *control &= ~0x00000008u;
+    }
+
+    if(tx){
         //RX has an FS/4 IF
         fputc(convert_to_steps(frequency), frequency_out);
     } else {
         //TX is direct conversion
         fputc(convert_to_steps(frequency-24414), frequency_out);
     }
+
     fputc(*control, control_out);
+
 }
 
-void toggle_test_signal(unsigned * control){
-    *control ^= 0x00000040u;
+void set_test_signal(unsigned on, unsigned * control){
+    if(on){
+        *control |= 0x00000040u;
+    } else {
+        *control &= ~0x00000040u;
+    }
     fputc(*control, control_out);
 }
 
@@ -119,12 +137,11 @@ void main(){
     stdout = debug_out;
     stdin = debug_in;
 
-    unsigned int cmd, frequency, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc, agc_speed;
+    unsigned int cmd, frequency=1215000-24414, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc, agc_speed;
     unsigned int capture[1000];
 
     fputc(convert_to_steps(1215000-24414), frequency_out);
     fputc(control, control_out);
-    fputc(gain, gain_out);
 
     puts("FPGA transceiver v 0.01\n");
 
@@ -164,8 +181,7 @@ void main(){
 
                 case 't':
                 //set tx
-                    mode = scan_udecimal();
-                    toggle_tx(frequency, &control);
+                    set_tx(scan_udecimal(), frequency, &control);
                     puts("control : ");
                     print_uhex(control);
                     puts("\n");
@@ -173,8 +189,7 @@ void main(){
 
                 case 'T':
                 //set tx
-                    mode = scan_udecimal();
-                    toggle_test_signal(&control);
+                    set_test_signal(scan_udecimal(), &control);
                     puts("control : ");
                     print_uhex(control);
                     puts("\n");
@@ -189,11 +204,11 @@ void main(){
                     puts("s: read smeter\n");
                     puts("v: set volume (0-9)\n");
                     puts("q: set squelch (0-12)\n");
-                    puts("t: toggle TX\n");
+                    puts("t: TX (0, 1)\n");
                     puts("x: get GPS 1pps count\n");
                     puts("a: adc\n");
                     puts("A: AGC speed (0-3)\n");
-                    puts("T: toggle test signal\n");
+                    puts("T: test signal, (0, 1)\n");
                     puts("\n");
                     break;
 
@@ -214,9 +229,8 @@ void main(){
                     break;
 
                 case 'g':
-                    gain = scan_udecimal();
-                    fputc(gain, gain_out);
-                    print_uhex(gain);
+                    set_gain(scan_udecimal(), &control);
+                    print_uhex(control);
                     puts("\n");
                     break;
 

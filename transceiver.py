@@ -78,13 +78,14 @@ def generate():
     cpu_clk = Clock("cpu_clk")
 
     #control settings
-    settings.mode      = Unsigned(2).input("filter_mode_in")
-    settings.sideband  = Unsigned(2).input("filter_sideband_in")
-    settings.rx_tx     = Boolean().input("rx_tx_in")
-    settings.gain      = Signed(4).input("gain_in")
-    settings.volume    = Signed(6).input("volume_in")
-    settings.agc_speed = Unsigned(2).input("agc_speed_in")
-    settings.enable_test_signal = Boolean().input("enable_test_signal_in")
+    control                     = Unsigned(32).input("control_in")
+    settings.mode               = control[1:0]
+    settings.sideband           = control[2]
+    settings.rx_tx              = control[3]
+    settings.agc_speed          = control[5:4]
+    settings.enable_test_signal = control[6]
+    settings.volume             = control[13:8]
+    settings.gain               = control[19:16]
     frequency          = Unsigned(32).input("frequency_in")
 
     #adc interface inputs
@@ -183,13 +184,7 @@ def generate():
 
         #inputs
         [
-            settings.mode,
-            settings.sideband,
-            settings.rx_tx,
-            settings.gain,
-            settings.volume,
-            settings.agc_speed,
-            settings.enable_test_signal,
+            control,
             frequency,
             response_channel,
             response_data,

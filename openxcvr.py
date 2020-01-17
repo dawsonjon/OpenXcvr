@@ -13,7 +13,7 @@ import sys
 
 class Xcvr:
 
-    def __init__(self, device="/dev/ttyUSB1"):
+    def __init__(self, device="/dev/ttyUSB0"):
         self.port = serial.Serial(device, 500000, timeout=2)
         self.port.flush()
 
@@ -37,6 +37,11 @@ class Xcvr:
 
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%frequency)
+        self.port.readline()
+        self.port.readline()
+
+    def set_test_signal(self, state):
+        self.port.write("T%u\n"%state)
         self.port.readline()
         self.port.readline()
 

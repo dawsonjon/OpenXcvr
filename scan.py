@@ -9,14 +9,15 @@ from scipy import signal
 import matplotlib.pyplot as plt
 from openxcvr import Xcvr
 
-xcvr = Xcvr("/dev/ttyUSB1")
+xcvr = Xcvr("/dev/ttyUSB0")
 
 xcvr.set_mode(1)
 xcvr.set_squelch(0)
 xcvr.set_gain(4)
+xcvr.set_test_signal(1)
 
-start_frequency = 0.1e6
-stop_frequency = 2.0e6
+start_frequency = 12.0e6
+stop_frequency = 15.0e6
 step = 0.005e6
 
 frequency = start_frequency
@@ -26,6 +27,7 @@ while frequency <= stop_frequency:
     frequency += step
 
 powers = xcvr.scan(frequencies)
+xcvr.set_test_signal(0)
 
 plt.plot(frequencies, powers, 'b-')
 plt.show()

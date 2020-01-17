@@ -99,10 +99,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     wire power_ack;
     wire power_stb;
 	 
-	 wire [31:0] gain_bus;
-    wire gain_ack;
-    wire gain_stb;
-	 
 	 wire [31:0] pps_count_bus;
     wire pps_count_ack;
     wire pps_count_stb;
@@ -144,10 +140,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		  .input_pps_count_in(pps_count_bus),
         .input_pps_count_in_ack(pps_count_ack),
         .input_pps_count_in_stb(pps_count_stb),
-		  
-		  .output_gain_out(gain_bus[5:0]),
-        .output_gain_out_ack(gain_ack),
-        .output_gain_out_stb(gain_stb),
 		  
 		  .input_adc_in(adc_bus),
         .input_adc_in_ack(adc_ack),
@@ -226,15 +218,9 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .pps_in(pps_in),
   
   //Transceiver Control
-  .filter_mode_in(control[1:0]), 
-  .filter_sideband_in(control[2]), 
-  .rx_tx_in(control[3]),
-  .agc_speed_in(control[5:4]),
-  .enable_test_signal_in(control[6]),
-  .volume_in(control[13:8]),
+  .control_in(control),
   .frequency_in(frequency), 
   .power_out(power_bus),
-  .gain_in(gain_bus),
   
   //ADC INTERFACE
   .response_channel_in(response_channel), 
