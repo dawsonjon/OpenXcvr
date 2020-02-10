@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "xcvr_components")(type "Legacy")(uri "${KIPRJMOD}/xcvr_components.lib")(options "")(descr ""))
+)
