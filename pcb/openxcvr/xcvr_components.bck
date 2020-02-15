@@ -1,3 +1,13 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP FST5253
+D Dual 1 to 4 Analog Multiplexer
+K TTL Analog Multiplexer
+F https://www.onsemi.com/pub/Collateral/FST3253-D.pdf
+$ENDCMP
+#
+$CMP MAX_1000
+F https://www.trenz-electronic.de/fileadmin/docs/Trenz_Electronic/Modules_and_Module_Carriers/2.5x6.15/TEI0001/User_Guide/MAX1000%20User%20Guide.pdf
+$ENDCMP
+#
 #End Doc Library

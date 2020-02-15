@@ -110,7 +110,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = tx_q.resize(tx_bits)
     tx_stb = tx_stb
 
-    capture_i, capture_q, capture_stb = tx_i.resize(18)<<2, tx_q.resize(18)<<2, tx_stb
+    capture_i, capture_q, capture_stb = filter_out_i, filter_out_q, filter_out_stb
 
 
     return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow

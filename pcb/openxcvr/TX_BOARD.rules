@@ -1,0 +1,81 @@
+
+(rules PCB TX_BOARD
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 727)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.6)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.6)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.2)
+    (clear 125.0 (type smd_to_turn_gap))
+    (clear 50.0 (type smd_smd))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    GND "FWD_PWR" "REV_PWR" "LPF_BAND_0_A" "LPF_BAND_1_A" "LPF_BAND_2_A" "LPF_BAND_3_A" "Net-(C59-Pad1)"
+    "Net-(C60-Pad1)" "Net-(C61-Pad1)" "Net-(C62-Pad1)" "Net-(C63-Pad1)" "Net-(C64-Pad1)" "Net-(C65-Pad1)" "Net-(C66-Pad1)" "LPF_BAND_0_B"
+    "LPF_BAND_1_B" "LPF_BAND_2_B" "LPF_BAND_3_B" "Net-(D1-Pad2)" +5V "Net-(D2-Pad2)" "Net-(D3-Pad2)" "TX_N"
+    "PA_IN" "RF_IN" "BAND_0" "BAND_1" "TX_ENABLE" BATTERY ANTENNA "Net-(K1-Pad9)"
+    "Net-(K1-Pad11)" "Net-(K1-Pad8)" "Net-(K1-Pad6)" "Net-(K5-Pad11)" "RF_OUT" "Net-(D5-Pad2)" "Net-(D6-Pad2)" "LPF_TXRX"
+    "LPF_SWR" "Net-(K5-Pad13)" "Net-(K5-Pad9)" "Net-(C2-Pad1)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)

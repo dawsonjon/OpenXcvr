@@ -1,4 +1,4 @@
-update=Sat 08 Feb 2020 17:03:19 GMT
+update=Sat 15 Feb 2020 13:30:34 GMT
 version=1
 last_client=kicad
 [general]
@@ -19,7 +19,7 @@ LastNetListRead=
 LastSTEPExportPath=
 LastIDFExportPath=
 LastVRMLExportPath=
-LastSpecctraDSNExportPath=
+LastSpecctraDSNExportPath=TX_BOARD.dsn
 LastGenCADExportPath=
 CopperLayerCount=2
 BoardThickness=1.6
@@ -66,7 +66,7 @@ DimensionPrecision=1
 SolderMaskClearance=0
 SolderMaskMinWidth=0
 SolderPasteClearance=0
-SolderPasteRatio=-0
+SolderPasteRatio=0
 [pcbnew/Layer.F.Cu]
 Name=F.Cu
 Type=0
@@ -245,3 +245,5 @@ uViaDrill=0.1
 dPairWidth=0.2
 dPairGap=0.25
 dPairViaGap=0.25
+[ModEditFrame]
+version=1

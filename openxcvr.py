@@ -17,10 +17,8 @@ class Xcvr:
         self.port = serial.Serial(device, 500000, timeout=2)
         self.port.flush()
 
-    def get_data_value(self):
-        value = self.port.readline()
-        print value
-        value = int(value, 16)
+    def get_data_value(self, line):
+        value = int(line, 16)
         if value & 0x8000:
             value |= (~0xffff)
         return value
@@ -28,11 +26,14 @@ class Xcvr:
     def capture(self):
         self.port.flush()
         self.port.write("c\n")
+        lines = []
+        for i in range(1000):
+            lines.append((self.port.readline(), self.port.readline()))
         i_values = []
         q_values = []
-        for i in range(1000):
-            i_values.append(float(self.get_data_value()))
-            q_values.append(float(self.get_data_value()))
+        for a, b in lines:
+            i_values.append(float(self.get_data_value(a)))
+            q_values.append(float(self.get_data_value(b)))
         return i_values, q_values
 
     def set_frequency(self, frequency):
@@ -65,13 +66,13 @@ class Xcvr:
         command = ""
         values = []
         for frequency in frequencies:
-            print frequency
-            self.port.write("f%u\np\n"%frequency)
-            self.port.readline()
-            value = self.port.readline()
+            self.set_frequency(frequency)
+            i, q = self.capture()
+            value = np.array(i)+1.0j*np.array(q)
+            value = sum(abs(value))
             values.append(value)
-            time.sleep(0.1)
-        return [int(i, 16) for i in values]
+            print frequency, value
+        return values
 
     def set_squelch(self, squelch):
         self.port.write("q%u\n"%squelch)
