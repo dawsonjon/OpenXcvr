@@ -6,7 +6,7 @@ A cheap open source radio transceiver based on the [MAX1000 FPGA module](https:/
 
 There are many HF radio receivers based on a Tayloe mixer, this type of mixer can be made using a cheap analogue switch such as an [FST3253](https://www.onsemi.com/products/interfaces/analog-switches/fst3253). When combined with a Hi Fidelity Audio ADC, it is possible to realise a sensitive receiver with a high dynamic range.
 
-The [soft-rock](http://www.wb5rvz.org/) and [qrp-labs](https://www.qrp-labs.com/receiver.html) receivers require a PC with a sound card to demodulate the I and Q outputs. [mchf](http://www.m0nka.co.uk/) and the [Elekraft kx-3](https://elecraft.com/products/kx3-all-mode-160-6-m-transceiver) receivers have built-in Audio ADC and CPU, to replace the PC providing a stand-alone radio.
+The [soft-rock](http://www.wb5rvz.org/) and [qrp-labs](https://www.qrp-labs.com/receiver.html) receivers require a PC with a sound card to demodulate the I and Q outputs. [mcHF](http://www.m0nka.co.uk/) and the [Elekraft kx-3](https://elecraft.com/products/kx3-all-mode-160-6-m-transceiver) receivers have built-in Audio ADC and CPU, to replace the PC providing a stand-alone radio.
 
 Projects such as [rpitx](https://github.com/F5OEO/rpitx) and [FPGA-TX](https://github.com/dawsonjon/FPGA-TX) also show that it is possible to build a flexible radio transmitter using a high speed digital IO pin. I have experimented building receivers using similar techniques, and while I have been successful in receiving some signals using these techniques, I have not been able to achieve sufficient dynamic range to build a useful receiver.
 
@@ -45,9 +45,9 @@ Band | f1 (MHz) |  f2 (MHz)
 2 | 4 | 8
 3 | 2 | 4
 
-This technique is used in both the soft-rock (ensemble) and mchf designs, using an analogue multiplexer to switch between bands. The qrp-labs design uses much narrower plug-in BPF modules which each pass on of the HF ham bands. The qrp-labs design does a better job of filtering out unwanted signals outside the ham bands, but a filter is needed for each band (which would be a lot of filters). The OpenXcvr design uses a 4 band filter to reduce cost, and allow a general coverage design that could also be used for Short Wave Listening (SWLing). 
+This technique is used in both the soft-rock (ensemble) and mcHF designs, using an analogue multiplexer to switch between bands. The qrp-labs design uses much narrower plug-in BPF modules which each pass on of the HF ham bands. The qrp-labs design does a better job of filtering out unwanted signals outside the ham bands, but a filter is needed for each band (which would be a lot of filters). The OpenXcvr design uses a 4 band filter to reduce cost, and allow a general coverage design that could also be used for Short Wave Listening (SWLing). 
 
-In common with the mchf design, wire-wound surface mount inductors are used. The surface mount inductors reduce cost and board area, but still provide a reasonably high Q factor.
+In common with the mcHF design, wire-wound surface mount inductors are used. The surface mount inductors reduce cost and board area, but still provide a reasonably high Q factor.
 
 The 2MHz lower frequency limit of band 3 will probably allow reasonable performance on the 1.8MHz (160m) band, due to the slow roll-off of the filter. To allow maximum flexibility, e.g. for comercial broadcast on LW and MW bands, a bypass option is also included. 
 
@@ -84,7 +84,7 @@ To build a QRP transceiver with a similar spec to the existing products, an HF p
 
 Due to the dithering employed, the TX output should be relatively free from harmonics. The power in the harmonics is effectively converted into wideband noise. Most of this noise lies outside the HF band and is filtered away. However, the Power Amplifier may add additional harmonics and good practice dictates that a low pass filter should be employed after the Power Amplifier to prevent unwanted spurious emissions.
 
-The low pass filter must handle 10 watts of RF power, so the inductors used in the loww pass filter are hand-wound toroidal inductors. OpenXCVR uses a relay switched design similar in principal to [mchf](http://www.m0nka.co.uk/) and [ubitx](https://ubitx.net/). This [article](https://www.qrp-labs.com/images/lpfkit/gqrplpf.pdf) provides the basic filter designs.
+The low pass filter must handle 10 watts of RF power, so the inductors used in the loww pass filter are hand-wound toroidal inductors. OpenXCVR uses a relay switched design similar in principal to [mcHF](http://www.m0nka.co.uk/) and [ubitx](https://ubitx.net/). This [article](https://www.qrp-labs.com/images/lpfkit/gqrplpf.pdf) provides the basic filter designs.
 
 AXICOM d2n relays have been selected because they have been used successfully in other HF applications for example in [ubitx](http://ubitx.net/spectral-purity/) and [easy tr switch](https://www.qrpkits.com/ezseries.html#eztrsw).
 
