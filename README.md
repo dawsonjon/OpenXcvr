@@ -34,11 +34,11 @@ The main aims for this phase of the project are to:
 
 The Tayloe mixer uses a square wave local oscillator and is therefore sensitive not only to the tuned frequency but also to odd harmonics, the strongest being the third harmonic (3x the tuned frequency). To prevent signals at the harmonic frequencies interfering with the signal of interest, a bandpass filter is placed in front of the receiver.
 
-The entire HF spectrum is broken down into a number of bands each with a separate band pass filter. To prevent the third (and higher harmonics) from being received, the high cut-off frequency must not be greater than the 3x the lower cut-off frequency. In the real world, filters roll off slowly, so we ideally to allow some extra margin say 2x the lower cutoff frequency.
+The entire HF spectrum is broken down into a number of bands each with a separate band pass filter. To prevent the third (and higher harmonics) from being received, the high cut-off frequency must not be greater than the 3x the lower cut-off frequency. In the real world, filters roll off slowly, so we ideally to allow some extra margin say 2x the lower cut-off frequency.
 
 Using this approach, we can cover the whole HF spectrum from 3MHz to 30MHz with only four filters.
 
-Band | f1 (MHz) |  f2 (MHz)    
+Band | f1 (MHz) |  f2 (MHz)
 -|-|-
 0 | 16 | 30
 1 | 8 | 16
@@ -84,7 +84,7 @@ To build a QRP transceiver with a similar spec to the existing products, an HF p
 
 Due to the dithering employed, the TX output should be relatively free from harmonics. The power in the harmonics is effectively converted into wideband noise. Most of this noise lies outside the HF band and is filtered away. However, the Power Amplifier may add additional harmonics and good practice dictates that a low pass filter should be employed after the Power Amplifier to prevent unwanted spurious emissions.
 
-The low pass filter must handle 10 watts of RF power, so the inductors used in the loww pass filter are hand-wound toroidal inductors. OpenXCVR uses a relay switched design similar in principal to [mcHF](http://www.m0nka.co.uk/) and [ubitx](https://ubitx.net/). This [article](https://www.qrp-labs.com/images/lpfkit/gqrplpf.pdf) provides the basic filter designs.
+The low pass filter must handle 10 watts of RF power, so the inductors used in the low pass filter are hand-wound toroidal inductors. OpenXCVR uses a relay switched design similar in principal to [mcHF](http://www.m0nka.co.uk/) and [ubitx](https://ubitx.net/). This [article](https://www.qrp-labs.com/images/lpfkit/gqrplpf.pdf) provides the basic filter designs.
 
 AXICOM d2n relays have been selected because they have been used successfully in other HF applications for example in [ubitx](http://ubitx.net/spectral-purity/) and [easy tr switch](https://www.qrpkits.com/ezseries.html#eztrsw).
 
@@ -94,9 +94,11 @@ The transmit receive switch simply uses a AXICOM d2n relay to switch the antenna
 
 ## Power Meter and SWR meter
 
-[This article](https://sites.google.com/view/kn9b/digital-swr-meter) describes the design of a QRP SWR meter using an Arduino and a Stockton Bridge. OpenXcvr uses the same basic design, but uses spare FPGA analogue inputs to measure the forward and reverse power.
+[This article](https://sites.google.com/view/kn9b/digital-swr-meter) describes the design of a QRP SWR meter using an Arduino and a Stockton Bridge. OpenXCVR uses the same basic design, but uses spare FPGA analogue inputs to measure the forward and reverse power.
 
 # FPGA Firmware
+
+![top level](https://github.com/dawsonjon/OpenXcvr/blob/master/images/firmware_top.png?raw=true)
 
 The FPGA firmware consists of 2 main parts. The RF rate section works at a sample rate of 300MS/s with a clock speed of 150MHz, and the audio rate section works at a sampling rate of 100KS/s and a clock speed of 50MHz. 
 
@@ -106,7 +108,9 @@ In the audio rate section, things are a bit more relaxed, we have up to 500 cloc
 
 ## Numerically Controlled Oscillator
 
-A 32-bit phase counter forms the basis of the NCO. At 300MS/s this gives a frequency resolution of ~0.07 Hz. Normally, an NCO would be a simple counter representing the phase, each clock cycle the change in phase (better known as the frequency) is added to the phase. If the frequency value is large, the phse counter overflows quickly giving a high frequency. If the frequency value is small the phase counter takes a long time to overflow and the frequency is low. 
+![top level](https://github.com/dawsonjon/OpenXcvr/blob/master/images/NCO.png?raw=true)
+
+A 32-bit phase counter forms the basis of the NCO. At 300MS/s this gives a frequency resolution of ~0.07 Hz. Normally, an NCO would be a simple counter representing the phase, each clock cycle the change in phase (better known as the frequency) is added to the phase. If the frequency value is large, the phase counter overflows quickly giving a high frequency. If the frequency value is small the phase counter takes a long time to overflow and the frequency is low. 
 
 In this system, we need to generate 2 samples per clock cycle. To achieve this we add twice the phase to the counter each clock cycle. Even numbered samples are then derived directly from the counter, and odd samples are derived from the phase counter added to the frequency. Thus in cycle 0 the samples are 0 and 1x frequency, in the cycle 1 the outputs are 2x frequency and 3x frequency and so on. The NCO con only update the phase once per clock cycle, this results in a jitter of 3.333ns, but over a long period the average frequency averages out to the programmed value precisely. 
 
@@ -128,7 +132,7 @@ The random number is generated by combining the output of two different length [
 
 ## Downconverter
 
-The I and Q outputs from the PCM1802 ADC are received at a sample rate of approximately 100Khz. The receiver hardware does not pass signals at DC, and in any case the local oscillator and other sources of noise make it desirable to use a small Intermediate Frequency (IF) within the bandwidth of the ADC. The IF signal is then down-converted to DC digitally using a complex mixer. When receiving therefore, the frequency of the NCO is set to the frequency of the received signal minus the IF frequency. The IF frequency is chosen to be exactly one quarter of the sampling frequency (FS/4). At this frequency, the I and Q components of the IF oscillator are either 0, 1, or -1. This greatly simplifies the design of the mixer which can then be built without using multipliers.
+The I and Q outputs from the PCM1802 ADC are received at a sample rate of approximately 100kHz. The receiver hardware does not pass signals at DC, and in any case the local oscillator and other sources of noise make it desirable to use a small Intermediate Frequency (IF) within the bandwidth of the ADC. The IF signal is then down-converted to DC digitally using a complex mixer. When receiving therefore, the frequency of the NCO is set to the frequency of the received signal minus the IF frequency. The IF frequency is chosen to be exactly one quarter of the sampling frequency (FS/4). At this frequency, the I and Q components of the IF oscillator are either 0, 1, or -1. This greatly simplifies the design of the mixer which can then be built without using multipliers.
 
 ## Digital Filter
 
@@ -150,7 +154,7 @@ To demodulate AM and FM signals, the I and Q components are first converted into
 
 ## DC removal
 
-A demodulated AM signal contains a large DC component which needs to be removed. The DC removal block uses a first order IIR low-pass filter. In this design, filter coeeficients are chosen so that the "multiplies" can be achieved using a single shift thereby eliminating the need for multipliers. The low-pass filter provides an estimate of the DC present in the signal. The DC is removed by simply subtracting this value from the signal.
+A demodulated AM signal contains a large DC component which needs to be removed. The DC removal block uses a first order IIR low-pass filter. In this design, filter coefficients are chosen so that the "multiplies" can be achieved using a single shift thereby eliminating the need for multipliers. The low-pass filter provides an estimate of the DC present in the signal. The DC is removed by simply subtracting this value from the signal.
 
 ## Automatic Gain Control (AGC)
 
@@ -184,9 +188,9 @@ GPS modules can be obtained very cheaply, and provide an extremely accurate freq
 
 ## Self Test
 
-One objective of this project is to enable the project to be build with minimal test equipment. It is unlikely that a hobyist builder will be able to get hold of a spectum/network analyser. While it is possible to measure the frequency response of a filter using more basic equipment, this can be a time consuming and difficult task.
+One objective of this project is to enable the project to be build with minimal test equipment. It is unlikely that a hobbyist builder will be able to get hold of a spectrum/network analyser. While it is possible to measure the frequency response of a filter using more basic equipment, this can be a time consuming and difficult task.
 
-To simplify the process, OpenXCVR is capable of generating a test tone in the receivers passband. With simple software it is then possible to use the OpenXCVR as a "poor man's" network analyser. The folloowing measurements of the band-pass filter response were made using the prototype.
+To simplify the process, OpenXCVR is capable of generating a test tone in the receivers passband. With simple software it is then possible to use the OpenXCVR as a "poor man's" network analyser. The following measurements of the band-pass filter response were made using the prototype.
 
 ![analyser](https://github.com/dawsonjon/OpenXcvr/blob/master/images/analyser.png?raw=true)
 
