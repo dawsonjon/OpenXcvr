@@ -52,12 +52,12 @@ if __name__ == "__main__" and "sim" in sys.argv:
     clk = Clock("clk")
     data_in = Signed(16).input("data_in")
     stb_in = Boolean().input("stb_in")
-    magnitude = measure_magnitude(clk, data_in, stb_in)
+    magnitude = measure_magnitude(clk, data_in, stb_in, 0, 0)
 
     stimulus = []
-    for i in range(100):
+    for i in range(1000):
         stimulus.append(100)
-    for i in range(1000000):
+    for i in range(20000):
         stimulus.append(0)
 
     response = []
@@ -71,7 +71,6 @@ if __name__ == "__main__" and "sim" in sys.argv:
         for i in range(2):
             stb_in.set(i==1)
             if i==1:
-                print magnitude.get()
                 response.append(magnitude.get())
             clk.tick()
             i+=1
@@ -79,5 +78,5 @@ if __name__ == "__main__" and "sim" in sys.argv:
     response = np.array(response)
 
     plt.plot(response)
-    #plt.plot(stimulus)
+    plt.plot(stimulus)
     plt.show()

@@ -17,6 +17,21 @@ def make_response(fs, f1, f2=None):
         low = (512-high)/2
         return np.concatenate([np.zeros(low), np.ones(high), np.zeros(low)])
 
+def create_filter(frequency_response, taps=511, kernel_bits=18):
+
+    #take inverse fft of desired response
+    frequency_response = np.fft.fftshift(frequency_response)
+
+    #create a filter kernel by windowing the desired response
+    impulse_response = np.fft.ifft(frequency_response)
+    impulse_response = np.concatenate([impulse_response[-taps/2:], impulse_response[0:taps/2]])
+    kernel = impulse_response * np.blackman(taps)
+
+    #quantise kernel
+    kernel = np.round(kernel*(2**kernel_bits - 1)) 
+
+    return kernel
+
 def make_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
@@ -34,23 +49,61 @@ def make_kernel(taps, kernel_bits):
         ]
     )
 
-def create_filter(frequency_response, taps=511, kernel_bits=18):
+def frequency_response(response, taps, kernel_bits):
+    response = create_filter(response, taps, kernel_bits)
+    response = np.concatenate([np.zeros(1024), response, np.zeros(1024)])
+    response /= (2.0**kernel_bits - 1.0) 
+    response = 20*np.log10(abs(np.fft.fftshift(np.fft.fft(response))))
+    return response
 
-    #take inverse fft of desired response
-    frequency_response = np.fft.fftshift(frequency_response)
+def plot_kernel(taps, kernel_bits):
 
-    #create a filter kernel by windowing the desired response
-    impulse_response = np.fft.ifft(frequency_response)
-    impulse_response = np.concatenate([impulse_response[-taps/2:], impulse_response[0:taps/2]])
-    kernel = impulse_response * np.blackman(taps)
+    #each step represents 1/512 of 100kHz ~200Hz
+    response_0 = frequency_response(make_response(100e3, 200, 3.4e3), taps, kernel_bits)#SSB
+    response_1 = frequency_response(make_response(100e3, 6e3), taps, kernel_bits) #AM
+    response_2 = frequency_response(make_response(100e3, 15e3), taps, kernel_bits) #FM
+    response_3 = frequency_response(make_response(100e3, 9e3), taps, kernel_bits)  #NFM
 
-    #quantise kernel
-    kernel = np.round(kernel*(2**kernel_bits - 1)) 
-    #padded_kernel = np.concatenate([np.zeros(1024), kernel, np.zeros(1024)])
-    #plt.plot(np.linspace(-50000, 50000, len(padded_kernel)), 20*np.log10(abs(np.fft.fftshift(np.fft.fft(padded_kernel)))))
-    #plt.show()
+    plt.figure()
 
-    return kernel
+    plt.subplot(221)
+    plt.grid(True)
+    plt.title("SSB")
+    plt.xlabel("Frequency (kHz)")
+    plt.ylabel("Gain (dB)")
+    plt.plot(
+            np.linspace(-50, 50, len(response_0)), 
+            response_0
+    )
+    plt.subplot(222)
+    plt.grid(True)
+    plt.title("AM")
+    plt.xlabel("Frequency (kHz)")
+    plt.ylabel("Gain (dB)")
+    plt.plot(
+            np.linspace(-50, 50, len(response_1)), 
+            response_1
+    )
+    plt.subplot(223)
+    plt.grid(True)
+    plt.title("FM (Wide)")
+    plt.xlabel("Frequency (kHz)")
+    plt.ylabel("Gain (dB)")
+    plt.plot(
+            np.linspace(-50, 50, len(response_2)), 
+            response_2
+    )
+    plt.subplot(224)
+    plt.grid(True)
+    plt.title("FM (Narrow)")
+    plt.xlabel("Frequency (kHz)")
+    plt.ylabel("Gain (dB)")
+    plt.plot(
+            np.linspace(-50, 50, len(response_3)), 
+            response_3
+    )
+    plt.show()
+
 
 def multiply(clk, data, kernel):
     data = data.resize(data.subtype.bits+kernel.subtype.bits-1)
@@ -302,3 +355,7 @@ if __name__ == "__main__":
         )
         f = open("filter.v", "w")
         f.write(netlist.generate())
+
+    if "plot" in sys.argv:
+        plot_kernel(255, 18)
+

@@ -19,22 +19,25 @@ if __name__ == "__main__":
     def sin_wave():
         i=0
         while 1:
-            yield sin(2.0*pi*i/10)*511
+            yield sin(2.0*pi*i/500)*511
             i+= 1
     stim = iter(sin_wave())
 
     #Simulate
     clk = Clock("clk")
-    audio = Signed(12).input("in")
+    audio = Signed(10).input("in")
     shifter = dither(clk, audio, False)
 
     clk.initialise()
     clk.tick()
     audio.set(next(stim))
     clk.tick()
+    stimulus = []
     results = []
-    for i in range(10000):
-        audio.set(next(stim))
+    for i in range(1000):
+        x = next(stim)
+        audio.set(x)
+        stimulus.append(x)
         results.append(shifter.get()-0.5)
         clk.tick()
 
@@ -43,4 +46,10 @@ if __name__ == "__main__":
 
     #plot results
     plt.plot(spectrum)
+    plt.show()
+
+    plt.title("Dithering")
+    a, = plt.plot(stimulus, label="Input to Dither")
+    b, = plt.plot(np.array(results)*1023, label="Output from Dither")
+    plt.legend(handles=[a, b])
     plt.show()

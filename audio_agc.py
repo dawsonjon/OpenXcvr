@@ -69,9 +69,10 @@ if __name__ == "__main__" and "sim" in sys.argv:
     audio_in = Signed(16).input("magnitude")
     stb_in = Boolean().input("stb")
 
-    audio_out, stb_out, gain, magnitude = audio_agc(clk, audio_in, stb_in)
+    audio_out, stb_out, _ = audio_agc(clk, audio_in, stb_in, Unsigned(8).constant(0), Unsigned(8).constant(0))
 
     clk.initialise()
+    response = []
 
     for i in range(100):
         audio_in.set(100)
@@ -79,10 +80,38 @@ if __name__ == "__main__" and "sim" in sys.argv:
             stb_in.set(i==0)
             clk.tick()
             if stb_out.get():
-                print magnitude.get(), gain.get(), audio_out.get()
+                x = audio_out.get()
+                response.append(x)
         audio_in.set(-100)
         for i in range(100):
             stb_in.set(i==0)
             clk.tick()
             if stb_out.get():
-                print magnitude.get(), gain.get(), audio_out.get()
+                x = audio_out.get()
+                response.append(x)
+    for i in range(100):
+        audio_in.set(0)
+        for i in range(100):
+            stb_in.set(i==0)
+            clk.tick()
+            if stb_out.get():
+                x = audio_out.get()
+                response.append(x)
+    for i in range(100):
+        audio_in.set(100)
+        for i in range(100):
+            stb_in.set(i==0)
+            clk.tick()
+            if stb_out.get():
+                x = audio_out.get()
+                response.append(x)
+        audio_in.set(-100)
+        for i in range(100):
+            stb_in.set(i==0)
+            clk.tick()
+            if stb_out.get():
+                x = audio_out.get()
+                response.append(x)
+
+    plt.plot(response)
+    plt.show()

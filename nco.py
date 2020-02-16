@@ -46,6 +46,9 @@ if __name__ == "__main__":
     clk.tick()
     clk.tick()
     clk.tick()
+    clk.tick()
+    clk.tick()
+    clk.tick()
     for it in range(1000):
         for j in range(4):
             clk.tick()
@@ -61,6 +64,7 @@ if __name__ == "__main__":
     spectrum = 20.0 * np.log10(spectrum, out=np.zeros_like(spectrum), where=(spectrum!=0))
 
     plt.plot(i)
+    plt.plot(q)
     plt.show()
 
     outputs = [Unsigned(10).output("lo_i_%u"%i, x) for i, x in enumerate(lo_i)]

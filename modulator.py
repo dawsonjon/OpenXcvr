@@ -82,10 +82,16 @@ def test_modulator(stimulus, mode):
                 response.append(i.get()+1j*q.get())
 
     response = np.array(response)
-    plt.plot(np.real(response))
-    plt.plot(np.imag(response))
-    plt.plot(stimulus)
+    plt.title("Modulator")
+    plt.xlabel("Time (samples)")
+    plt.ylabel("Value")
+    a, = plt.plot(np.real(response), label="I")
+    b, = plt.plot(np.imag(response), label="Q")
+    c, = plt.plot(stimulus, label="Audio Input")
+    plt.legend(handles=[a, b, c])
     plt.show()
+
+
 
 
 if __name__ == "__main__" and "sim" in sys.argv:
@@ -95,7 +101,6 @@ if __name__ == "__main__" and "sim" in sys.argv:
         np.sin(np.arange(10000)*2.0*pi*0.01)*
         ((2**7)-1)#scale to 16 bits
     )
-    test_modulator(stimulus, TEST)
     test_modulator(stimulus, AM)
     test_modulator(stimulus, FM)
     test_modulator(stimulus, NBFM)
