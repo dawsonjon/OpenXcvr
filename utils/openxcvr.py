@@ -37,7 +37,7 @@ class Xcvr:
         return i_values, q_values
 
     def set_frequency(self, frequency):
-        self.port.write("f%u\n"%frequency)
+        self.port.write("f%u\n"%int(frequency))
         self.port.readline()
         self.port.readline()
 

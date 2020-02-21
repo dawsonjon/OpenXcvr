@@ -126,17 +126,20 @@ def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings.mode = Unsigned(2).input("filter_mode")
     settings.sideband = Unsigned(2).input("filter_sideband")
     settings.rx_tx = Boolean().input("rx_tx")
+    settings.gain = Signed(4).constant(0)
+    settings.volume = Signed(4).constant(0)
+    settings.agc_speed = Signed(4).constant(0)
     
 
     taps = 255
     clk = Clock("clk")
-    rx_i_in = Signed(16).input("i_data_in")
-    rx_q_in = Signed(16).input("q_data_in")
+    rx_i_in = Signed(24).input("i_data_in")
+    rx_q_in = Signed(24).input("q_data_in")
     rx_stb_in = Boolean().input("stb_in")
     tx_audio_in = Signed(8).input("tx_audio_in")
     tx_audio_stb_in = Boolean().input("stb_in")
 
-    rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb = af_section(clk, rx_i_in, rx_q_in, rx_stb_in, tx_audio_in, tx_audio_stb_in, settings) 
+    rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, _, _, _, _, _ = af_section(clk, rx_i_in, rx_q_in, rx_stb_in, tx_audio_in, tx_audio_stb_in, settings) 
 
     plt.plot(np.real(stimulus))
     plt.plot(np.imag(stimulus))
@@ -185,11 +188,11 @@ if __name__ == "__main__" and "sim" in sys.argv:
     ##############################################
 
     #mode am stim tx
-    #stimulus=(
-        #np.sin(np.arange(1000)*2.0*pi*0.01)*
-        #((2**7)-1)#scale to 16 bits
-    #)
-    #test_transceiver(stimulus, USB, AM, 1)#lsb AM
+    stimulus=(
+        np.sin(np.arange(1000)*2.0*pi*0.01)*
+        ((2**7)-1)#scale to 16 bits
+    )
+    test_transceiver(stimulus, USB, AM, 1)#lsb AM
 
     #mode SSB stim tx
     #stimulus=(
@@ -209,12 +212,12 @@ if __name__ == "__main__" and "sim" in sys.argv:
     ###############################################
 
     #mode am stim am
-    stimulus=(
-        np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
-        (np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)* #The signal a tone
-        ((2**15)-1)#scale to 16 bits
-    )
-    test_transceiver(stimulus, USB, AM, 0)#lsb AM
+    #stimulus=(
+    #    np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
+    #    (np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)* #The signal a tone
+    #    ((2**15)-1)#scale to 16 bits
+    #)
+    #test_transceiver(stimulus, USB, AM, 0)#lsb AM
 
     #mode usb stim dsb
     #stimulus=(
