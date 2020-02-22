@@ -2,35 +2,25 @@ from baremetal import *
 from baremetal.signed import number_of_bits_needed
 from interpolate import interpolate
 from dither import dither
-from nco import nco
+from accumulator import accumulator
 from prng import prng
 from math import sin
 from random import randint
+from audio_dac import audio_dac
 
 def rf_section(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor, lut_bits, channels, rx_tx, enable_test_signal):
-    dlo_i, dlo_q = nco(clk, frequency, lut_bits, channels)
-    dlo_i = [i.label("nco_i_%s"%idx) for idx, i in enumerate(dlo_i)]
-    dlo_q = [i.label("nco_q_%s"%idx) for idx, i in enumerate(dlo_q)]
-    lo_i = [i[i.subtype.bits-1] for i in dlo_i]
-    lo_q = [i[i.subtype.bits-1] for i in dlo_q]
+    lo = accumulator(clk, frequency, channels)
+    lo = [i.subtype.register(clk, d=i, init=0) for i in lo]
+    lo = [i[31:30] for i in lo]
 
-    audio_bits = audio_i.subtype.bits
-    audio_i = interpolate(clk, audio_i, audio_stb, interpolation_factor, channels)
-    audio_q = interpolate(clk, audio_q, audio_stb, interpolation_factor, channels)
-    audio_i = [i.label("audio_i_%s"%idx) for idx, i in enumerate(audio_i)]
-    audio_q = [i.label("audio_q_%s"%idx) for idx, i in enumerate(audio_q)]
+    lo_i = [Boolean().select(i, 0, 1, 1, 0) for i in lo]
+    lo_q = [Boolean().select(i, 0, 0, 1, 1) for i in lo]
 
-    product_bits = audio_bits + lut_bits - 1
-    rf_i = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_i, dlo_i)]
-    rf_q = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_q, dlo_q)]
-    rf_i = [i.subtype.register(clk, d=i) for i in rf_i]
-    rf_q = [i.subtype.register(clk, d=i) for i in rf_q]
-    rf_i = [i.label("rf_i_%s"%idx) for idx, i in enumerate(rf_i)]
-    rf_q = [i.label("rf_q_%s"%idx) for idx, i in enumerate(rf_q)]
-    
-    rf = [i.subtype.register(clk, d=i+q) for i, q in zip(rf_i, rf_q)]
-    rf = [i.label("rf_full_%s"%idx) for idx, i in enumerate(rf)]
-    rf = [dither(clk, i, True) for i in rf]
+    audio_i = audio_dac(clk, audio_i, audio_stb)
+    audio_q = audio_dac(clk, audio_q, audio_stb)
+
+    rf = [audio_i.subtype.select(i, audio_i, audio_q, ~audio_i, ~audio_q) for i in lo]
+    rf = [i.subtype.register(clk, d=i, init=0) for i in rf]
 
     #blank rf output during tx
     temp = rf
