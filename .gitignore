@@ -1,4 +1,7 @@
 *.pyc
 *.v
 quartus
-main_0
+*main_0
+*.bak
+*.swp
+_auto*
