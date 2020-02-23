@@ -87,6 +87,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     reg [31:0] frequency;
     wire frequency_stb;
     wire frequency_ack;
+	 
+	 wire [31:0] audio_in;
+	 wire audio_in_stb;
+	 wire audio_in_ack;	 
 
     wire [31:0] control_bus;
     reg [31:0] control;
@@ -130,6 +134,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .output_frequency_out(frequency_bus),
         .output_frequency_out_ack(frequency_ack),
         .output_frequency_out_stb(frequency_stb),
+		  
+		  .output_audio_out(audio_in),
+        .output_audio_out_ack(audio_in_ack),
+        .output_audio_out_stb(audio_in_stb),
 
         .output_control_out(control_bus),
         .output_control_out_ack(control_ack),
@@ -172,6 +180,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     end
 
     assign frequency_ack = 1;
+	 assign audio_in_ack = 1;
     assign control_ack = 1;
 	 assign power_stb = 1;
 	 assign gain_ack = 1;
@@ -257,6 +266,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   //CPU capture interface
   .audio_out_out(audio_out),
   .audio_out_stb_out(audio_out_stb),
+  .audio_in_in(audio_in),
+  .audio_in_stb_in(audio_in_stb),
   
   //GPS 1PPS counter interface
   .pps_count_out(pps_count_bus),

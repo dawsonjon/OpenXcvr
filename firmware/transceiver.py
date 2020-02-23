@@ -86,7 +86,10 @@ def generate():
     settings.enable_test_signal = control[6]
     settings.volume             = control[13:8]
     settings.gain               = control[19:16]
-    frequency          = Unsigned(32).input("frequency_in")
+    usb_audio                   = control[20]
+    frequency                   = Unsigned(32).input("frequency_in")
+    audio_in                    = Signed(8).input("audio_in_in")
+    audio_in_stb                = Boolean().input("audio_in_stb_in")
 
     #adc interface inputs
     response_channel  = Unsigned(5).input("response_channel_in")
@@ -127,8 +130,12 @@ def generate():
 
     # Implement transceiver
     ########################
+
+    #select usb audio input
+    mic = Signed(8).select(usb_audio, mic[11:4], audio_in)
+    mic_stb = Signed(8).select(usb_audio, mic_stb, audio_in_stb)
     speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow, test_signal = transceiver(
-            cpu_clk, clk, rx_i, rx_q, iq_stb, mic[11:4], mic_stb, frequency, settings)
+            cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
     leds =settings.enable_test_signal.cat(adc_stb.cat(mic_stb))
@@ -190,6 +197,8 @@ def generate():
 
         #inputs
         [
+            audio_in,
+            audio_in_stb,
             control,
             frequency,
             response_channel,

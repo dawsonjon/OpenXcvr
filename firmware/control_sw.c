@@ -4,6 +4,7 @@ unsigned debug_out = output("debug_out");
 unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
 unsigned audio_in = input("audio_in");
+unsigned audio_out = output("audio_out");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");
@@ -104,6 +105,13 @@ void set_gain(unsigned gain, unsigned * control){
     fputc(*control, control_out);
 }
 
+void set_usb_audio(unsigned audio, unsigned * control){
+    audio &= 0x1;
+    *control &= 0xffefffffu;
+    *control |= (audio << 20);
+    fputc(*control, control_out);
+}
+
 void set_tx(unsigned tx, unsigned frequency, unsigned * control){
 
     if(tx){
@@ -189,6 +197,14 @@ void main(){
                     puts("\n");
                     break;
 
+                case 'U':
+                //set USB audio
+                    set_usb_audio(scan_udecimal(), &control);
+                    puts("control : ");
+                    print_uhex(control);
+                    puts("\n");
+                    break;
+
                 case 'T':
                 //set tx
                     set_test_signal(scan_udecimal(), &control);
@@ -212,6 +228,8 @@ void main(){
                     puts("A: AGC speed (0-3)\n");
                     puts("T: test signal, (0, 1)\n");
                     puts("O: get audio\n");
+                    puts("I: put audio\n");
+                    puts("U: set_usb_audio\n");
                     puts("\n");
                     break;
 
@@ -293,6 +311,12 @@ void main(){
                         audio >>= 4;
                         putc(audio);
                         putc(audio>>8);
+                    }
+                    break;
+                case 'I':
+                    for(i=0;i<1000;i++){
+                        audio = getc();
+                        fputc(audio, audio_out);
                     }
                     break;
             }

@@ -42,14 +42,22 @@ class Xcvr:
         buf = self.port.read(1000)
         return buf
 
+    def put_audio(self, data):
+        if len(data) < 1000:
+            return
+        self.port.write("I")
+        buf = self.port.write(data[:1000])
+
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%int(frequency))
-        self.port.readline()
         self.port.readline()
 
     def set_test_signal(self, state):
         self.port.write("T%u\n"%state)
         self.port.readline()
+
+    def set_TX(self, state):
+        self.port.write("t%u\n"%state)
         self.port.readline()
 
     def set_mode(self, mode):
@@ -62,6 +70,10 @@ class Xcvr:
 
     def set_AGC(self, gain):
         self.port.write("A%u\n"%gain)
+        self.port.readline()
+
+    def set_USB_audio(self, gain):
+        self.port.write("U%u\n"%gain)
         self.port.readline()
 
     def get_power(self):
