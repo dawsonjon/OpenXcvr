@@ -33,10 +33,10 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #tx_audio, tx_audio_stb = test_tone(clk)
 
     tx_bits = tx_audio.subtype.bits
-    t_rx = rx_i.subtype
     
     #rx agc
     rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings.gain)
+    t_rx = rx_i.subtype
 
     #downconvert rx by fs/4
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)

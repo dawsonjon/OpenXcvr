@@ -1,8 +1,9 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_rx, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, test);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, test);
 
   input clk_in;
   input reset_in;
   input rs232_rx;
+  output rs232_cts;
   input bclk_in;
   input lrclk_in;
   input dout_in;
@@ -15,6 +16,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   output speaker;
   output [7:0] leds;
   output rs232_tx;
+  output rs232_rtr;
 
 ////////////////////////////////////////////////////////////////////////////////
 //RESET AND CLOCKS
@@ -95,6 +97,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
     wire capture_ack;
     wire capture_stb;
 	 
+	 wire [31:0] audio_out;
+    wire audio_out_ack;
+    wire audio_out_stb;
+	 
 	 wire [31:0] power_bus;
     wire power_ack;
     wire power_stb;
@@ -133,6 +139,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .input_capture_in_ack(capture_ack),
         .input_capture_in_stb(capture_stb),
 		  
+		  .input_audio_in(audio_out),
+        .input_audio_in_ack(audio_out_ack),
+        .input_audio_in_stb(audio_out_stb),
+		  
 		  .input_power_in(power_bus),
         .input_power_in_ack(power_ack),
         .input_power_in_stb(power_stb),
@@ -169,12 +179,13 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 
     serial_output #(
         .clock_frequency(50000000),
-        .baud_rate(500000)
+        .baud_rate(2000000)
     )
     serial_output_0(
         .clk(clk_50),
         .rst(rst),
         .tx(rs232_tx),
+		  .cts(rs232_cts),
        
         .in1(debug_tx[7:0]),
         .in1_stb(debug_tx_stb),
@@ -183,12 +194,13 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 
     serial_input #(
         .clock_frequency(50000000),
-        .baud_rate(500000)
+        .baud_rate(2000000)
     )
     serial_input_0(
         .clk(clk_50),
         .rst(rst),
         .rx(rs232_rx),
+		  .rtr(rs232_rtr),
        
         .out1(debug_rx[7:0]),
         .out1_stb(debug_rx_stb),
@@ -236,11 +248,15 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .lrclk_in(lrclk_in),
   .dout_in(dout_in),
   .sclk_out(sclk_out),
-  .leds(leds),
+  //.leds(leds),
   
   //CPU capture interface
   .capture_out(capture_bus),
   .capture_stb_out(capture_stb),
+  
+  //CPU capture interface
+  .audio_out_out(audio_out),
+  .audio_out_stb_out(audio_out_stb),
   
   //GPS 1PPS counter interface
   .pps_count_out(pps_count_bus),
@@ -285,5 +301,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		{test_1, test_0}, 
       test
   );
+  
+  assign leds[0] = rs232_rtr;
+  assign leds[1] = rs232_cts;
+  assign leds[2] = rs232_tx;
+  assign leds[3] = rs232_rx;
 
 endmodule

@@ -3,6 +3,7 @@ unsigned control_out = output("control_out");
 unsigned debug_out = output("debug_out");
 unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
+unsigned audio_in = input("audio_in");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");
@@ -139,6 +140,7 @@ void main(){
 
     unsigned int cmd, frequency=1215000-24414, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc, agc_speed;
     unsigned int capture[1000];
+    int audio;
 
     fputc(convert_to_steps(1215000-24414), frequency_out);
     fputc(control, control_out);
@@ -209,6 +211,7 @@ void main(){
                     puts("a: adc\n");
                     puts("A: AGC speed (0-3)\n");
                     puts("T: test signal, (0, 1)\n");
+                    puts("O: get audio\n");
                     puts("\n");
                     break;
 
@@ -279,6 +282,17 @@ void main(){
                         puts("\n");
                         print_uhex((capture[i]>>16)&0xffff);
                         puts("\n");
+                    }
+                    break;
+                case 'O':
+                    for(i=0;i<1000;i++){
+                        audio =  fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio >>= 4;
+                        putc(audio);
+                        putc(audio>>8);
                     }
                     break;
             }

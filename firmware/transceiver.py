@@ -137,6 +137,8 @@ def generate():
     ##################
 
     clk = Clock("clk")
+    audio_out = speaker
+    audio_out_stb = speaker_stb
     speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
     
     # 1pps counter
@@ -151,10 +153,14 @@ def generate():
     command_startofpacket = command_startofpacket.subtype.output("command_startofpacket_out", command_startofpacket)
     command_endofpacket = command_endofpacket.subtype.output("command_endofpacket_out", command_endofpacket)
     capture = capture.subtype.output("capture_out", capture)
-    capture_stb = capture.subtype.output("capture_stb_out", capture_stb)
+    capture_stb = capture_stb.subtype.output("capture_stb_out", capture_stb)
     power = power.subtype.output("power_out", power)
     sclk = sclk.subtype.output("sclk_out", sclk)
     leds = leds.subtype.output("leds", leds)
+
+    #audio output to CPU
+    audio_out = audio_out.subtype.output("audio_out_out", audio_out.resize(32))
+    audio_out_stb = audio_out_stb.subtype.output("audio_out_stb_out", audio_out_stb)
 
     #RF outputs
     rf = [i.subtype.output("rf_%u_out"%idx, i) for idx, i in enumerate(rf)]
@@ -202,6 +208,8 @@ def generate():
             command_startofpacket,
             command_endofpacket,
             speaker,
+            audio_out,
+            audio_out_stb,
             capture,
             capture_stb,
             sclk,

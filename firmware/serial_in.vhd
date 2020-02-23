@@ -27,6 +27,7 @@ entity serial_input is
     clk      : in std_logic;
     rst      : in std_logic;
     rx       : in std_logic;
+    rtr      : out std_logic;
    
     out1     : out std_logic_vector(7 downto 0);
     out1_stb : out std_logic;
@@ -52,7 +53,8 @@ architecture rtl of serial_input is
 
       output : out std_logic_vector(width-1 downto 0);
       output_stb : out std_logic;
-      output_ack : in std_logic
+      output_ack : in std_logic;
+      rtr : out std_logic
     );
   end component fifo;
 
@@ -86,7 +88,8 @@ begin
 
       output => out1,
       output_stb => out1_stb,
-      output_ack => out1_ack
+      output_ack => out1_ack,
+      rtr => rtr
   );
 
   process

@@ -14,7 +14,7 @@ import sys
 class Xcvr:
 
     def __init__(self, device="/dev/ttyUSB0"):
-        self.port = serial.Serial(device, 500000, timeout=2)
+        self.port = serial.Serial(device, 2000000, timeout=2, rtscts=True)
         self.port.flush()
 
     def get_data_value(self, line):
@@ -36,6 +36,12 @@ class Xcvr:
             q_values.append(float(self.get_data_value(b)))
         return i_values, q_values
 
+    def get_audio(self):
+        self.port.flush()
+        self.port.write("O\n")
+        buf = self.port.read(1000)
+        return buf
+
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%int(frequency))
         self.port.readline()
@@ -52,6 +58,10 @@ class Xcvr:
 
     def set_gain(self, gain):
         self.port.write("g%u\n"%gain)
+        self.port.readline()
+
+    def set_AGC(self, gain):
+        self.port.write("A%u\n"%gain)
         self.port.readline()
 
     def get_power(self):

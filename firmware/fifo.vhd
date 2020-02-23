@@ -16,12 +16,14 @@ entity fifo is
 
     output : out std_logic_vector(width-1 downto 0);
     output_stb : out std_logic;
-    output_ack : in std_logic
+    output_ack : in std_logic;
+
+    rtr : out std_logic
   );
 end entity fifo;
 
 architecture rtl of fifo is
-  signal s_output_stb, s_input_ack, full, empty, read, write : std_logic;
+  signal s_output_stb, s_input_ack, full, empty, read, write, half_full : std_logic;
   signal a_out, a_in : integer range 0 to depth - 1 := 0;
   type memory_type is array (0 to depth - 1) of std_logic_vector(width -1 downto 0);
   signal memory : memory_type;
@@ -77,6 +79,10 @@ begin
   full <= '1' when (a_out-1) = a_in else
           '1' when (a_out = 0) and (a_in = depth - 1) else
           '0';
+
+  half_full <= '1' when (a_out - a_in) > depth/2 else '0';
+  rtr <= half_full;
+
   empty <= '1' when a_out = a_in else '0';
 
   s_input_ack <= not full;

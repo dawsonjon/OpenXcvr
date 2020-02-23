@@ -28,6 +28,7 @@ entity serial_output is
     CLK     : in std_logic;
     RST     : in  std_logic;
     TX      : out std_logic := '1';
+    CTS     : in std_logic;
    
     IN1     : in std_logic_vector(7 downto 0);
     IN1_STB : in std_logic;
@@ -78,7 +79,7 @@ begin
           STATE <= WAIT_EN;
         end if;
       when WAIT_EN =>
-        if X16CLK_EN = '1' then
+        if X16CLK_EN = '1' and CTS = '0' then
           STATE <= START;
         end if;
       when START =>
