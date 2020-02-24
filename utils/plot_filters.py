@@ -19,7 +19,6 @@ f, f_2_4 = read_response("f_2_4")
 f, f_4_8 = read_response("f_4_8")
 f, f_8_16 = read_response("f_8_16")
 f, f_16_32 = read_response("f_16_30")
-f, f_14 = read_response("f_14")
 
 a, = plt.plot(f/1e6, f_2_4 - baseline_p, label="band 3")
 b, = plt.plot(f/1e6, f_4_8 - baseline_p, label="band 2")

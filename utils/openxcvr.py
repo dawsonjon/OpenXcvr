@@ -50,31 +50,27 @@ class Xcvr:
 
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%int(frequency))
-        self.port.readline()
+
+    def set_squelch(self, squelch):
+        self.port.write("q%u\n"%squelch)
 
     def set_test_signal(self, state):
         self.port.write("T%u\n"%state)
-        self.port.readline()
 
     def set_TX(self, state):
         self.port.write("t%u\n"%state)
-        self.port.readline()
 
     def set_mode(self, mode):
         self.port.write("m%u\n"%mode)
-        self.port.readline()
 
     def set_gain(self, gain):
         self.port.write("g%u\n"%gain)
-        self.port.readline()
 
     def set_AGC(self, gain):
         self.port.write("A%u\n"%gain)
-        self.port.readline()
 
     def set_USB_audio(self, gain):
         self.port.write("U%u\n"%gain)
-        self.port.readline()
 
     def get_power(self):
         self.port.write("p\n")
@@ -96,9 +92,6 @@ class Xcvr:
             print frequency, value
         return values
 
-    def set_squelch(self, squelch):
-        self.port.write("q%u\n"%squelch)
-        self.port.readline()
 
     def __del__(self):
         self.port.close()

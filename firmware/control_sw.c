@@ -15,10 +15,28 @@ unsigned adc_in = input("adc_in");
 
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
+#define FREQUENCY_CALIBRATION 4294860440ul
+
+
+typedef struct{
+    unsigned volume;
+    unsigned frequency;
+    unsigned squelch;
+    unsigned mode;
+    unsigned gain;
+    unsigned agc_speed;
+    unsigned test_signal;
+    unsigned USB_audio;
+    unsigned tx;
+    unsigned mute;
+} struct_settings;
+struct_settings settings;
 
 //convert a frequency in Hertz into a frequency in NCO step size.
 unsigned convert_to_steps(unsigned x){
     unsigned long long y = x * FREQUENCY_STEP_MULTIPLIER;
+    y >>= 32;
+    y *= FREQUENCY_CALIBRATION;
     y >>= 32;
     return y;
 }
@@ -34,9 +52,9 @@ unsigned to_dB(unsigned x){
 }
 
 //crude conversion to dBs
-int read_smeter(unsigned gain){
+int read_smeter(){
 
-    gain = to_dB(gain);
+    unsigned gain = to_dB(settings.gain);
     unsigned power = to_dB(fgetc(power_in));
 
     //ADC has 1.5Vpk = 1.06Vrms = 0.0225W into 50ohm = 22.5mW = 13.5dBm
@@ -65,96 +83,74 @@ int read_smeter(unsigned gain){
     return s_scale;
 }
 
-void set_volume(unsigned volume, unsigned * control){
+void apply_settings (){
     unsigned attenuation; 
-    switch(volume){
-        case 9: attenuation = 0; break;
-        case 8: attenuation = 1; break;
-        case 7: attenuation = 2; break;
-        case 6: attenuation = 3; break;
-        case 5: attenuation = 4; break;
-        case 4: attenuation = 5; break;
-        case 3: attenuation = 6; break;
-        case 2: attenuation = 7; break;
-        case 1: attenuation = 8; break;
-        case 0: attenuation = 17; break;
-    }
-    *control &= 0xffff00ffu;
-    *control |= (attenuation << 8);
-    fputc(*control, control_out);
-}
+    unsigned control = 0;
 
-void set_mode(unsigned mode, unsigned * control){
-    mode &= 0x7;
-    *control &= 0xfffffff8u;
-    *control |= mode;
-    fputc(*control, control_out);
-}
-
-void set_agc_speed(unsigned agc_speed, unsigned * control){
-    agc_speed &= 0x3;
-    *control &= 0xffffffcfu;
-    *control |= (agc_speed << 4);
-    fputc(*control, control_out);
-}
-
-void set_gain(unsigned gain, unsigned * control){
-    gain &= 0xf;
-    *control &= 0xfff0ffffu;
-    *control |= (gain << 16);
-    fputc(*control, control_out);
-}
-
-void set_usb_audio(unsigned audio, unsigned * control){
-    audio &= 0x1;
-    *control &= 0xffefffffu;
-    *control |= (audio << 20);
-    fputc(*control, control_out);
-}
-
-void set_tx(unsigned tx, unsigned frequency, unsigned * control){
-
-    if(tx){
-        *control |= 0x00000008u;
+    //set volume
+    if(settings.mute) {
+        attenuation = 17;
     } else {
-        *control &= ~0x00000008u;
+        switch(settings.volume){
+            case 9: attenuation = 0; break;
+            case 8: attenuation = 1; break;
+            case 7: attenuation = 2; break;
+            case 6: attenuation = 3; break;
+            case 5: attenuation = 4; break;
+            case 4: attenuation = 5; break;
+            case 3: attenuation = 6; break;
+            case 2: attenuation = 7; break;
+            case 1: attenuation = 8; break;
+            case 0: attenuation = 17; break;
+        }
     }
+    control |= (attenuation << 8);
 
-    if(tx){
-        //RX has an FS/4 IF
-        fputc(convert_to_steps(frequency), frequency_out);
+    //set mode
+    settings.mode &= 0x7;
+    control |= settings.mode;
+
+    //set agc speed
+    settings.agc_speed &= 0x3;
+    control |= (settings.agc_speed << 4);
+
+    //set gain
+    settings.gain &= 0xf;
+    control |= (settings.gain << 16);
+
+    if(settings.test_signal) control |= 0x00000040u;
+    if(settings.USB_audio)  control |= 0x00100000u;
+    if(settings.tx)         control |= 0x00000008u;
+    if(settings.tx){
+        fputc(convert_to_steps(settings.frequency), frequency_out);
     } else {
         //TX is direct conversion
-        fputc(convert_to_steps(frequency-24414), frequency_out);
+        fputc(convert_to_steps(settings.frequency-24414), frequency_out);
     }
 
-    fputc(*control, control_out);
-
-}
-
-void set_test_signal(unsigned on, unsigned * control){
-    if(on){
-        *control |= 0x00000040u;
-    } else {
-        *control &= ~0x00000040u;
-    }
-    fputc(*control, control_out);
+    fputc(control, control_out);
 }
 
 void main(){
 
     stdout = debug_out;
     stdin = debug_in;
-
-    unsigned int cmd, frequency=1215000-24414, control=0x1100, gain=0, power, i, smeter, volume=9, squelch=0, mode, pps_count, adc, agc_speed;
-    unsigned int capture[1000];
-    int audio;
-
-    fputc(convert_to_steps(1215000-24414), frequency_out);
-    fputc(control, control_out);
-
     puts("FPGA transceiver v 0.01\n");
 
+    unsigned int cmd, power, i, smeter, pps_count;
+    unsigned int capture[1000];
+    int audio;
+    
+    settings.volume = 9;
+    settings.frequency = 1215000;
+    settings.mode = 1;
+    settings.gain = 0;
+    settings.agc_speed = 2;
+    settings.test_signal = 0;
+    settings.USB_audio = 0;
+    settings.tx = 0;
+    settings.mute = 0;
+    apply_settings();
 
     while(1){
 
@@ -162,57 +158,15 @@ void main(){
         if(ready(stdin)){ 
             cmd = getc();
             switch(cmd){
-                case 'f':
-                //set frequency, reduce by fs/4
-                    frequency = scan_udecimal();
-                    puts("frequency: ");
-                    print_uhex(frequency);
-                    puts("\n");
-                    fputc(convert_to_steps(frequency-24414), frequency_out);
-                    break;
-
-                case 'm':
-                //set mode/sideband
-                    mode = scan_udecimal();
-                    set_mode(mode, &control);
-                    puts("control : ");
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
-                case 'A':
-                //set mode/sideband
-                    agc_speed = scan_udecimal();
-                    set_agc_speed(agc_speed, &control);
-                    puts("control : ");
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
-                case 't':
-                //set tx
-                    set_tx(scan_udecimal(), frequency, &control);
-                    puts("control : ");
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
-                case 'U':
-                //set USB audio
-                    set_usb_audio(scan_udecimal(), &control);
-                    puts("control : ");
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
-                case 'T':
-                //set tx
-                    set_test_signal(scan_udecimal(), &control);
-                    puts("control : ");
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
+                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
+                case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
+                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
+                case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
+                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
+                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
+                case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
+                case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
+                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
                 case 'h':
                 //print help
                     puts("fxxxxxxxx: frequency\n");
@@ -249,25 +203,6 @@ void main(){
                     }
                     break;
 
-                case 'g':
-                    set_gain(scan_udecimal(), &control);
-                    print_uhex(control);
-                    puts("\n");
-                    break;
-
-                case 'v':
-                    volume = scan_udecimal();
-                    set_volume(volume, &control);
-                    print_uhex(volume);
-                    puts("\n");
-                    break;
-
-                case 'q':
-                    squelch = scan_udecimal();
-                    print_uhex(squelch);
-                    puts("\n");
-                    break;
-
                 case 'p':
                 //print rx magnitude (post filter)
                     power = fgetc(power_in);
@@ -277,7 +212,7 @@ void main(){
 
                 case 's':
                 //read smeter
-                    smeter = read_smeter(gain);
+                    smeter = read_smeter();
                     putc('s');
                     if(smeter <= 9){
                         putc('0'+smeter);
@@ -322,13 +257,7 @@ void main(){
             }
         }
 
-        //implement squelch by muting the audio if s-meter
-        //falls bellow specified value
-        if(read_smeter(gain) < squelch){
-            set_volume(0, &control);
-        } else {
-            set_volume(volume, &control);
-        }
+        settings.mute = read_smeter() < settings.squelch;
 
     }
 

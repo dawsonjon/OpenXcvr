@@ -11,15 +11,15 @@ from openxcvr import Xcvr
 
 xcvr = Xcvr("/dev/ttyUSB1")
 
-xcvr.set_mode(2)
+xcvr.set_mode(1)
 xcvr.set_squelch(0)
 xcvr.set_gain(0)
 xcvr.set_test_signal(1)
 
 start_frequency = 1.0e6
-stop_frequency = 30.0e6
+stop_frequency = 40.0e6
 
-frequencies = np.logspace(np.log10(start_frequency),np.log10(stop_frequency), 50)
+frequencies = np.logspace(np.log10(start_frequency),np.log10(stop_frequency), 100)
 powers = xcvr.scan(frequencies)
 powers = np.array(powers)
 

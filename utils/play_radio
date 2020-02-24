@@ -1,0 +1,1 @@
+./rx.py | aplay -t raw --format=S16_LE --rate=24414
