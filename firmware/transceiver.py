@@ -47,7 +47,7 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
 
     ###########################################################################
 
-    rf, lo_i, lo_q, test_signal = rf_section(
+    rf, lo_i, lo_q = rf_section(
         clk, 
         frequency = frequency, 
         audio_i = tx_i,
@@ -60,7 +60,7 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
         enable_test_signal = enable_test_signal
     )
 
-    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow, test_signal
+    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
 
 def generate():
     settings = Settings()
@@ -87,6 +87,7 @@ def generate():
     settings.volume             = control[13:8]
     settings.gain               = control[19:16]
     usb_audio                   = control[20]
+    settings.band               = control[23:21]
     frequency                   = Unsigned(32).input("frequency_in")
     audio_in                    = Signed(8).input("audio_in_in")
     audio_in_stb                = Boolean().input("audio_in_stb_in")
@@ -134,7 +135,7 @@ def generate():
     #select usb audio input
     mic = Signed(8).select(usb_audio, mic[11:4], audio_in)
     mic_stb = Signed(8).select(usb_audio, mic_stb, audio_in_stb)
-    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow, test_signal = transceiver(
+    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
@@ -173,7 +174,6 @@ def generate():
     rf = [i.subtype.output("rf_%u_out"%idx, i) for idx, i in enumerate(rf)]
     lo_i = [i.subtype.output("lo_i_%u_out"%idx, i) for idx, i in enumerate(lo_i)]
     lo_q = [i.subtype.output("lo_q_%u_out"%idx, i) for idx, i in enumerate(lo_q)]
-    test_signal = [i.subtype.output("test_signal_%u_out"%idx, i) for idx, i in enumerate(test_signal)]
 
     #speaker output
     speaker = speaker.subtype.output("speaker_out", speaker)
@@ -184,6 +184,10 @@ def generate():
     #adc output
     adc = adc.subtype.output("adc_out", adc)
     adc_stb = adc_stb.subtype.output("adc_stb_out", adc_stb)
+
+    #filter control
+    band = settings.band.subtype.output("band", settings.band)
+    tx_enable = Boolean().output("tx_enable", settings.rx_tx)
 
     #generate netlist and output
     netlist = Netlist(
@@ -212,7 +216,7 @@ def generate():
         ],
 
         #outputs
-        rf + lo_i + lo_q + test_signal + [
+        rf + lo_i + lo_q + [
             command_channel,
             command_startofpacket,
             command_endofpacket,
@@ -226,7 +230,9 @@ def generate():
             power,
             pps_count,
             adc,
-            adc_stb
+            adc_stb,
+            band,
+            tx_enable
         ]
     )
     f = open("transceiver.v", "w")

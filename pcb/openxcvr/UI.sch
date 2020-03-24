@@ -29,24 +29,22 @@ Connection ~ 7000 1000
 Connection ~ 7000 2750
 Connection ~ 7300 4900
 Connection ~ 9600 3100
-Connection ~ 9600 3300
 Connection ~ 10200 3650
 Connection ~ 10200 5250
 NoConn ~ 6600 1800
 NoConn ~ 6600 1900
 NoConn ~ 6600 2000
 NoConn ~ 6600 2100
+NoConn ~ 7750 4700
+NoConn ~ 7750 4800
+NoConn ~ 7750 5000
 NoConn ~ 9450 1250
 NoConn ~ 9450 1350
 NoConn ~ 9450 1450
 NoConn ~ 9450 1550
 NoConn ~ 9950 1650
-NoConn ~ 7750 4700
-NoConn ~ 7750 4800
-NoConn ~ 7750 5000
-NoConn ~ 10000 4800
-NoConn ~ 10000 3400
 NoConn ~ 10000 3200
+NoConn ~ 10000 4800
 Wire Wire Line
 	1050 1100 1050 1200
 Wire Wire Line
@@ -198,7 +196,7 @@ Wire Wire Line
 Wire Wire Line
 	8500 1650 9450 1650
 Wire Wire Line
-	9250 3400 9600 3400
+	9250 3400 10000 3400
 Wire Wire Line
 	9250 3500 9250 3650
 Wire Wire Line
@@ -223,8 +221,6 @@ Wire Wire Line
 	9600 3100 10000 3100
 Wire Wire Line
 	9600 3300 9600 3100
-Wire Wire Line
-	9600 3400 9600 3300
 Wire Wire Line
 	9750 4300 9750 4400
 Wire Wire Line

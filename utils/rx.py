@@ -12,12 +12,13 @@ from openxcvr import Xcvr
 import sys
 from readchar import readkey
 
-xcvr = Xcvr("/dev/ttyUSB1")
+xcvr = Xcvr("/dev/ttyUSB0")
 
-xcvr.set_frequency(3.573e6)
-xcvr.set_mode(0)
+xcvr.set_frequency(1.215e6)
+xcvr.set_mode(1)
 xcvr.set_squelch(0)
-xcvr.set_gain(6)
+xcvr.set_gain(4)
+xcvr.set_band(4)
 xcvr.set_AGC(3)
 
 while 1:

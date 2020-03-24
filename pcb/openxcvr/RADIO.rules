@@ -1,0 +1,89 @@
+
+(rules PCB RADIO
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 12)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.6)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.6)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.2)
+    (clear 125.0 (type smd_to_turn_gap))
+    (clear 50.0 (type smd_smd))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    GND +5V +2V5 "Net-(C9-Pad2)" "RX_I" "Net-(C11-Pad1)" "RX_Q" "Net-(C13-Pad2)"
+    "MIC_HDR" "Net-(C14-Pad1)" +3V3 "SPEAKER_HDR" "Net-(C35-Pad2)" "BPF_16_30_A" "Net-(C36-Pad2)" "BPF_8_16_A"
+    "BPF_4_8_A" "BPF_2_4_A" "Net-(C43-Pad2)" "Net-(C44-Pad2)" "Net-(C45-Pad2)" "Net-(C46-Pad2)" "Net-(C47-Pad2)" "Net-(C48-Pad2)"
+    "BPF_16_30_B" "BPF_8_16_B" "BPF_4_8_B" "BPF_2_4_B" "RF_OUT" "BAND_0" "BAND_1" "REV_PWR"
+    "BAND_2" "FWD_PWR" "TX_ENABLE" BATTERY "PB_1" "PB_0" "LCD_CONTRAST" "LCD_E"
+    "LCD_RS" LCD4 LCD5 LCD6 LCD7 "RF_BPF" "Net-(R11-Pad2)" SPEAKER
+    MIC "Net-(RV2-Pad2)" "LO_I" "LO_Q" SCK DOUT BCK LRCK
+    "5V_IN" "Net-(J1-Pad13)" "Net-(J1-Pad11)" "Net-(J1-Pad9)" "Net-(J1-Pad7)" "Net-(J1-Pad16)" "Net-(C2-Pad1)" "Net-(C5-Pad1)"
+    "Net-(C10-Pad1)" "Net-(C13-Pad1)" "Net-(C14-Pad2)" "Net-(C16-Pad2)" "Net-(C30-Pad2)" "RF_IN" "Net-(C33-Pad2)" "Net-(C34-Pad2)"
+    "Net-(C41-Pad2)" "Net-(C42-Pad2)" "Net-(J1-Pad5)" "1PPS_TEST_SIGNAL" "Net-(R3-Pad2)" "Net-(R6-Pad2)" "Net-(U1-Pad9)" "Net-(U2-Pad8)"
+    "Net-(U2-Pad7)" "Net-(U2-Pad1)" "Net-(U10-Pad8)" "Net-(U10-Pad7)" "Net-(U10-Pad6)" "Net-(U10-Pad1)" "Net-(U10-Pad20)" "Net-(U10-Pad21)"
+    "Net-(U10-Pad24)" "Net-(C53-Pad1)" "Net-(U10-Pad26)" "Net-(U8-Pad6)" "Net-(U9-Pad6)" "Net-(U8-Pad12)" "Net-(R13-Pad2)" "Net-(R13-Pad1)"
+    "Net-(C22-Pad2)" "Net-(C23-Pad2)" "Net-(R11-Pad1)" "Net-(C20-Pad2)" "Net-(C22-Pad1)" "Net-(C21-Pad2)" "Net-(C23-Pad1)" "Net-(U4-Pad13)"
+    "Net-(U4-Pad11)" "Net-(U4-Pad6)" "Net-(U4-Pad4)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)

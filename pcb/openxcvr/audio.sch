@@ -40,6 +40,8 @@ NoConn ~ 4450 1700
 NoConn ~ 4450 2300
 NoConn ~ 4550 2300
 Wire Wire Line
+	1750 1200 1900 1200
+Wire Wire Line
 	2150 5050 2450 5050
 Wire Wire Line
 	2200 1200 2500 1200
@@ -253,10 +255,10 @@ Text Notes 4650 1200 2    50   ~ 0
 Audio Amplifier
 Text Notes 7250 3400 2    50   ~ 0
 5v Power Rail Splitter
+Text GLabel 1750 1200 0    50   Input ~ 0
+SPEAKER
 Text GLabel 2150 5050 0    50   Input ~ 0
 MIC_HDR
-Text GLabel 2200 1200 0    50   Input ~ 0
-SPEAKER
 Text GLabel 5625 5300 2    50   Output ~ 0
 MIC
 Text GLabel 7250 2000 2    50   Output ~ 0
@@ -548,6 +550,17 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21733j.pdf" H 9550 4500 50 
 	1    0    0    -1  
 $EndComp
 $Comp
+L Device:C C24
+U 1 1 5E7745A5
+P 2050 1200
+F 0 "C24" H 2165 1245 50  0000 L CNN
+F 1 "100n" H 2165 1155 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 2088 1050 50  0001 C CNN
+F 3 "~" H 2050 1200 50  0001 C CNN
+	1    2050 1200
+	0    -1   -1   0   
+$EndComp
+$Comp
 L Device:C C9
 U 1 1 5E2F6946
 P 2875 5050
@@ -663,7 +676,7 @@ U 1 1 5E33D7FB
 P 3375 5400
 F 0 "RV1" H 3305 5445 50  0000 R CNN
 F 1 "10K" H 3305 5355 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 3375 5400 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-H_Horizontal" H 3375 5400 50  0001 C CNN
 F 3 "~" H 3375 5400 50  0001 C CNN
 	1    3375 5400
 	1    0    0    -1  
@@ -674,7 +687,7 @@ U 1 1 5E37D6F0
 P 3750 1900
 F 0 "RV2" H 3680 1945 50  0000 R CNN
 F 1 "10K" H 3680 1855 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 3750 1900 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-H_Horizontal" H 3750 1900 50  0001 C CNN
 F 3 "~" H 3750 1900 50  0001 C CNN
 	1    3750 1900
 	1    0    0    -1  

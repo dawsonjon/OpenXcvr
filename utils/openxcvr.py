@@ -66,6 +66,9 @@ class Xcvr:
     def set_gain(self, gain):
         self.port.write("g%u\n"%gain)
 
+    def set_band(self, band):
+        self.port.write("b%u\n"%band)
+
     def set_AGC(self, gain):
         self.port.write("A%u\n"%gain)
 

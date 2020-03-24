@@ -10,4 +10,10 @@ $CMP MAX_1000
 F https://www.trenz-electronic.de/fileadmin/docs/Trenz_Electronic/Modules_and_Module_Carriers/2.5x6.15/TEI0001/User_Guide/MAX1000%20User%20Guide.pdf
 $ENDCMP
 #
+$CMP cx2074NL
+D Transformer, single primary, split secondary
+K transformer coil magnet
+F https://datasheet.octopart.com/CX2074NL-Pulse-datasheet-123678.pdf
+$ENDCMP
+#
 #End Doc Library

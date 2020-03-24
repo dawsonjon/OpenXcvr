@@ -12,9 +12,11 @@ from openxcvr import Xcvr
 
 xcvr = Xcvr("/dev/ttyUSB1")
 
-xcvr.set_frequency(10.0e6)
+xcvr.set_frequency(1.215e6)
 xcvr.set_mode(0)
+xcvr.set_band(4)
 xcvr.set_squelch(0)
+xcvr.set_test_signal(1)
 
 i_values, q_values = xcvr.capture()
 values = np.array(i_values)+1.0j*np.array(q_values)
@@ -27,6 +29,3 @@ frequency_range = np.linspace(-18.311e3*2, 18.311e3*2,  len(spectrum))
 plt.plot(frequency_range, spectrum)
 #plt.xlim(-50e3, 50e3)
 plt.show()
-
-port.close()
-

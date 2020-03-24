@@ -1,4 +1,4 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, test);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, band, tx_enable, lcd_data, lcd_e, lcd_rs);
 
   input clk_in;
   input reset_in;
@@ -8,7 +8,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   input lrclk_in;
   input dout_in;
   input pps_in;
-  output test;
   output sclk_out;
   output rf;
   output lo_i;
@@ -17,6 +16,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   output [7:0] leds;
   output rs232_tx;
   output rs232_rtr;
+  output [2:0] band;
+  output tx_enable;
+  output reg [3:0]lcd_data;
+  output reg lcd_e;
+  output reg lcd_rs;
 
 ////////////////////////////////////////////////////////////////////////////////
 //RESET AND CLOCKS
@@ -116,6 +120,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 wire [31:0] adc_bus;
     wire adc_ack;
     wire adc_stb;
+	 
+	 wire [31:0] lcd_bus;
+    wire lcd_ack;
+    wire lcd_stb;
 
 	 
     //implement compiled C program
@@ -142,6 +150,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .output_control_out(control_bus),
         .output_control_out_ack(control_ack),
         .output_control_out_stb(control_stb),
+		  
+		  .output_lcd_out(lcd_bus),
+        .output_lcd_out_ack(lcd_ack),
+        .output_lcd_out_stb(lcd_stb),
 		  
 		  .input_capture_in(capture_bus),
         .input_capture_in_ack(capture_ack),
@@ -176,6 +188,12 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         if (control_stb) begin
             control <= control_bus;
         end
+		  
+		  if (lcd_stb) begin
+            lcd_data <= lcd_bus[3:0];
+				lcd_e    <= lcd_bus[8];
+				lcd_rs   <= lcd_bus[9];
+        end
 
     end
 
@@ -185,6 +203,7 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 assign power_stb = 1;
 	 assign gain_ack = 1;
 	 assign pps_count_stb = 1;
+	 assign lcd_ack = 1;
 
     serial_output #(
         .clock_frequency(50000000),
@@ -226,8 +245,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   wire lo_i_1;
   wire lo_q_0;
   wire lo_q_1;
-  wire test_0;
-  wire test_1;
   
   transceiver transceiver_u0(
   
@@ -276,6 +293,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .adc_out(adc_bus),
   .adc_stb_out(adc_stb),
   
+  //band
+  .band(band),
+  .tx_enable(tx_enable),
+  
   //RF INTERFACE
   .rf_0_out(rf_0), 
   .rf_1_out(rf_1), 
@@ -283,8 +304,6 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   .lo_i_1_out(lo_i_1), 
   .lo_q_0_out(lo_q_0), 
   .lo_q_1_out(lo_q_1),
-  .test_signal_0_out(test_0),
-  .test_signal_1_out(test_1),
   
   //AUDIO OUTPUT
   .speaker_out(speaker)

@@ -1,4 +1,4 @@
-3064342079906309
+3067509996776309
 Button_Switch_THT
 KSA_Tactile_SPST
 KSA{space}http://www.ckswitches.com/media/1457/ksa_ksl.pdf
@@ -13565,6 +13565,20 @@ SSOP{space}SO
 0
 20
 20
+openxcvr
+bn43-2402-transformer
+
+
+0
+6
+6
+openxcvr
+cx2074
+
+
+0
+6
+6
 openxcvr
 jack3.5mm switched
 

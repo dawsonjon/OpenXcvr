@@ -28,11 +28,11 @@ NoConn ~ 2600 4450
 NoConn ~ 2600 4550
 NoConn ~ 3100 4650
 NoConn ~ 5250 1950
-NoConn ~ 6400 2350
 NoConn ~ 5250 2450
 NoConn ~ 5250 2550
 NoConn ~ 5250 2650
 NoConn ~ 6400 2150
+NoConn ~ 6400 2350
 Wire Wire Line
 	1000 950  1000 1050
 Wire Wire Line
@@ -615,7 +615,7 @@ U 1 1 5E49FC52
 P 2450 5700
 F 0 "RV3" H 2380 5745 50  0000 R CNN
 F 1 "10K" H 2380 5655 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 2450 5700 50  0001 C CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-H_Horizontal" H 2450 5700 50  0001 C CNN
 F 3 "~" H 2450 5700 50  0001 C CNN
 	1    2450 5700
 	1    0    0    -1  

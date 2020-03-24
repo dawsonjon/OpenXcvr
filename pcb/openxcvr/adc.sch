@@ -18,8 +18,10 @@ Comment7 ""
 Comment8 ""
 Comment9 ""
 $EndDescr
+Connection ~ 4050 3150
 Connection ~ 4050 6150
 Connection ~ 4300 4250
+Connection ~ 4750 3150
 Connection ~ 4750 4250
 Connection ~ 4900 6150
 NoConn ~ 5050 3650
@@ -30,6 +32,8 @@ Wire Wire Line
 Wire Wire Line
 	3600 3350 3600 3850
 Wire Wire Line
+	3900 2650 3900 3450
+Wire Wire Line
 	3900 6150 4050 6150
 Wire Wire Line
 	3900 6450 3900 6550
@@ -37,6 +41,12 @@ Wire Wire Line
 	3950 4250 4300 4250
 Wire Wire Line
 	3950 4550 3950 4650
+Wire Wire Line
+	4050 3150 4050 2650
+Wire Wire Line
+	4050 3150 4350 3150
+Wire Wire Line
+	4050 3250 4050 3150
 Wire Wire Line
 	4050 6000 4050 6150
 Wire Wire Line
@@ -50,9 +60,7 @@ Wire Wire Line
 Wire Wire Line
 	4300 4550 4300 4650
 Wire Wire Line
-	4450 2650 4450 3450
-Wire Wire Line
-	4600 3250 4600 2650
+	4650 3150 4750 3150
 Wire Wire Line
 	4750 3150 4750 4250
 Wire Wire Line
@@ -80,11 +88,11 @@ Wire Wire Line
 Wire Wire Line
 	5050 3150 4750 3150
 Wire Wire Line
-	5050 3250 4600 3250
+	5050 3250 4050 3250
 Wire Wire Line
 	5050 3350 3600 3350
 Wire Wire Line
-	5050 3450 4450 3450
+	5050 3450 3900 3450
 Wire Wire Line
 	5050 3750 4950 3750
 Wire Wire Line
@@ -152,6 +160,28 @@ BCK
 Text GLabel 7150 3850 2    50   Output ~ 0
 LRCK
 $Comp
+L power:+3V3 #PWR07
+U 1 1 5E38F1B7
+P 3900 2650
+F 0 "#PWR07" H 3900 2500 50  0001 C CNN
+F 1 "+3V3" H 3915 2823 50  0000 C CNN
+F 2 "" H 3900 2650 50  0001 C CNN
+F 3 "" H 3900 2650 50  0001 C CNN
+	1    3900 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR08
+U 1 1 5E38C061
+P 4050 2650
+F 0 "#PWR08" H 4050 2500 50  0001 C CNN
+F 1 "+5V" H 4065 2823 50  0000 C CNN
+F 2 "" H 4050 2650 50  0001 C CNN
+F 3 "" H 4050 2650 50  0001 C CNN
+	1    4050 2650
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:+3V3 #PWR04
 U 1 1 5E38CACB
 P 4050 6000
@@ -160,28 +190,6 @@ F 1 "+3V3" H 4065 6173 50  0000 C CNN
 F 2 "" H 4050 6000 50  0001 C CNN
 F 3 "" H 4050 6000 50  0001 C CNN
 	1    4050 6000
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+3V3 #PWR07
-U 1 1 5E38F1B7
-P 4450 2650
-F 0 "#PWR07" H 4450 2500 50  0001 C CNN
-F 1 "+3V3" H 4465 2823 50  0000 C CNN
-F 2 "" H 4450 2650 50  0001 C CNN
-F 3 "" H 4450 2650 50  0001 C CNN
-	1    4450 2650
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:+5V #PWR08
-U 1 1 5E38C061
-P 4600 2650
-F 0 "#PWR08" H 4600 2500 50  0001 C CNN
-F 1 "+5V" H 4615 2823 50  0000 C CNN
-F 2 "" H 4600 2650 50  0001 C CNN
-F 3 "" H 4600 2650 50  0001 C CNN
-	1    4600 2650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -381,6 +389,17 @@ F 2 "" H 9150 2300 50  0001 C CNN
 F 3 "" H 9150 2300 50  0001 C CNN
 	1    9150 2300
 	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R12
+U 1 1 5E61E083
+P 4500 3150
+F 0 "R12" V 4706 3150 50  0000 C CNN
+F 1 "1K" V 4615 3150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 4430 3150 50  0001 C CNN
+F 3 "~" H 4500 3150 50  0001 C CNN
+	1    4500 3150
+	0    -1   -1   0   
 $EndComp
 $Comp
 L Device:C C3

@@ -29,15 +29,12 @@ def rf_section(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor
     rf_q = [i.label("rf_q_%s"%idx) for idx, i in enumerate(rf_q)]
     
     rf = [i.subtype.register(clk, d=i+q) for i, q in zip(rf_i, rf_q)]
-    rf = [i.label("rf_full_%s"%idx) for idx, i in enumerate(rf)]
     rf = [dither(clk, i, True) for i in rf]
 
     #blank rf output during tx
-    temp = rf
-    rf = [i.subtype.select(rx_tx, 0, i) for i in rf]
-    test_signal = [i.subtype.select(enable_test_signal, 0, i) for i in temp]
+    rf = [i.subtype.select(rx_tx | enable_test_signal, 0, i) for i in rf]
 
-    return rf, lo_i, lo_q, test_signal
+    return rf, lo_i, lo_q
 
 if __name__ == "__main__":
 

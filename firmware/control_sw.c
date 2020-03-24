@@ -12,6 +12,7 @@ unsigned adc_in = input("adc_in");
 #include <stdio.h>
 #include <scan.h>
 #include <print.h>
+#include "lcd.h"
 
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
@@ -23,6 +24,7 @@ typedef struct{
     unsigned frequency;
     unsigned squelch;
     unsigned mode;
+    unsigned band;
     unsigned gain;
     unsigned agc_speed;
     unsigned test_signal;
@@ -120,6 +122,12 @@ void apply_settings (){
 
     if(settings.test_signal) control |= 0x00000040u;
     if(settings.USB_audio)  control |= 0x00100000u;
+
+    //set band
+    settings.band &= 0x7;
+    control |= (settings.band << 21);
+
+
     if(settings.tx)         control |= 0x00000008u;
     if(settings.tx){
         fputc(convert_to_steps(settings.frequency), frequency_out);
@@ -144,6 +152,7 @@ void main(){
     settings.volume = 9;
     settings.frequency = 1215000;
     settings.mode = 1;
+    settings.band = 4;
     settings.gain = 0;
     settings.agc_speed = 2;
     settings.test_signal = 0;
@@ -151,6 +160,7 @@ void main(){
     settings.tx = 0;
     settings.mute = 0;
     apply_settings();
+    lcdInit();
 
     while(1){
 
@@ -160,6 +170,7 @@ void main(){
             switch(cmd){
                 case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
                 case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
+                case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
                 case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
                 case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
                 case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
@@ -172,6 +183,7 @@ void main(){
                     puts("fxxxxxxxx: frequency\n");
                     puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
                     puts("g: set gain (decimal)\n");
+                    puts("b: set band (decimal)\n");
                     puts("p: read power (hex)\n");
                     puts("s: read smeter\n");
                     puts("v: set volume (0-9)\n");
@@ -257,7 +269,12 @@ void main(){
             }
         }
 
+        lcd_clear();
+        lcd_line1();
+        lcd_print("Hello World");
+
         settings.mute = read_smeter() < settings.squelch;
+        wait_clocks(5000000);
 
     }
 

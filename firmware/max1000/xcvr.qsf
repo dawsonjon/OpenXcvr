@@ -68,7 +68,7 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
-set_location_assignment PIN_L12 -to rf
+set_location_assignment PIN_K12 -to rf
 set_location_assignment PIN_D8 -to leds[7]
 set_location_assignment PIN_C10 -to leds[6]
 set_location_assignment PIN_C9 -to leds[5]
@@ -79,8 +79,8 @@ set_location_assignment PIN_A9 -to leds[1]
 set_location_assignment PIN_A8 -to leds[0]
 set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE stp2.stp
-set_location_assignment PIN_J1 -to lo_i
-set_location_assignment PIN_J2 -to lo_q
+set_location_assignment PIN_H13 -to lo_i
+set_location_assignment PIN_G12 -to lo_q
 set_location_assignment PIN_A4 -to rs232_rx
 set_location_assignment PIN_B4 -to rs232_tx
 set_global_assignment -name QIP_FILE adc/adc/synthesis/adc.qip
@@ -98,14 +98,23 @@ set_global_assignment -name SIP_FILE io.sip
 set_global_assignment -name QIP_FILE output_buffer.qip
 set_global_assignment -name SIP_FILE output_buffer.sip
 set_global_assignment -name SIGNALTAP_FILE stp2.stp
-set_location_assignment PIN_J12 -to speaker
+set_location_assignment PIN_J2 -to speaker
 set_location_assignment PIN_H4 -to sclk_out
 set_location_assignment PIN_H5 -to lrclk_in
 set_location_assignment PIN_K10 -to bclk_in
 set_location_assignment PIN_H8 -to dout_in
 set_global_assignment -name QIP_FILE fiforam.qip
-set_location_assignment PIN_K11 -to pps_in
-set_location_assignment PIN_J13 -to test
+set_location_assignment PIN_J1 -to pps_in
 set_location_assignment PIN_B5 -to rs232_cts
 set_location_assignment PIN_A6 -to rs232_rtr
+set_location_assignment PIN_J12 -to band[1]
+set_location_assignment PIN_J13 -to band[2]
+set_location_assignment PIN_L12 -to band[0]
+set_location_assignment PIN_K11 -to tx_enable
+set_location_assignment PIN_M3 -to lcd_data[3]
+set_location_assignment PIN_N3 -to lcd_data[2]
+set_location_assignment PIN_L3 -to lcd_data[1]
+set_location_assignment PIN_N2 -to lcd_data[0]
+set_location_assignment PIN_K2 -to lcd_e
+set_location_assignment PIN_M2 -to lcd_rs
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
