@@ -12,7 +12,7 @@ unsigned adc_in = input("adc_in");
 #include <stdio.h>
 #include <scan.h>
 #include <print.h>
-#include "lcd.h"
+#include "ui.h"
 
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
@@ -137,6 +137,9 @@ void apply_settings (){
     }
 
     fputc(control, control_out);
+
+    //update display status
+    print_frequency(settings.frequency);
 }
 
 void main(){
@@ -149,6 +152,7 @@ void main(){
     unsigned int capture[1000];
     int audio;
     
+    lcdInit();
     settings.volume = 9;
     settings.frequency = 1215000;
     settings.mode = 1;
@@ -160,7 +164,6 @@ void main(){
     settings.tx = 0;
     settings.mute = 0;
     apply_settings();
-    lcdInit();
 
     while(1){
 
@@ -269,11 +272,8 @@ void main(){
             }
         }
 
-        lcd_clear();
-        lcd_line1();
-        lcd_print("Hello World");
-
         settings.mute = read_smeter() < settings.squelch;
+        print_s_meter(read_smeter());
         wait_clocks(5000000);
 
     }
