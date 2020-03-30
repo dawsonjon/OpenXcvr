@@ -2,4 +2,5 @@
 
 c2verilog control_sw.c
 python transceiver.py gen
+python rotary_encoder.py
 

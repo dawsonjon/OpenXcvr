@@ -1,4 +1,6 @@
-module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, band, tx_enable, lcd_data, lcd_e, lcd_rs);
+module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, 
+rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, 
+band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
 
   input clk_in;
   input reset_in;
@@ -18,9 +20,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   output rs232_rtr;
   output [2:0] band;
   output tx_enable;
-  output reg [3:0]lcd_data;
+  inout [3:0]lcd_data;
   output reg lcd_e;
-  output reg lcd_rs;
+  inout lcd_rs;
+  input quad_a;
+  input quad_b;
 
 ////////////////////////////////////////////////////////////////////////////////
 //RESET AND CLOCKS
@@ -95,7 +99,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 wire [31:0] audio_in;
 	 wire audio_in_stb;
 	 wire audio_in_ack;	 
-
+	 
+	 wire [31:0] pb_bus;
+	 wire pb_stb;
+	 wire pb_ack;
+	 
     wire [31:0] control_bus;
     reg [31:0] control;
     wire control_ack;
@@ -124,6 +132,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 	 wire [31:0] lcd_bus;
     wire lcd_ack;
     wire lcd_stb;
+	 
+	 wire [31:0] position_bus;
+    wire position_ack;
+    wire position_stb;
 
 	 
     //implement compiled C program
@@ -155,6 +167,10 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .output_lcd_out_ack(lcd_ack),
         .output_lcd_out_stb(lcd_stb),
 		  
+		  .input_pb_in(pb_bus),
+        .input_pb_in_ack(pb_ack),
+        .input_pb_in_stb(pb_stb),
+		  
 		  .input_capture_in(capture_bus),
         .input_capture_in_ack(capture_ack),
         .input_capture_in_stb(capture_stb),
@@ -173,12 +189,20 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
 		  
 		  .input_adc_in(adc_bus),
         .input_adc_in_ack(adc_ack),
-        .input_adc_in_stb(adc_stb)
+        .input_adc_in_stb(adc_stb),
+		  
+		  .input_position_in(position_bus),
+        .input_position_in_ack(position_ack),
+        .input_position_in_stb(position_stb)
 		  
         //exception
     );
 
     //implement registers for frequency and control
+	 reg [3:0] lcd_data_out;
+	 reg lcd_rs_out;
+	 reg lcd_oe = 0;
+	 
     always @(posedge clk_50) begin
 
         if (frequency_stb) begin
@@ -190,20 +214,29 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         end
 		  
 		  if (lcd_stb) begin
-            lcd_data <= lcd_bus[3:0];
-				lcd_e    <= lcd_bus[8];
-				lcd_rs   <= lcd_bus[9];
+            lcd_data_out <= lcd_bus[3:0];
+				lcd_e        <= lcd_bus[8];
+				lcd_rs_out   <= lcd_bus[9];
+				lcd_oe       <= lcd_bus[10];
         end
 
     end
+	 
+	 //lcd outputs reused as push button inputs
+	 assign lcd_data   = lcd_oe?lcd_data_out:4'bZ;
+	 assign lcd_rs     = lcd_oe?lcd_rs_out:1'bZ;
+	 assign pb_bus[3:0] = lcd_data;
+	 assign pb_bus[4]   = lcd_rs;
 
     assign frequency_ack = 1;
 	 assign audio_in_ack = 1;
+	 assign pb_stb = 1;
     assign control_ack = 1;
 	 assign power_stb = 1;
 	 assign gain_ack = 1;
 	 assign pps_count_stb = 1;
 	 assign lcd_ack = 1;
+	 assign position_stb = 1;
 
     serial_output #(
         .clock_frequency(50000000),
@@ -234,6 +267,8 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
         .out1_stb(debug_rx_stb),
         .out1_ack(debug_rx_ack)
     );
+	 
+	 rotary_encoder(clk_50, quad_a, quad_b, position_bus);
 
   ////////////////////////////////////////////////////////////////////////////////
   //Transceiver
@@ -336,5 +371,11 @@ module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, rs232
   assign leds[1] = rs232_cts;
   assign leds[2] = rs232_tx;
   assign leds[3] = rs232_rx;
+  assign leds[4] = quad_a;
+  assign leds[5] = quad_b;
+  assign leds[6] = position_bus[0];
+  assign leds[7] = position_bus[1];
+  
+  
 
 endmodule

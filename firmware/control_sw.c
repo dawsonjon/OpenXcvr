@@ -8,16 +8,16 @@ unsigned audio_out = output("audio_out");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");
+unsigned position_in = input("position_in");
+unsigned push_button_in = input("pb_in");
 
 #include <stdio.h>
 #include <scan.h>
 #include <print.h>
-#include "ui.h"
 
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
 #define FREQUENCY_CALIBRATION 4294860440ul
-
 
 typedef struct{
     unsigned volume;
@@ -31,8 +31,11 @@ typedef struct{
     unsigned USB_audio;
     unsigned tx;
     unsigned mute;
+    unsigned step;
 } struct_settings;
 struct_settings settings;
+
+#include "ui.h"
 
 //convert a frequency in Hertz into a frequency in NCO step size.
 unsigned convert_to_steps(unsigned x){
@@ -68,43 +71,25 @@ int read_smeter(){
 
     if(power_dbm < -63){
         power_dbm += 127;
-        s_scale = 0;
-        while(power_dbm >= 6){
-            power_dbm -= 6;
-            s_scale += 1;
-        }
+        s_scale = power_dbm/6;
     } else {
         power_dbm += 73;
-        s_scale = 9;
-        while(power_dbm >= 10){
-            power_dbm -= 10;
-            s_scale += 1;
-        }
+        s_scale = 9 + power_dbm/10;
     }
 
     return s_scale;
 }
+
+const attenuation_settings[10] = {17, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 
 void apply_settings (){
     unsigned attenuation; 
     unsigned control = 0;
 
     //set volume
+    attenuation = attenuation_settings[settings.volume];
     if(settings.mute) {
         attenuation = 17;
-    } else {
-        switch(settings.volume){
-            case 9: attenuation = 0; break;
-            case 8: attenuation = 1; break;
-            case 7: attenuation = 2; break;
-            case 6: attenuation = 3; break;
-            case 5: attenuation = 4; break;
-            case 4: attenuation = 5; break;
-            case 3: attenuation = 6; break;
-            case 2: attenuation = 7; break;
-            case 1: attenuation = 8; break;
-            case 0: attenuation = 17; break;
-        }
     }
     control |= (attenuation << 8);
 
@@ -139,7 +124,12 @@ void apply_settings (){
     fputc(control, control_out);
 
     //update display status
+    LCD_CLEAR()
+    LCD_LINE1()
     print_frequency(settings.frequency);
+    lcd_print("   ");
+    lcd_print(modes[settings.mode]);
+
 }
 
 void main(){
@@ -148,11 +138,12 @@ void main(){
     stdin = debug_in;
     puts("FPGA transceiver v 0.01\n");
 
-    unsigned int cmd, power, i, smeter, pps_count;
+    unsigned int cmd, power, i, pps_count;
     unsigned int capture[1000];
     int audio;
     
     lcdInit();
+    init_ui();
     settings.volume = 9;
     settings.frequency = 1215000;
     settings.mode = 1;
@@ -183,23 +174,23 @@ void main(){
                 case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
                 case 'h':
                 //print help
-                    puts("fxxxxxxxx: frequency\n");
-                    puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
-                    puts("g: set gain (decimal)\n");
-                    puts("b: set band (decimal)\n");
-                    puts("p: read power (hex)\n");
-                    puts("s: read smeter\n");
-                    puts("v: set volume (0-9)\n");
-                    puts("q: set squelch (0-12)\n");
-                    puts("t: TX (0, 1)\n");
-                    puts("x: get GPS 1pps count\n");
-                    puts("a: adc\n");
-                    puts("A: AGC speed (0-3)\n");
-                    puts("T: test signal, (0, 1)\n");
-                    puts("O: get audio\n");
-                    puts("I: put audio\n");
-                    puts("U: set_usb_audio\n");
-                    puts("\n");
+                    //puts("fxxxxxxxx: frequency\n");
+                    //puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
+                    //puts("g: set gain (decimal)\n");
+                    //puts("b: set band (decimal)\n");
+                    //puts("p: read power (hex)\n");
+                    //puts("s: read smeter\n");
+                    //puts("v: set volume (0-9)\n");
+                    //puts("q: set squelch (0-12)\n");
+                    //puts("t: TX (0, 1)\n");
+                    //puts("x: get GPS 1pps count\n");
+                    //puts("a: adc\n");
+                    //puts("A: AGC speed (0-3)\n");
+                    //puts("T: test signal, (0, 1)\n");
+                    //puts("O: get audio\n");
+                    //puts("I: put audio\n");
+                    //puts("U: set_usb_audio\n");
+                    //puts("\n");
                     break;
 
                 case 'x':
@@ -227,17 +218,7 @@ void main(){
 
                 case 's':
                 //read smeter
-                    smeter = read_smeter();
-                    putc('s');
-                    if(smeter <= 9){
-                        putc('0'+smeter);
-                    } else if(smeter == 10){
-                        puts("9+10dB");
-                    } else if(smeter == 11){
-                        puts("9+20dB");
-                    } else if(smeter == 12){
-                        puts("9+30dB");
-                    }
+                    puts(smeter[read_smeter()]);
                     puts("\n");
                     break;
 
@@ -273,8 +254,11 @@ void main(){
         }
 
         settings.mute = read_smeter() < settings.squelch;
-        print_s_meter(read_smeter());
-        wait_clocks(5000000);
+
+
+        if(do_ui()) apply_settings();
+        LCD_LINE2()
+        lcd_print(smeter[read_smeter()]);
 
     }
 

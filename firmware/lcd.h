@@ -1,18 +1,21 @@
 unsigned lcd_out = output("lcd_out");
 
+#define OE 0x400
 #define RS 0x200
 #define E  0x100
 
 // output byte value to the lcd
 void lcd_io( unsigned value )
 {
+   fputc(OE, lcd_out);
    wait_clocks(500);//1us delay
-   fputc(value, lcd_out);
+   fputc(value | OE, lcd_out);
    wait_clocks(500);//1us delay
-   fputc(value | E, lcd_out);
+   fputc(value | E | OE, lcd_out);
    wait_clocks(500);//1us delay
-   fputc(value, lcd_out);
+   fputc(value | OE, lcd_out);
    wait_clocks(5000);//100us delay
+   fputc(0, lcd_out);
 }
 
 // output the instruction byte in value to the lcd
@@ -59,40 +62,9 @@ void lcdInit()
 
 }
 
-void lcd_clear()
-{
-   lcd_instruction( 0x01 );  // clear display
-   wait_clocks(100000);//2ms delay
-}
-
-void lcd_position( unsigned x )
-{
-   lcd_instruction( 0x80 + x );
-}
-
-void lcd_line1()
-{
-   lcd_instruction( 0x80 );
-}
-
-void lcd_line2()
-{
-   lcd_instruction( 0xA8 );
-}
-
-void clear_line1()
-{
-   int i;
-   lcd_line1();
-   for(i=0; i<16; i++) lcd_write(' ');
-}
-
-void clear_line2()
-{
-   int i;
-   lcd_line2();
-   for(i=0; i<16; i++) lcd_write(' ');
-}
+#define LCD_CLEAR() {lcd_instruction(0x01);  wait_clocks(100000);}
+#define LCD_LINE1() {lcd_instruction(0x80);}
+#define LCD_LINE2() {lcd_instruction(0xA8);}
 
 void lcd_define( 
    unsigned x,

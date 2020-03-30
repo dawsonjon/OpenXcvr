@@ -19,6 +19,7 @@ from settings import *
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
 
 
+
     #          +-----------+ +---------+ +-------------+ +--------+ +-------------+ +-------+
     #RX I/Q----+ DC        +-+ Complex +-+ Fs/4        +-+ filter +-+ demodulator +-+ Audio +-- Audio Out
     #          | removal   | | AGC     | | Downconvert | +--------+ +-------------+ | AGC   |                

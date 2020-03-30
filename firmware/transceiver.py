@@ -13,6 +13,12 @@ from pps_counter import pps_counter
 
 def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings):
 
+    #uncomment this to remove trx for faster synthesis
+    #zero = Boolean().constant(0)
+    #rf = [zero, zero]
+    #lo = [zero, zero]
+    #return Unsigned(16).constant(0), Boolean().constant(0), rf, lo, lo, Signed(18).constant(0), Signed(18).constant(0), Boolean().constant(0), Boolean().constant(0), Boolean().constant(0)
+
     (
         speaker, 
         speaker_stb, 
