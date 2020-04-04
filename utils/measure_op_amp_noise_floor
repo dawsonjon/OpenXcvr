@@ -1,0 +1,6 @@
+python scan.py m=1 g=0 ina_noise_m1_g0
+python scan.py m=1 g=1 ina_noise_m1_g1
+python scan.py m=1 g=2 ina_noise_m1_g2
+python scan.py m=1 g=3 ina_noise_m1_g3
+python scan.py m=1 g=4 ina_noise_m1_g4
+python scan.py m=1 g=5 ina_noise_m1_g5

@@ -17,11 +17,13 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
     #zero = Boolean().constant(0)
     #rf = [zero, zero]
     #lo = [zero, zero]
-    #return Unsigned(16).constant(0), Boolean().constant(0), rf, lo, lo, Signed(18).constant(0), Signed(18).constant(0), Boolean().constant(0), Boolean().constant(0), Boolean().constant(0)
+    #return Unsigned(16).constant(0), Boolean().constant(0), Unsigned(16).constant(0), Boolean().constant(0), rf, lo, lo, Signed(18).constant(0), Signed(18).constant(0), Boolean().constant(0), Boolean().constant(0), Boolean().constant(0)
 
     (
         speaker, 
         speaker_stb, 
+        audio_out,
+        audio_out_stb,
         tx_i, 
         tx_q, 
         tx_stb, 
@@ -66,7 +68,7 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
         enable_test_signal = enable_test_signal
     )
 
-    return speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
+    return speaker, speaker_stb, audio_out, audio_out_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow
 
 def generate():
     settings = Settings()
@@ -141,7 +143,7 @@ def generate():
     #select usb audio input
     mic = Signed(8).select(usb_audio, mic[11:4], audio_in)
     mic_stb = Signed(8).select(usb_audio, mic_stb, audio_in_stb)
-    speaker, speaker_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
+    speaker, speaker_stb, audio_out, audio_out_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
@@ -151,8 +153,6 @@ def generate():
     ##################
 
     clk = Clock("clk")
-    audio_out = speaker
-    audio_out_stb = speaker_stb
     speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
     
     # 1pps counter

@@ -59,9 +59,10 @@ def audio_agc(clk, data, stb, audio_attenuation, agc_speed):
     stb = stb.subtype.register(clk, d=stb)
 
     #apply additional attenuation (digital volume)
+    audio_out, audio_out_stb = data, stb
     data, stb = slow_barrel_shifter(clk, data, audio_attenuation, stb, "right")
 
-    return data, stb, positive_overflow | negative_overflow
+    return data, stb, audio_out, audio_out_stb, positive_overflow | negative_overflow
 
 if __name__ == "__main__" and "sim" in sys.argv:
 

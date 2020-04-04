@@ -10,6 +10,8 @@ unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");
 unsigned position_in = input("position_in");
 unsigned push_button_in = input("pb_in");
+unsigned i2c_in = input("i2c_in");
+unsigned i2c_out = output("i2c_out");
 
 #include <stdio.h>
 #include <scan.h>
@@ -35,6 +37,10 @@ typedef struct{
 } struct_settings;
 struct_settings settings;
 
+#include "i2c.h"
+i2c bus;
+#include "eeprom.h"
+#include "load_store.h"
 #include "ui.h"
 
 //convert a frequency in Hertz into a frequency in NCO step size.
@@ -110,7 +116,23 @@ void apply_settings (){
 
     //set band
     settings.band &= 0x7;
-    control |= (settings.band << 21);
+    if(settings.frequency >= 2000000 && settings.frequency <4000000){
+        control |= (3 << 21);
+    } else if(settings.frequency >= 4000000 && settings.frequency < 8000000){
+        control |= (2 << 21);
+    } else if(settings.frequency >= 8000000 && settings.frequency < 16000000){
+        control |= (1 << 21);
+    } else if(settings.frequency >= 16000000 && settings.frequency < 30000000){
+        control |= (0 << 21);
+    } else {
+        control |= (4 << 21);
+    }
+
+    //force a band
+    if(settings.band & 0x10){
+        settings.band &= 0x7;
+        control |= (settings.band << 21);
+    }
 
 
     if(settings.tx)         control |= 0x00000008u;
@@ -129,6 +151,8 @@ void apply_settings (){
     print_frequency(settings.frequency);
     lcd_print("   ");
     lcd_print(modes[settings.mode]);
+    LCD_LINE2()
+    lcd_print(smeter[read_smeter()]);
 
 }
 
@@ -136,45 +160,40 @@ void main(){
 
     stdout = debug_out;
     stdin = debug_in;
-    puts("FPGA transceiver v 0.01\n");
+    //puts("FPGA transceiver v 0.01\n");
 
-    unsigned int cmd, power, i, pps_count;
-    unsigned int capture[1000];
+    unsigned int cmd, power, i, pps_count, last_smeter=0;
+    unsigned wake_time = 0;
     int audio;
+    int capture[8], temp;
     
+    //initialise peripherals
     lcdInit();
     init_ui();
-    settings.volume = 9;
-    settings.frequency = 1215000;
-    settings.mode = 1;
-    settings.band = 4;
-    settings.gain = 0;
-    settings.agc_speed = 2;
-    settings.test_signal = 0;
-    settings.USB_audio = 0;
-    settings.tx = 0;
-    settings.mute = 0;
+    i2c_init(&bus, i2c_in, i2c_out);
+
+    load_settings(&bus, 0);//page 0 contains power up settings
     apply_settings();
 
     while(1){
 
 
-        if(ready(stdin)){ 
-            cmd = getc();
-            switch(cmd){
-                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
-                case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
-                case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
-                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
-                case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
-                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
-                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
-                case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
-                case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
-                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
-                case 'h':
+        //if(ready(stdin)){ 
+            //cmd = getc();
+            //switch(cmd){
+                //case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
+                //case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
+                //case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
+                //case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
+                //case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
+                //case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
+                //case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
+                //case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
+                //case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
+                //case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
+                //case 'h':
                 //print help
-                    //puts("fxxxxxxxx: frequency\n");
+                    //euts("fxxxxxxxx: frequency\n");
                     //puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
                     //puts("g: set gain (decimal)\n");
                     //puts("b: set band (decimal)\n");
@@ -191,74 +210,92 @@ void main(){
                     //puts("I: put audio\n");
                     //puts("U: set_usb_audio\n");
                     //puts("\n");
-                    break;
+                    //break;
 
-                case 'x':
-                    pps_count = fgetc(pps_count_in);
-                    print_uhex(pps_count);
-                    puts("\n");
-                    break;
+                //case 'x':
+                    //pps_count = fgetc(pps_count_in);
+                    //print_uhex(pps_count);
+                    //puts("\n");
+                    //break;
 
-                case 'a':
-                    for(i=0; i<5; i++){
-                        capture[i] = fgetc(adc_in);
-                    }
-                    for(i=0; i<5; i++){
-                        print_uhex(capture[i]);
-                        puts("\n");
-                    }
-                    break;
+                //case 'a':
+                    //for(i=0; i<5; i++){
+                        //capture[i] = fgetc(adc_in);
+                    //}
+                    //for(i=0; i<5; i++){
+                        //print_uhex(capture[i]);
+                        //puts("\n");
+                    //}
+                    //break;
 
-                case 'p':
+                //case 'p':
                 //print rx magnitude (post filter)
-                    power = fgetc(power_in);
-                    print_uhex(power);
-                    puts("\n");
-                    break;
+                    //power = fgetc(power_in);
+                    //print_uhex(power);
+                    //puts("\n");
+                    //break;
 
-                case 's':
+                //case 's':
                 //read smeter
-                    puts(smeter[read_smeter()]);
-                    puts("\n");
-                    break;
+                    //puts(smeter[read_smeter()]);
+                    //puts("\n");
+                    //break;
 
-                case 'c':
-                    for(i=0;i<1000;i++){
-                        capture[i] = fgetc(capture_in);
-                    }
-                    for(i=0;i<1000;i++){
-                        print_uhex(capture[i]&0xffff);
-                        puts("\n");
-                        print_uhex((capture[i]>>16)&0xffff);
-                        puts("\n");
-                    }
-                    break;
-                case 'O':
-                    for(i=0;i<1000;i++){
-                        audio =  fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio >>= 4;
-                        putc(audio);
-                        putc(audio>>8);
-                    }
-                    break;
-                case 'I':
-                    for(i=0;i<1000;i++){
-                        audio = getc();
-                        fputc(audio, audio_out);
-                    }
-                    break;
+                //case 'c':
+                    //for(i=0;i<1000;i++){
+                        //temp = fgetc(capture_in);
+                        //putc(temp & 0xff);
+                        //putc(temp >> 8  & 0xff);
+                        //putc(temp >> 16 & 0xff);
+                        //putc(temp >> 24 & 0xff);
+                    //}
+                    //break;
+                //case 'O':
+                    //for(i=0;i<1000;i++){
+                        //audio =  fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio >>= 4;
+                        //putc(audio);
+                        //putc(audio>>8);
+                    //}
+                    //break;
+                //case 'I':
+                    //for(i=0;i<1000;i++){
+                        //audio = getc();
+                        //fputc(audio, audio_out);
+                    //}
+                    //break;
+            //}
+        //}
+
+
+       
+       if(timer_low() - wake_time > 2000000){ 
+            settings.mute = read_smeter() < settings.squelch;
+
+            //If knob is turned adjust frequency
+            //don't store this in EEPROM to avoid wear
+            position_change = get_position_change();
+            if(position_change){
+               settings.frequency += position_change * step_sizes[settings.step];
+               apply_settings();
             }
-        }
 
-        settings.mute = read_smeter() < settings.squelch;
+            //if the menu was entered, update settings and
+            //store them in EEPROM
+            if(do_ui()){
+                apply_settings();
+                store_settings(&bus, 0);
+            }
 
-
-        if(do_ui()) apply_settings();
-        LCD_LINE2()
-        lcd_print(smeter[read_smeter()]);
+            if(last_smeter != read_smeter()){
+                LCD_LINE2()
+                lcd_print(smeter[read_smeter()]);
+                last_smeter = read_smeter();
+            }
+       }
 
     }
 

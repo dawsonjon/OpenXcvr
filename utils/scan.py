@@ -9,24 +9,29 @@ from scipy import signal
 import matplotlib.pyplot as plt
 from openxcvr import Xcvr
 
-xcvr = Xcvr("/dev/ttyUSB1")
+xcvr = Xcvr("/dev/ttyUSB0")
 
-xcvr.set_mode(1)
-xcvr.set_squelch(0)
-xcvr.set_gain(1)
-xcvr.set_test_signal(1)
-xcvr.set_band(3)
+parameters = []
+for parameter in sys.argv[1:-1]:
+    if "=" in parameter:
+        key, value = parameter.split("=")
+        parameters.append((key, value))
 
-start_frequency = 1.0e6
-stop_frequency = 40.0e6
+parameters = dict(parameters)
 
-frequencies = np.logspace(np.log10(start_frequency),np.log10(stop_frequency), 100)
+xcvr.set_mode(int(parameters.get("m", 1)))
+xcvr.set_gain(int(parameters.get("g", 0)))
+
+start_frequency = 7.0e6
+stop_frequency = 7.3e6
+
+#frequencies = np.logspace(np.log10(start_frequency),np.log10(stop_frequency), 1000)
+frequencies = np.linspace(start_frequency,stop_frequency, 300)
 powers = xcvr.scan(frequencies)
 powers = np.array(powers)
 
-xcvr.set_test_signal(0)
 
-outf = open(sys.argv[1], "w")
+outf = open(sys.argv[-1], "w")
 for frequency, power in zip(frequencies, powers):
     outf.write("%f %f\n"%(frequency, power))
 outf.close()

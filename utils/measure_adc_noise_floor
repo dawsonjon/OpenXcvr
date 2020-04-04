@@ -1,0 +1,6 @@
+python scan.py m=1 g=0 adc_noise_m1_g0
+python scan.py m=1 g=1 adc_noise_m1_g1
+python scan.py m=1 g=2 adc_noise_m1_g2
+python scan.py m=1 g=3 adc_noise_m1_g3
+python scan.py m=1 g=4 adc_noise_m1_g4
+python scan.py m=1 g=5 adc_noise_m1_g5

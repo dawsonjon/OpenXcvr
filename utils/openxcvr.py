@@ -17,23 +17,13 @@ class Xcvr:
         self.port = serial.Serial(device, 2000000, timeout=2, rtscts=True)
         self.port.flush()
 
-    def get_data_value(self, line):
-        value = int(line, 16)
-        if value & 0x8000:
-            value |= (~0xffff)
-        return value
-
     def capture(self):
         self.port.flush()
         self.port.write("c\n")
-        lines = []
-        for i in range(1000):
-            lines.append((self.port.readline(), self.port.readline()))
-        i_values = []
-        q_values = []
-        for a, b in lines:
-            i_values.append(float(self.get_data_value(a)))
-            q_values.append(float(self.get_data_value(b)))
+        buf = self.port.read(4000)
+        values = np.frombuffer(buf, dtype="int16")
+        i_values = values[::2]
+        q_values = values[1::2]
         return i_values, q_values
 
     def get_audio(self):

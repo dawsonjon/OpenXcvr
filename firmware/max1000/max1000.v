@@ -1,6 +1,6 @@
 module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, 
 rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, 
-band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
+band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_pu);
 
   input clk_in;
   input reset_in;
@@ -25,6 +25,10 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
   inout lcd_rs;
   input quad_a;
   input quad_b;
+  inout scl;
+  inout sda;
+  output sda_pu;
+  output scl_pu;
 
 ////////////////////////////////////////////////////////////////////////////////
 //RESET AND CLOCKS
@@ -133,6 +137,14 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
     wire lcd_ack;
     wire lcd_stb;
 	 
+	 wire [31:0] i2c_in_bus;
+    wire i2c_in_ack;
+    wire i2c_in_stb;
+	 
+	 wire [31:0] i2c_out_bus;
+    wire i2c_out_ack;
+    wire i2c_out_stb;
+	 
 	 wire [31:0] position_bus;
     wire position_ack;
     wire position_stb;
@@ -150,6 +162,14 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
         .output_debug_out_stb(debug_tx_stb),
         .output_debug_out_ack(debug_tx_ack),
         .output_debug_out(debug_tx),
+		  
+		  .input_i2c_in(i2c_in_bus),
+        .input_i2c_in_stb(i2c_in_stb),
+        .input_i2c_in_ack(i2c_in_ack),
+
+        .output_i2c_out_stb(i2c_out_stb),
+        .output_i2c_out_ack(i2c_out_ack),
+        .output_i2c_out(i2c_out_bus),
 
         .output_frequency_out(frequency_bus),
         .output_frequency_out_ack(frequency_ack),
@@ -267,6 +287,28 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b);
         .out1_stb(debug_rx_stb),
         .out1_ack(debug_rx_ack)
     );
+	 
+	 i2c #(
+      .CLOCKS_PER_SECOND(50000000),
+      .SPEED(100000)
+    )
+	 i2c_0(
+      .clk(clk_50),
+      .rst(rst),
+ 
+      .sda(sda),
+      .scl(scl),
+
+      .I2C_IN(i2c_out_bus),
+      .I2C_IN_STB(i2c_out_stb),
+      .I2C_IN_ACK(i2c_out_ack),
+ 
+      .I2C_OUT(i2c_in_bus),
+      .I2C_OUT_STB(i2c_in_stb),
+      .I2C_OUT_ACK(i2c_in_ack)
+    );
+    assign sda_pu=1;
+	 assign scl_pu=1;
 	 
 	 rotary_encoder(clk_50, quad_a, quad_b, position_bus);
 

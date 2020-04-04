@@ -66,7 +66,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     agc_in = t_rx.select(settings.rx_tx, demodulator_out, tx_audio)
     agc_in_stb = t_rx.select(settings.rx_tx, demodulator_out_stb, tx_audio_stb)
     dc_removed, dc_removed_stb = dc_removal(clk, demodulator_out, demodulator_out_stb)
-    agc_out, agc_out_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, settings.volume, settings.agc_speed)
+    agc_out, agc_out_stb, audio_capture, audio_capture_stb, overflow = audio_agc(clk, dc_removed, dc_removed_stb, settings.volume, settings.agc_speed)
 
 
     #modulator
@@ -94,6 +94,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #rx_audio_stb
     rx_audio = rx_audio.subtype.select(settings.rx_tx, rx_audio, zero)
     rx_audio_stb = Boolean().select(settings.rx_tx, rx_audio_stb, zero_stb)
+    audio_capture = rx_audio.subtype.select(settings.rx_tx, audio_capture, zero)
+    audio_capture_stb = Boolean().select(settings.rx_tx, audio_capture_stb, zero_stb)
 
     #output to transmitter
     #=====================
@@ -114,7 +116,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
 
 
-    return rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow
+    return rx_audio, rx_audio_stb, audio_capture, audio_capture_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow
 
 def test_transceiver(stimulus, sideband, mode, rx_tx):
     settings = Settings()

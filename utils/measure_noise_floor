@@ -1,0 +1,9 @@
+python scan.py m=1 g=0 noise_floor_m1_g0
+python scan.py m=1 g=1 noise_floor_m1_g1
+python scan.py m=1 g=2 noise_floor_m1_g2
+python scan.py m=1 g=3 noise_floor_m1_g3
+python scan.py m=1 g=4 noise_floor_m1_g4
+python scan.py m=0 g=5 noise_floor_m0_g5
+python scan.py m=1 g=5 noise_floor_m1_g5
+python scan.py m=2 g=5 noise_floor_m2_g5
+python scan.py m=3 g=5 noise_floor_m3_g5

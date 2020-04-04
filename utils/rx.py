@@ -17,7 +17,7 @@ xcvr = Xcvr("/dev/ttyUSB0")
 xcvr.set_frequency(1.215e6)
 xcvr.set_mode(1)
 xcvr.set_squelch(0)
-xcvr.set_gain(4)
+xcvr.set_gain(0)
 xcvr.set_band(4)
 xcvr.set_AGC(3)
 

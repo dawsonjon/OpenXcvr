@@ -1,0 +1,9 @@
+python scan.py m=1 g=0 antenna_noise_m1_g0
+python scan.py m=1 g=1 antenna_noise_m1_g1
+python scan.py m=1 g=2 antenna_noise_m1_g2
+python scan.py m=1 g=3 antenna_noise_m1_g3
+python scan.py m=1 g=4 antenna_noise_m1_g4
+python scan.py m=0 g=5 antenna_noise_m0_g5
+python scan.py m=1 g=5 antenna_noise_m1_g5
+python scan.py m=2 g=5 antenna_noise_m2_g5
+python scan.py m=3 g=5 antenna_noise_m3_g5

@@ -1,0 +1,109 @@
+<internal_error>
+<sub_system>ERR</sub_system>
+<callstack>
+	0x7fc35b6e91e1: ccl_err + 0x81e1 (_ZN15ERR_STACKWALKER15get_stack_traceEPPKviiPv + 0xb1)
+	0x7fc35b6ec22a: ccl_err + 0xb22a (_Z14err_terminatorv + 0x4b)
+	0x7fc38c687506: jtag_client + 0x33506 (_ZN10__cxxabiv111__terminateEPFvvE + 0x6)
+	0x7fc38c68cac9: jtag_client + 0x38ac9
+	0x7fc38c68740a: jtag_client + 0x3340a (__gxx_personality_v0 + 0x52a)
+	0x7fc38c698053: jtag_client + 0x44053 (_Unwind_RaiseException_Phase2 + 0x43)
+	0x7fc38c6986aa: jtag_client + 0x446aa (_Unwind_RaiseException + 0xfa)
+	0x7fc38c687631: jtag_client + 0x33631 (__cxa_throw + 0x51)
+	0x7fc35b6ec0f7: ccl_err + 0xb0f7 (err_sigaction_handler + 0x76)
+	0x7fc353ff4890: pthread.so.0 + 0x12890
+	0x7fc35889ff86: QtGui.so.4 + 0x6a8f86
+	0x7fc3588a0c86: QtGui.so.4 + 0x6a9c86
+	0x7fc37f877824: QtCore.so.4 + 0x1c9824 (_ZN7QObject5eventEP6QEvent + 0x94)
+	0x7fc35845cb3f: QtGui.so.4 + 0x265b3f (_ZN7QWidget5eventEP6QEvent + 0x7f)
+	0x7fc35887347b: QtGui.so.4 + 0x67c47b (_ZN6QFrame5eventEP6QEvent + 0x2b)
+	0x7fc358905089: QtGui.so.4 + 0x70e089 (_ZN19QAbstractScrollArea5eventEP6QEvent + 0xa9)
+	0x7fc3588a165b: QtGui.so.4 + 0x6aa65b (_ZN8QMdiArea5eventEP6QEvent + 0x10b)
+	0x7fc3583fb84f: QtGui.so.4 + 0x20484f (_ZN19QApplicationPrivate13notify_helperEP7QObjectP6QEvent + 0xaf)
+	0x7fc358401ea3: QtGui.so.4 + 0x20aea3 (_ZN12QApplication6notifyEP7QObjectP6QEvent + 0x183)
+	0x7fc37f863a84: QtCore.so.4 + 0x1b5a84 (_ZN16QCoreApplication14notifyInternalEP7QObjectP6QEvent + 0x84)
+	0x7fc37f899a1d: QtCore.so.4 + 0x1eba1d
+	0x7fc37f8967dd: QtCore.so.4 + 0x1e87dd
+	0x7fc37f896801: QtCore.so.4 + 0x1e8801
+	0x7fc351cff417: glib-2.0.so.0 + 0x4c417 (g_main_context_dispatch + 0x2e7)
+	0x7fc351cff650: glib-2.0.so.0 + 0x4c650
+	0x7fc351cff6dc: glib-2.0.so.0 + 0x4c6dc (g_main_context_iteration + 0x2c)
+	0x7fc37f896ab5: QtCore.so.4 + 0x1e8ab5 (_ZN20QEventDispatcherGlib13processEventsE6QFlagsIN10QEventLoop17ProcessEventsFlagEE + 0x65)
+	0x7fc3584af89f: QtGui.so.4 + 0x2b889f
+	0x7fc37f862a95: QtCore.so.4 + 0x1b4a95 (_ZN10QEventLoop13processEventsE6QFlagsINS_17ProcessEventsFlagEE + 0x35)
+	0x7fc37f862e68: QtCore.so.4 + 0x1b4e68 (_ZN10QEventLoop4execE6QFlagsINS_17ProcessEventsFlagEE + 0x128)
+	0x7fc3589469f7: QtGui.so.4 + 0x74f9f7 (_ZN7QDialog4execEv + 0xe7)
+	0x7fc38a0b3878: gcl_afcq + 0x171878 (_ZN16AFCQ_MSG_DISPLAY22internal_error_displayESs + 0x268)
+	0x7fc35dfd5cdf: ccl_msg + 0x4acdf (_ZN10MSG_REPORT14internal_errorERKSs + 0x123)
+	0x7fc35dff25a6: ccl_msg + 0x675a6 (_ZN14MSG_ERROR_INFO8finalizeEv + 0x50)
+	0x7fc35dff27fe: ccl_msg + 0x677fe (_ZN18MSG_INTERNAL_ERROR12report_fatalEPKcPv + 0x5c)
+	0x7fc35b6ebecd: ccl_err + 0xaecd (_Z26err_report_fatal_exceptionPKcPv + 0x66)
+	0x7fc35b6ec1b1: ccl_err + 0xb1b1 (err_sigaction_handler + 0x130)
+	0x7fc353ff4890: pthread.so.0 + 0x12890
+	0x7fc35889ff86: QtGui.so.4 + 0x6a8f86
+	0x7fc3588a0c86: QtGui.so.4 + 0x6a9c86
+	0x7fc3588a1c8d: QtGui.so.4 + 0x6aac8d (_ZN8QMdiArea11resizeEventEP12QResizeEvent + 0x1ad)
+	0x7fc35845d572: QtGui.so.4 + 0x266572 (_ZN7QWidget5eventEP6QEvent + 0xab2)
+	0x7fc35887347b: QtGui.so.4 + 0x67c47b (_ZN6QFrame5eventEP6QEvent + 0x2b)
+	0x7fc3589036e7: QtGui.so.4 + 0x70c6e7 (_ZN19QAbstractScrollArea13viewportEventEP6QEvent + 0x17)
+	0x7fc3588a1285: QtGui.so.4 + 0x6aa285 (_ZN8QMdiArea13viewportEventEP6QEvent + 0x45)
+	0x7fc358906108: QtGui.so.4 + 0x70f108
+	0x7fc37f863d7f: QtCore.so.4 + 0x1b5d7f (_ZN23QCoreApplicationPrivate29sendThroughObjectEventFiltersEP7QObjectP6QEvent + 0x7f)
+	0x7fc3583fb820: QtGui.so.4 + 0x204820 (_ZN19QApplicationPrivate13notify_helperEP7QObjectP6QEvent + 0x80)
+	0x7fc358401ea3: QtGui.so.4 + 0x20aea3 (_ZN12QApplication6notifyEP7QObjectP6QEvent + 0x183)
+	0x7fc37f863a84: QtCore.so.4 + 0x1b5a84 (_ZN16QCoreApplication14notifyInternalEP7QObjectP6QEvent + 0x84)
+	0x7fc3584a3b7d: QtGui.so.4 + 0x2acb7d (_ZN14QWidgetPrivate15setGeometry_sysEiiiib + 0x37d)
+	0x7fc358455d08: QtGui.so.4 + 0x25ed08 (_ZN7QWidget11setGeometryERK5QRect + 0x78)
+	0x7fc358904576: QtGui.so.4 + 0x70d576 (_ZN26QAbstractScrollAreaPrivate14layoutChildrenEv + 0x3d6)
+	0x7fc35889d6c1: QtGui.so.4 + 0x6a66c1
+	0x7fc3588a07b3: QtGui.so.4 + 0x6a97b3
+	0x7fc3588a1451: QtGui.so.4 + 0x6aa451 (_ZN8QMdiArea13viewportEventEP6QEvent + 0x211)
+	0x7fc358906108: QtGui.so.4 + 0x70f108
+	0x7fc37f863d7f: QtCore.so.4 + 0x1b5d7f (_ZN23QCoreApplicationPrivate29sendThroughObjectEventFiltersEP7QObjectP6QEvent + 0x7f)
+	0x7fc3583fb820: QtGui.so.4 + 0x204820 (_ZN19QApplicationPrivate13notify_helperEP7QObjectP6QEvent + 0x80)
+	0x7fc358401ea3: QtGui.so.4 + 0x20aea3 (_ZN12QApplication6notifyEP7QObjectP6QEvent + 0x183)
+	0x7fc37f863a84: QtCore.so.4 + 0x1b5a84 (_ZN16QCoreApplication14notifyInternalEP7QObjectP6QEvent + 0x84)
+	0x7fc3588b06fc: QtGui.so.4 + 0x6b96fc (_ZN13QMdiSubWindow10closeEventEP11QCloseEvent + 0xcc)
+	0x7fc38f211c30: sys_qui + 0xacc30 (_ZN15QUI_MDI_SUB_WND10closeEventEP11QCloseEvent + 0x50c)
+	0x7fc35845d8aa: QtGui.so.4 + 0x2668aa (_ZN7QWidget5eventEP6QEvent + 0xdea)
+	0x7fc3588b096b: QtGui.so.4 + 0x6b996b (_ZN13QMdiSubWindow5eventEP6QEvent + 0x18b)
+	0x7fc3583fb84f: QtGui.so.4 + 0x20484f (_ZN19QApplicationPrivate13notify_helperEP7QObjectP6QEvent + 0xaf)
+	0x7fc358401ea3: QtGui.so.4 + 0x20aea3 (_ZN12QApplication6notifyEP7QObjectP6QEvent + 0x183)
+	0x7fc37f863a84: QtCore.so.4 + 0x1b5a84 (_ZN16QCoreApplication14notifyInternalEP7QObjectP6QEvent + 0x84)
+	0x7fc3584543f8: QtGui.so.4 + 0x25d3f8 (_ZN14QWidgetPrivate12close_helperENS_9CloseModeE + 0x1f8)
+	0x7fc3584544e2: QtGui.so.4 + 0x25d4e2 (_ZN7QWidget5closeEv + 0x12)
+	0x7fc38f1f8722: sys_qui + 0x93722 (_ZN13QUI_FRAME_WND17close_all_in_listE5QListIP13QMdiSubWindowES2_5_GUID + 0x358)
+	0x7fc38f1f8850: sys_qui + 0x93850 (_ZN13QUI_FRAME_WND17close_all_windowsE5_GUID + 0xde)
+	0x7fc38f1fb2f9: sys_qui + 0x962f9 (_ZN13QUI_FRAME_WND10closeEventEP11QCloseEvent + 0x257)
+	0x7fc38f754d41: sys_qgq + 0x19d41 (_ZN15QGQ_MAIN_WINDOW10closeEventEP11QCloseEvent + 0x35)
+	0x7fc35845d8aa: QtGui.so.4 + 0x2668aa (_ZN7QWidget5eventEP6QEvent + 0xdea)
+	0x7fc35889095c: QtGui.so.4 + 0x69995c (_ZN11QMainWindow5eventEP6QEvent + 0x13c)
+	0x7fc3583fb84f: QtGui.so.4 + 0x20484f (_ZN19QApplicationPrivate13notify_helperEP7QObjectP6QEvent + 0xaf)
+	0x7fc358401ea3: QtGui.so.4 + 0x20aea3 (_ZN12QApplication6notifyEP7QObjectP6QEvent + 0x183)
+	0x7fc37f863a84: QtCore.so.4 + 0x1b5a84 (_ZN16QCoreApplication14notifyInternalEP7QObjectP6QEvent + 0x84)
+	0x7fc3584543f8: QtGui.so.4 + 0x25d3f8 (_ZN14QWidgetPrivate12close_helperENS_9CloseModeE + 0x1f8)
+	0x7fc358475882: QtGui.so.4 + 0x27e882
+	0x7fc358477fa5: QtGui.so.4 + 0x280fa5 (_ZN12QApplication16x11ClientMessageEP7QWidgetP7_XEventb + 0x1e5)
+	0x7fc3584847a1: QtGui.so.4 + 0x28d7a1 (_ZN12QApplication15x11ProcessEventEP7_XEvent + 0xfa1)
+	0x7fc3584afd62: QtGui.so.4 + 0x2b8d62
+	0x7fc351cff417: glib-2.0.so.0 + 0x4c417 (g_main_context_dispatch + 0x2e7)
+	0x7fc351cff650: glib-2.0.so.0 + 0x4c650
+	0x7fc351cff6dc: glib-2.0.so.0 + 0x4c6dc (g_main_context_iteration + 0x2c)
+	0x7fc37f896ab5: QtCore.so.4 + 0x1e8ab5 (_ZN20QEventDispatcherGlib13processEventsE6QFlagsIN10QEventLoop17ProcessEventsFlagEE + 0x65)
+	0x7fc3584af89f: QtGui.so.4 + 0x2b889f
+	0x7fc37f862a95: QtCore.so.4 + 0x1b4a95 (_ZN10QEventLoop13processEventsE6QFlagsINS_17ProcessEventsFlagEE + 0x35)
+	0x7fc37f862e68: QtCore.so.4 + 0x1b4e68 (_ZN10QEventLoop4execE6QFlagsINS_17ProcessEventsFlagEE + 0x128)
+	0x7fc37f867c84: QtCore.so.4 + 0x1b9c84 (_ZN16QCoreApplication4execEv + 0xb4)
+	   0x401efb: quartus + 0x1efb (_Z8qgq_mainiPPKc + 0x7b)
+	0x7fc35dfcb990: ccl_msg + 0x40990 (_Z15msg_main_threadPv + 0x10)
+	0x7fc35b2ab0cc: ccl_thr + 0x60cc (thr_final_wrapper + 0xc)
+	0x7fc35dfcba4f: ccl_msg + 0x40a4f (_Z18msg_thread_wrapperPFPvS_ES_ + 0x62)
+	0x7fc35b91c679: ccl_mem + 0xa679 (_Z18mem_thread_wrapperPFPvS_ES_ + 0x99)
+	0x7fc35b6ea034: ccl_err + 0x9034 (_Z18err_thread_wrapperPFPvS_ES_ + 0x27)
+	0x7fc35b2ab492: ccl_thr + 0x6492 (thr_thread_wrapper + 0x15)
+	0x7fc35dfcd94c: ccl_msg + 0x4294c (_Z12msg_exe_mainiPPKcPFiiS1_E + 0xa3)
+</callstack>
+<error>*** Fatal Error: Unhandled Exception</error>
+<date>Thu Mar 26 20:28:33 2020
+</date>
+<version>Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition</version>
+</internal_error>

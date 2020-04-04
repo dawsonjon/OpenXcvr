@@ -47,6 +47,9 @@ unsigned get_button(unsigned button){
 	WAIT_10MS
 	return 0;
 }
+unsigned check_button(unsigned button){
+	return ~fgetc(push_button_in) & button;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Draw frequency XX.XXX.XXX 0 to 99.999999 MHz in 1Hz steps
@@ -212,15 +215,9 @@ int position_change=0;
 
 int do_ui(){
 
-    //If knob is turned adjust frequency
-    position_change = get_position_change();
-    if(position_change){
-       settings.frequency += position_change * step_sizes[settings.step];
-       return 1;
-    }
-
     //If button is pressed enter menu
-    if(!get_button(1)) return 0;
+    if(!check_button(1)) return 0;
+    get_button(1);
 
     //top level menu
     char unsigned buttons;
@@ -234,8 +231,8 @@ int do_ui(){
     options[3] = "AGC";
     options[4] = "squelch";
     options[5] = "gain";
-    options[6] = "band";
-    options[7] = "step";
+    options[6] = "step";
+    options[7] = "factory reset";
     if(!get_enum("menu:", options, 7, &setting)) return 1;
     title = options[setting];
 
@@ -269,10 +266,6 @@ int do_ui(){
 		return 1;
 
 	case 6 : 
-		get_digit(title, 4, &settings.band);
-		return 1;
-
-	case 7 : 
 		options[0]="10Hz";
 		options[1]="50Hz";
 		options[2]="100Hz";
@@ -287,6 +280,13 @@ int do_ui(){
 
 		//round frequency to the nearest step size
 		settings.frequency -= settings.frequency%step_sizes[settings.step];
+		return 1;
+
+	case 7 : 
+		options[0]="No";
+		options[1]="Yes";
+		get_enum("confirm", options, 2, &setting);
+		if(setting) factory_reset(&bus);
 		return 1;
 
     }
