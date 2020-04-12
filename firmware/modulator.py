@@ -10,7 +10,7 @@ def modulator(clk, audio, audio_stb, settings):
 
     #generating I and Q for am and FM are fairly trivial
     audio_bits = audio.subtype.bits
-    dc = (2**(audio_bits-2))-1
+    dc = (2**(audio_bits-2))
     am_i = (audio >> 1) + dc
     am_q = (audio >> 1) + dc
     ssb_i = audio.resize(audio_bits+1)<<1
@@ -98,10 +98,10 @@ if __name__ == "__main__" and "sim" in sys.argv:
 
     #mode am stim am
     stimulus=(
-        np.sin(np.arange(10000)*2.0*pi*0.01)*
-        ((2**7)-1)#scale to 16 bits
+        np.sin(np.arange(10000)*2.0*pi*0.01)>0#*
+        #((2**7)-1)-1#scale to 16 bits
     )
     test_modulator(stimulus, AM)
-    test_modulator(stimulus, FM)
-    test_modulator(stimulus, NBFM)
-    test_modulator(stimulus, SSB)
+    #test_modulator(stimulus, FM)
+    #test_modulator(stimulus, NBFM)
+    #test_modulator(stimulus, SSB)
