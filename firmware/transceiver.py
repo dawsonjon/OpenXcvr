@@ -62,7 +62,7 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
         audio_q = tx_q,
         audio_stb = tx_stb,
         interpolation_factor = 3000, #from 300000000 to 9180
-        lut_bits = 10,
+        lut_bits = 9,
         channels = 2, 
         rx_tx = rx_tx,
         enable_test_signal = enable_test_signal
@@ -154,6 +154,7 @@ def generate():
 
     clk = Clock("clk")
     speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
+    #speaker = audio_dac(cpu_clk, mic.resize(18)<<6, mic_stb) 
     
     # 1pps counter
     ##############

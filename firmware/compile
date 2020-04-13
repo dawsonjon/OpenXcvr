@@ -1,6 +1,6 @@
 #!/bin/sh
 
-c2verilog control_sw.c
+c2verilog memory_size=2048 control_sw.c
 python transceiver.py gen
 python rotary_encoder.py
 

@@ -14,6 +14,8 @@ from downconverter import downconverter
 from measure_magnitude import measure_magnitude
 from test_tone import test_tone
 from test_signal import test_signal
+from clamp import clamp
+from mic_compression import mic_compression
 from settings import *
 
 def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug={}):
@@ -31,9 +33,9 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #          +-----------+ +---------+
 
 
-    #tx_audio, tx_audio_stb = test_tone(clk)
-
+    #compress microphone dynamic range
     tx_bits = tx_audio.subtype.bits
+    tx_audio, mic_compression(clk, tx_audio, tx_audio_stb)
     
     #rx agc
     rx_i, rx_q, rx_stb = complex_agc(clk, rx_i, rx_q, rx_stb, settings.gain)
@@ -92,6 +94,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     rx_audio, rx_audio_stb = agc_out, agc_out_stb
 
     #rx_audio_stb
+    #blank audio output during transmit
     rx_audio = rx_audio.subtype.select(settings.rx_tx, rx_audio, zero)
     rx_audio_stb = Boolean().select(settings.rx_tx, rx_audio_stb, zero_stb)
     audio_capture = rx_audio.subtype.select(settings.rx_tx, audio_capture, zero)
@@ -109,10 +112,10 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_q = t_rx.select(settings.rx_tx, test_q, filter_out_q)
     tx_stb = Boolean().select(settings.rx_tx, test_stb, filter_out_stb)
 
-    #resize tx
-    tx_i = tx_i.resize(tx_bits)
-    tx_q = tx_q.resize(tx_bits)
-    tx_stb = tx_stb
+    #resize tx clamp if necassary
+    tx_i, stb = clamp(clk, tx_i, tx_stb, 8)
+    tx_q, _   = clamp(clk, tx_q, tx_stb, 8)
+    tx_stb = stb
 
 
 
@@ -142,7 +145,7 @@ def test_transceiver(stimulus, sideband, mode, rx_tx):
     tx_audio_in = Signed(8).input("tx_audio_in")
     tx_audio_stb_in = Boolean().input("stb_in")
 
-    rx_audio, rx_audio_stb, tx_i, tx_q, tx_stb, _, _, _, _, _ = af_section(clk, rx_i_in, rx_q_in, rx_stb_in, tx_audio_in, tx_audio_stb_in, settings) 
+    rx_audio, rx_audio_stb, _, _, tx_i, tx_q, tx_stb, _, _, _, _, _ = af_section(clk, rx_i_in, rx_q_in, rx_stb_in, tx_audio_in, tx_audio_stb_in, settings) 
 
     plt.plot(np.real(stimulus))
     plt.plot(np.imag(stimulus))
@@ -180,6 +183,7 @@ def test_transceiver(stimulus, sideband, mode, rx_tx):
     #plt.plot(np.imag(stimulus))
     plt.plot(np.real(response))
     plt.plot(np.imag(response))
+    plt.plot(np.abs(response))
     plt.show()
     plt.plot(20*np.log10(abs(np.fft.fftshift(np.fft.fft(response)))))
     plt.show()
@@ -195,14 +199,20 @@ if __name__ == "__main__" and "sim" in sys.argv:
         np.sin(np.arange(1000)*2.0*pi*0.01)*
         ((2**7)-1)#scale to 16 bits
     )
-    test_transceiver(stimulus, USB, AM, 1)#lsb AM
+    #stimulus=(
+    #    ((np.sin(np.arange(1000)*2.0*pi*0.01)>0)-0.5)*127*2
+    #)
+    #test_transceiver(stimulus, USB, AM, 1)#lsb AM
 
     #mode SSB stim tx
     #stimulus=(
-        #np.sin(np.arange(1000)*2.0*pi*0.01)*
-        #((2**7)-1)#scale to 16 bits
+    #   ((np.sin(np.arange(1000)*2.0*pi*0.01)>0)-0.5)*127*2
     #)
-    #test_transceiver(stimulus, USB, SSB, 1)#lsb AM
+    stimulus=(
+        np.sin(np.arange(1000)*2.0*pi*0.01)*
+        ((2**7)-1)#scale to 16 bits
+    )
+    test_transceiver(stimulus, USB, SSB, 1)#lsb AM
 
     #mode nfm
     #stimulus=(

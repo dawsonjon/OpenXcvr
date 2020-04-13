@@ -385,6 +385,8 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
   //AUDIO OUTPUT
   .speaker_out(speaker)
   );
+  
+  //assign tx_enable = internal_tx_enable?1'b0:1'bZ;
 
   //use double data rate buffers for rf signals
   
@@ -413,9 +415,9 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
   assign leds[1] = rs232_cts;
   assign leds[2] = rs232_tx;
   assign leds[3] = rs232_rx;
-  assign leds[4] = quad_a;
-  assign leds[5] = quad_b;
-  assign leds[6] = position_bus[0];
+  assign leds[4] = band[0];
+  assign leds[5] = band[1];
+  assign leds[6] = band[2];
   assign leds[7] = position_bus[1];
   
   

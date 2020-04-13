@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 from openxcvr import Xcvr
 import time
 
-xcvr = Xcvr("/dev/ttyUSB1")
+xcvr = Xcvr("/dev/ttyUSB0")
 
 xcvr.set_mode(1)
 xcvr.set_squelch(0)
-xcvr.set_gain(2)
+xcvr.set_gain(0)
 xcvr.set_test_signal(1)
 
 start_frequency = 1.0e6

@@ -114,26 +114,22 @@ void apply_settings (){
     if(settings.test_signal) control |= 0x00000040u;
     if(settings.USB_audio)  control |= 0x00100000u;
 
-    //set band
-    settings.band &= 0x7;
-    if(settings.frequency >= 2000000 && settings.frequency <4000000){
-        control |= (3 << 21);
-    } else if(settings.frequency >= 4000000 && settings.frequency < 8000000){
-        control |= (2 << 21);
-    } else if(settings.frequency >= 8000000 && settings.frequency < 16000000){
-        control |= (1 << 21);
-    } else if(settings.frequency >= 16000000 && settings.frequency < 30000000){
-        control |= (0 << 21);
-    } else {
-        control |= (4 << 21);
-    }
-
     //force a band
-    if(settings.band & 0x10){
-        settings.band &= 0x7;
-        control |= (settings.band << 21);
+    if(settings.band & 0x8){
+        control |= ((settings.band & 0x7) << 21);
+    } else {
+        if(settings.frequency >= 2000000 && settings.frequency <4000000){
+            control |= (3 << 21);
+        } else if(settings.frequency >= 4000000 && settings.frequency < 8000000){
+            control |= (2 << 21);
+        } else if(settings.frequency >= 8000000 && settings.frequency < 16000000){
+            control |= (1 << 21);
+        } else if(settings.frequency >= 16000000 && settings.frequency < 30000000){
+            control |= (0 << 21);
+        } else {
+            control |= (4 << 21);
+        }
     }
-
 
     if(settings.tx)         control |= 0x00000008u;
     if(settings.tx){
@@ -160,7 +156,7 @@ void main(){
 
     stdout = debug_out;
     stdin = debug_in;
-    //puts("FPGA transceiver v 0.01\n");
+    puts("FPGA transceiver v 0.01\n");
 
     unsigned int cmd, power, i, pps_count, last_smeter=0;
     unsigned wake_time = 0;
@@ -178,19 +174,19 @@ void main(){
     while(1){
 
 
-        //if(ready(stdin)){ 
-            //cmd = getc();
-            //switch(cmd){
-                //case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
-                //case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
-                //case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
-                //case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
-                //case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
-                //case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
-                //case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
-                //case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
-                //case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
-                //case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
+        if(ready(stdin)){ 
+            cmd = getc();
+            switch(cmd){
+                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
+                case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
+                case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
+                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
+                case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
+                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
+                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
+                case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
+                case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
+                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
                 //case 'h':
                 //print help
                     //euts("fxxxxxxxx: frequency\n");
@@ -212,63 +208,63 @@ void main(){
                     //puts("\n");
                     //break;
 
-                //case 'x':
-                    //pps_count = fgetc(pps_count_in);
-                    //print_uhex(pps_count);
-                    //puts("\n");
-                    //break;
+                case 'x':
+                    pps_count = fgetc(pps_count_in);
+                    print_uhex(pps_count);
+                    puts("\n");
+                    break;
 
-                //case 'a':
-                    //for(i=0; i<5; i++){
-                        //capture[i] = fgetc(adc_in);
-                    //}
-                    //for(i=0; i<5; i++){
-                        //print_uhex(capture[i]);
-                        //puts("\n");
-                    //}
-                    //break;
+                case 'a':
+                    for(i=0; i<5; i++){
+                        capture[i] = fgetc(adc_in);
+                    }
+                    for(i=0; i<5; i++){
+                        print_uhex(capture[i]);
+                        puts("\n");
+                    }
+                    break;
 
-                //case 'p':
+                case 'p':
                 //print rx magnitude (post filter)
-                    //power = fgetc(power_in);
-                    //print_uhex(power);
-                    //puts("\n");
-                    //break;
+                    power = fgetc(power_in);
+                    print_uhex(power);
+                    puts("\n");
+                    break;
 
-                //case 's':
+                case 's':
                 //read smeter
-                    //puts(smeter[read_smeter()]);
-                    //puts("\n");
-                    //break;
+                    puts(smeter[read_smeter()]);
+                    puts("\n");
+                    break;
 
-                //case 'c':
-                    //for(i=0;i<1000;i++){
-                        //temp = fgetc(capture_in);
-                        //putc(temp & 0xff);
-                        //putc(temp >> 8  & 0xff);
-                        //putc(temp >> 16 & 0xff);
-                        //putc(temp >> 24 & 0xff);
-                    //}
-                    //break;
-                //case 'O':
-                    //for(i=0;i<1000;i++){
-                        //audio =  fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio >>= 4;
-                        //putc(audio);
-                        //putc(audio>>8);
-                    //}
-                    //break;
-                //case 'I':
-                    //for(i=0;i<1000;i++){
-                        //audio = getc();
-                        //fputc(audio, audio_out);
-                    //}
-                    //break;
-            //}
-        //}
+                case 'c':
+                    for(i=0;i<1000;i++){
+                        temp = fgetc(capture_in);
+                        putc(temp & 0xff);
+                        putc(temp >> 8  & 0xff);
+                        putc(temp >> 16 & 0xff);
+                        putc(temp >> 24 & 0xff);
+                    }
+                    break;
+                case 'O':
+                    for(i=0;i<1000;i++){
+                        audio =  fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio += fgetc(audio_in);
+                        audio >>= 4;
+                        putc(audio);
+                        putc(audio>>8);
+                    }
+                    break;
+                case 'I':
+                    for(i=0;i<1000;i++){
+                        audio = getc();
+                        fputc(audio, audio_out);
+                    }
+                    break;
+            }
+       }
 
 
        

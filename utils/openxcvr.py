@@ -36,7 +36,7 @@ class Xcvr:
         if len(data) < 1000:
             return
         self.port.write("I")
-        buf = self.port.write(data[:1000])
+        self.port.write(data[:1000])
 
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%int(frequency))
@@ -57,7 +57,7 @@ class Xcvr:
         self.port.write("g%u\n"%gain)
 
     def set_band(self, band):
-        self.port.write("b%u\n"%band)
+        self.port.write("b%d\n"%(band|8))
 
     def set_AGC(self, gain):
         self.port.write("A%u\n"%gain)

@@ -9,24 +9,18 @@ from random import randint
 
 def rf_section(clk, frequency, audio_i, audio_q, audio_stb, interpolation_factor, lut_bits, channels, rx_tx, enable_test_signal):
     dlo_i, dlo_q = nco(clk, frequency, lut_bits, channels)
-    dlo_i = [i.label("nco_i_%s"%idx) for idx, i in enumerate(dlo_i)]
-    dlo_q = [i.label("nco_q_%s"%idx) for idx, i in enumerate(dlo_q)]
     lo_i = [i[i.subtype.bits-1] for i in dlo_i]
     lo_q = [i[i.subtype.bits-1] for i in dlo_q]
 
     audio_bits = audio_i.subtype.bits
     audio_i = interpolate(clk, audio_i, audio_stb, interpolation_factor, channels)
     audio_q = interpolate(clk, audio_q, audio_stb, interpolation_factor, channels)
-    audio_i = [i.label("audio_i_%s"%idx) for idx, i in enumerate(audio_i)]
-    audio_q = [i.label("audio_q_%s"%idx) for idx, i in enumerate(audio_q)]
 
     product_bits = audio_bits + lut_bits - 1
     rf_i = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_i, dlo_i)]
     rf_q = [((a.resize(product_bits)*l)>>lut_bits-1).resize(audio_bits) for a, l in zip(audio_q, dlo_q)]
     rf_i = [i.subtype.register(clk, d=i) for i in rf_i]
     rf_q = [i.subtype.register(clk, d=i) for i in rf_q]
-    rf_i = [i.label("rf_i_%s"%idx) for idx, i in enumerate(rf_i)]
-    rf_q = [i.label("rf_q_%s"%idx) for idx, i in enumerate(rf_q)]
     
     rf = [i.subtype.register(clk, d=i+q) for i, q in zip(rf_i, rf_q)]
     rf = [dither(clk, i, True) for i in rf]

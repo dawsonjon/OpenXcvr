@@ -159,8 +159,8 @@ def filter(clk, data_i, data_q, stb, settings):
     #select sideband
     #0=lsb
     #1=usb
-    t_i = kernel_type.select(settings.sideband, kernel_i, kernel_q)
-    t_q = kernel_type.select(settings.sideband, kernel_q, kernel_i)
+    t_i = kernel_type.select(settings.sideband, kernel_q, kernel_i)
+    t_q = kernel_type.select(settings.sideband, kernel_i, kernel_q)
     kernel_i = t_i
     kernel_q = t_q
 

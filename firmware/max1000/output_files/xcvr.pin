@@ -157,7 +157,7 @@ VCC_ONE                      : G8        : power  :                   : 3.0V/3.3
 RESERVED_INPUT_WITH_WEAK_PULLUP : G9        :        :                   :         : 6         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : G10       :        :                   :         : 6         :                
 VCCIO6                       : G11       : power  :                   : 3.3V    : 6         :                
-lo_i                         : G12       : output : 3.3-V LVTTL       :         : 5         : Y              
+lo_q                         : G12       : output : 3.3-V LVTTL       :         : 5         : Y              
 sda_pu                       : G13       : output : 3.3-V LVTTL       :         : 5         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : H1        :        :                   :         : 1B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : H2        :        :                   :         : 1B        :                
@@ -171,7 +171,7 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : H9        :        :                   :      
 sda                          : H10       : bidir  : 3.3-V LVTTL       :         : 5         : Y              
 VCCIO5                       : H11       : power  :                   : 3.3V    : 5         :                
 GND                          : H12       : gnd    :                   :         :           :                
-lo_q                         : H13       : output : 3.3-V LVTTL       :         : 5         : Y              
+lo_i                         : H13       : output : 3.3-V LVTTL       :         : 5         : Y              
 pps_in                       : J1        : input  : 3.3-V LVTTL       :         : 2         : Y              
 speaker                      : J2        : output : 3.3-V LVTTL       :         : 2         : Y              
 VCCIO2                       : J3        : power  :                   : 3.3V    : 2         :                
