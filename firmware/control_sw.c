@@ -136,7 +136,7 @@ void apply_settings (){
         fputc(convert_to_steps(settings.frequency), frequency_out);
     } else {
         //TX is direct conversion
-        fputc(convert_to_steps(settings.frequency-24414), frequency_out);
+        fputc(convert_to_steps(settings.frequency-12207), frequency_out);
     }
 
     fputc(control, control_out);

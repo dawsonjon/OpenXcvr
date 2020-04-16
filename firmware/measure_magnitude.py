@@ -19,8 +19,8 @@ from numpy import log10
 def measure_magnitude(clk, audio, audio_stb, agc_speed, reset=0):
     attack_factor = 4
     max_factor = 15
-    decay_factor = Signed(5).select(agc_speed, 10, 12, 13, 15)
-    hang = Unsigned(19).select(agc_speed, 10000, 25000, 100000, 200000)
+    decay_factor = Signed(5).select(agc_speed, 9, 11, 12, 13)
+    hang = Unsigned(19).select(agc_speed, 5000, 12500, 50000, 100000)
 
     #use a leaky max hold
     audio_bits = audio.subtype.bits

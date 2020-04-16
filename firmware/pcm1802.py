@@ -21,11 +21,11 @@ from cdc import meta_chain
 def pcm1802(clk, bclk, lrclk, dout):
 
     #create a divided down clock to drive sclk
-    fs = 96000
+    fs = 50000.0
     clk_frequency = 50000000
     clock_divide = int(ceil(clk_frequency/(512*fs)))
 
-    print (clk_frequency/clock_divide)/512.0/4
+    print int((clk_frequency/clock_divide)/512.0/4)
     _, last = counter(clk, 0, clock_divide-1, 1)
     sclk = Boolean().register(clk, init=0, en=last)
     sclk.d(~sclk)

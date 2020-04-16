@@ -35,10 +35,10 @@ def create_filter(frequency_response, taps=511, kernel_bits=18):
 def make_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
-    usb_response_0 = make_response(100e3, 200, 3.4e3)#SSB
-    usb_response_1 = make_response(100e3, 6e3)  #AM
-    usb_response_2 = make_response(100e3, 15e3) #FM
-    usb_response_3 = make_response(100e3, 9e3)  #NFM
+    usb_response_0 = make_response(50e3, 200, 3.4e3)#SSB
+    usb_response_1 = make_response(50e3, 6e3)  #AM
+    usb_response_2 = make_response(50e3, 15e3) #FM
+    usb_response_3 = make_response(50e3, 9e3)  #NFM
 
     #In Max10 9k block ram supports 512*18 so 1 BRAM can store 128
     return np.concatenate([
@@ -59,10 +59,10 @@ def frequency_response(response, taps, kernel_bits):
 def plot_kernel(taps, kernel_bits):
 
     #each step represents 1/512 of 100kHz ~200Hz
-    response_0 = frequency_response(make_response(100e3, 200, 3.4e3), taps, kernel_bits)#SSB
-    response_1 = frequency_response(make_response(100e3, 6e3), taps, kernel_bits) #AM
-    response_2 = frequency_response(make_response(100e3, 15e3), taps, kernel_bits) #FM
-    response_3 = frequency_response(make_response(100e3, 9e3), taps, kernel_bits)  #NFM
+    response_0 = frequency_response(make_response(50e3, 200, 3.4e3), taps, kernel_bits)#SSB
+    response_1 = frequency_response(make_response(50e3, 6e3), taps, kernel_bits) #AM
+    response_2 = frequency_response(make_response(50e3, 15e3), taps, kernel_bits) #FM
+    response_3 = frequency_response(make_response(50e3, 9e3), taps, kernel_bits)  #NFM
 
     plt.figure()
 
@@ -72,7 +72,7 @@ def plot_kernel(taps, kernel_bits):
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-50, 50, len(response_0)), 
+            np.linspace(-25, 25, len(response_0)), 
             response_0
     )
     plt.subplot(222)
@@ -81,7 +81,7 @@ def plot_kernel(taps, kernel_bits):
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-50, 50, len(response_1)), 
+            np.linspace(-25, 25, len(response_1)), 
             response_1
     )
     plt.subplot(223)
@@ -90,7 +90,7 @@ def plot_kernel(taps, kernel_bits):
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-50, 50, len(response_2)), 
+            np.linspace(-25, 25, len(response_2)), 
             response_2
     )
     plt.subplot(224)
@@ -99,7 +99,7 @@ def plot_kernel(taps, kernel_bits):
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-50, 50, len(response_3)), 
+            np.linspace(-25, 25, len(response_3)), 
             response_3
     )
     plt.show()
@@ -113,7 +113,7 @@ def multiply(clk, data, kernel):
 
 def filter(clk, data_i, data_q, stb, settings):
 
-    taps = 255 #chose a power of 2 - 1
+    taps = 127 #chose a power of 2 - 1
     kernel_type = Signed(settings.filter_kernel_bits)
     kernel = make_kernel(taps, settings.filter_kernel_bits)
     kernel_i = np.real(kernel)
@@ -207,7 +207,7 @@ def test_filter(stimulus, filt, sideband):
     settings.mode   = Unsigned(2).input("mode")
     settings.sideband               = Unsigned(2).input("sideband_select")
 
-    taps = 255
+    taps = 127
 
     clk = Clock("clk")
     stb_in = Boolean().input("stb")
@@ -357,5 +357,5 @@ if __name__ == "__main__":
         f.write(netlist.generate())
 
     if "plot" in sys.argv:
-        plot_kernel(255, 18)
+        plot_kernel(127, 18)
 

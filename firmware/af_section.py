@@ -84,7 +84,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #generate stream of zeros
     #========================
 
-    _, zero_stb = counter(clk, 0, 1499, 1)
+    _, zero_stb = counter(clk, 0, 999, 1)
     zero = t_rx.constant(0)
 
     #output to speaker

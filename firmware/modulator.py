@@ -20,7 +20,7 @@ def modulator(clk, audio, audio_stb, settings):
     #scale audio to give correct frequency deviation depending on mode
     audio_bits = audio.subtype.bits
     extra_bits = 8
-    frequency = scale(audio, 5.0/100, extra_bits, False)
+    frequency = scale(audio, 5.0/50, extra_bits, False)
     frequency_wideband = frequency
     frequency_narrowband = (frequency>>1)
     frequency = frequency_wideband.subtype.select(settings.mode==NBFM, frequency_wideband, frequency_narrowband)
