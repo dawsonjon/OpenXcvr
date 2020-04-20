@@ -3,7 +3,7 @@
 #define WAIT_10MS wait_clocks(500000);
 
 char * smeter[13];
-char * modes[5];
+char * modes[6];
 void init_ui(){
 smeter[0]="s0               ";
 smeter[1]="s1-|             ";
@@ -20,11 +20,12 @@ smeter[11]="s9---------+20dB";
 smeter[12]="s9---------+30dB";
 
 //Select Mode
-modes[0]="LSB";
-modes[1]="AM";
-modes[2]="NFM";
-modes[3]="FM";
+modes[0]="AM";
+modes[1]="NFM";
+modes[2]="FM";
+modes[3]="LSB";
 modes[4]="USB";
+modes[5]="CW";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -230,10 +231,9 @@ int do_ui(){
     options[2] = "mode";
     options[3] = "AGC";
     options[4] = "squelch";
-    options[5] = "gain";
-    options[6] = "step";
-    options[7] = "factory reset";
-    if(!get_enum("menu:", options, 7, &setting)) return 1;
+    options[5] = "step";
+    options[6] = "factory reset";
+    if(!get_enum("menu:", options, 6, &setting)) return 1;
     title = options[setting];
 
     switch(setting){
@@ -244,7 +244,7 @@ int do_ui(){
 		 return 1;
 
 	case 2 : 
-		get_enum(title, modes, 4, &settings.mode);
+		get_enum(title, modes, 5, &settings.mode);
 		return 1;
 
 	case 3 :
@@ -262,10 +262,6 @@ int do_ui(){
 		return 1;
 
 	case 5 : 
-		get_digit(title, 5, &settings.gain);
-		return 1;
-
-	case 6 : 
 		options[0]="10Hz";
 		options[1]="50Hz";
 		options[2]="100Hz";
@@ -282,7 +278,7 @@ int do_ui(){
 		settings.frequency -= settings.frequency%step_sizes[settings.step];
 		return 1;
 
-	case 7 : 
+	case 6 : 
 		options[0]="No";
 		options[1]="Yes";
 		get_enum("confirm", options, 2, &setting);

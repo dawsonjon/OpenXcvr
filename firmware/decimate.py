@@ -1,13 +1,10 @@
 from baremetal import *
 
-def downconverter(clk, i, q, stb):
-    phase, _ = counter(clk, 0, 3, 1, en=stb)
-
-    i, q = i.subtype.select(phase, q, i, -q, -i), q.subtype.select(phase, i, -q, -i, q)
-
-    i = i.subtype.register(clk, d=i, init=0)
-    q = q.subtype.register(clk, d=q, init=0)
-    stb = stb.subtype.register(clk, d=stb, init=0)
+def decimate(clk, i, q, stb, ratio):
+    _, last = counter(clk, 0, ratio-1, 1, en=stb)
+    i = i.subtype.register(clk, d=i, init=0, en=stb&last)
+    q = q.subtype.register(clk, d=q, init=0, en=stb&last)
+    stb = stb.subtype.register(clk, d=stb&last, init=0)
 
     return i, q, stb
 
@@ -23,7 +20,7 @@ if __name__ == "__main__" and "sim" in sys.argv:
     rx_stb_in = Boolean().input("stb_in")
     clk = Clock("clk")
 
-    rx_i_out, rx_q_out, rx_stb = downconverter(clk, rx_i_in, rx_q_in, rx_stb_in) 
+    rx_i_out, rx_q_out, rx_stb = decimate(clk, rx_i_in, rx_q_in, rx_stb_in, 4) 
 
     #mode am stim tx
     stimulus=(
@@ -50,8 +47,8 @@ if __name__ == "__main__" and "sim" in sys.argv:
     response = np.array(i_response)+1.0j*np.array(q_response)
 
     #response = np.array(response)
-    #plt.plot(np.real(stimulus))
-    #plt.plot(np.imag(stimulus))
+    plt.plot(np.real(stimulus))
+    plt.plot(np.imag(stimulus))
     plt.plot(np.real(response))
     plt.plot(np.imag(response))
     plt.show()

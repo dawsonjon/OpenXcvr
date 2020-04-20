@@ -18,15 +18,13 @@ from cdc import meta_chain
 # FMT_0 : LOW
 # FMT_0 : LOW
 
-def pcm1802(clk, bclk, lrclk, dout):
+def pcm1802(clk, bclk, lrclk, dout, clock_divide):
 
     #create a divided down clock to drive sclk
-    fs = 50000.0
-    clk_frequency = 50000000
-    clock_divide = int(ceil(clk_frequency/(512*fs)))
 
-    print int((clk_frequency/clock_divide)/512.0/4)
-    _, last = counter(clk, 0, clock_divide-1, 1)
+    count = clock_divide.subtype.register(clk, init=0)
+    count.d(count.subtype.select(count==0, count-1, clock_divide-1))
+    last = (count==0)
     sclk = Boolean().register(clk, init=0, en=last)
     sclk.d(~sclk)
 
@@ -41,8 +39,8 @@ def pcm1802(clk, bclk, lrclk, dout):
     right.d(right << 1 | dout)
 
     #register left and right channel after each sample
-    left  = Signed(24).register(clk, d=left[31:8],  en=bclk_rising & lrclk_rising)
-    right = Signed(24).register(clk, d=right[31:8], en=bclk_rising & lrclk_rising)
+    left  = Signed(18).register(clk, d=left[31:14],  en=bclk_rising & lrclk_rising)
+    right = Signed(18).register(clk, d=right[31:14], en=bclk_rising & lrclk_rising)
     stb = Boolean().register(clk, d=bclk_rising & lrclk_rising, init=0)
 
     return left, right, stb, sclk

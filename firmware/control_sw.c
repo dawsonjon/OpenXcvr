@@ -27,7 +27,6 @@ typedef struct{
     unsigned squelch;
     unsigned mode;
     unsigned band;
-    unsigned gain;
     unsigned agc_speed;
     unsigned test_signal;
     unsigned USB_audio;
@@ -65,14 +64,13 @@ unsigned to_dB(unsigned x){
 //crude conversion to dBs
 int read_smeter(){
 
-    unsigned gain = to_dB(settings.gain);
     unsigned power = to_dB(fgetc(power_in));
 
     //ADC has 1.5Vpk = 1.06Vrms = 0.0225W into 50ohm = 22.5mW = 13.5dBm
     //Receiver has a gain of 1+(2*2k2/150) = 30.33.. = 29.6dB
     //so full scale pk magnitude = 13.5 - 29.6 = -16.1dBm at input connector
 
-    int power_dbm = -16-(102-power)-gain;
+    int power_dbm = -16-(102-power);
     int s_scale;
 
     if(power_dbm < -63){
@@ -91,6 +89,7 @@ const attenuation_settings[10] = {17, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 void apply_settings (){
     unsigned attenuation; 
     unsigned control = 0;
+    int rx_frequency_correction[6];
 
     //set volume
     attenuation = attenuation_settings[settings.volume];
@@ -106,10 +105,6 @@ void apply_settings (){
     //set agc speed
     settings.agc_speed &= 0x3;
     control |= (settings.agc_speed << 4);
-
-    //set gain
-    settings.gain &= 0xf;
-    control |= (settings.gain << 16);
 
     if(settings.test_signal) control |= 0x00000040u;
     if(settings.USB_audio)  control |= 0x00100000u;
@@ -131,12 +126,23 @@ void apply_settings (){
         }
     }
 
+
+                                            //Mode Clock Divider   NCO Offset
+    rx_frequency_correction[0] = -12207;     //AM    1   48828    -12207
+    rx_frequency_correction[1] = -24414;     //NFM   1   97656    -24414
+    rx_frequency_correction[2] = -24414;     //FM    1   97656    -24414
+    rx_frequency_correction[4] = -4578;      //LSB   4   24414    -4578
+    rx_frequency_correction[3] = -7629;      //USB   4   24414    -7629
+    rx_frequency_correction[5] = -8138;      //CW    3   32552    -8138
+    print_uhex(rx_frequency_correction[settings.mode]);
+
     if(settings.tx)         control |= 0x00000008u;
     if(settings.tx){
+        //TX is direct conversion
         fputc(convert_to_steps(settings.frequency), frequency_out);
     } else {
-        //TX is direct conversion
-        fputc(convert_to_steps(settings.frequency-12207), frequency_out);
+        //Rx uses Fs/4 IF
+        fputc(convert_to_steps(settings.frequency+rx_frequency_correction[settings.mode]), frequency_out);
     }
 
     fputc(control, control_out);
@@ -184,14 +190,12 @@ void main(){
                 case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
                 case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
                 case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
-                case 'g': settings.gain        = scan_udecimal(); apply_settings(); break;
                 case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
                 case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
                 //case 'h':
                 //print help
                     //euts("fxxxxxxxx: frequency\n");
                     //puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
-                    //puts("g: set gain (decimal)\n");
                     //puts("b: set band (decimal)\n");
                     //puts("p: read power (hex)\n");
                     //puts("s: read smeter\n");

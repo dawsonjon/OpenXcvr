@@ -1,12 +1,10 @@
-#sideband settings
-LSB = 0
-USB = 1
-
 #modes
-SSB = 0
-AM = 1
-FM = 2
-NBFM = 3
+AM = 0
+FM = 1
+NBFM = 2
+LSB = 3
+USB = 4
+CW = 5
 
 class Settings:
     pass

@@ -87,13 +87,11 @@ def generate():
 
     #control settings
     control                     = Unsigned(32).input("control_in")
-    settings.mode               = control[1:0]
-    settings.sideband           = control[2]
+    settings.mode               = control[2:0]
     settings.rx_tx              = control[3]
     settings.agc_speed          = control[5:4]
     settings.enable_test_signal = control[6]
     settings.volume             = control[13:8]
-    settings.gain               = control[19:16]
     usb_audio                   = control[20]
     settings.band               = control[23:21]
     frequency                   = Unsigned(32).input("frequency_in")
@@ -135,7 +133,18 @@ def generate():
 
     #external PCM1802 ADC
     #####################
-    rx_i, rx_q, iq_stb, sclk = pcm1802(cpu_clk, bclk, lrclk, dout)
+
+    # Mode Divider  Fs 
+    # ==== =====   ====
+    #  AM    2     48828
+    #  NFM   1     97656
+    #  FM    1     97656
+    #  LSB   4     24414
+    #  USB   4     24414
+    #  CW    3     32552
+
+    clock_divide = Unsigned(3).select(settings.mode, 2, 1, 1, 4, 4, 3)
+    rx_i, rx_q, iq_stb, sclk = pcm1802(cpu_clk, bclk, lrclk, dout, clock_divide)
 
     # Implement transceiver
     ########################

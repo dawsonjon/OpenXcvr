@@ -4,102 +4,62 @@ from settings import *
 from math import log, pi, ceil
 from matplotlib import pyplot as plt
 import numpy as np
+from scipy import signal
 import sys
 
-def make_response(fs, f1, f2=None):
-    if f2 is not None:
-        high = int(ceil(512*(f2-f1)/fs))
-        low1 = int(ceil(512*f1/fs))
-        low2 = (256-high-low1)
-        return np.concatenate([np.zeros(256+low1), np.ones(high), np.zeros(low2)])
-    else:
-        high = int(ceil(1024*f1/fs))/2
-        low = (512-high)/2
-        return np.concatenate([np.zeros(low), np.ones(high), np.zeros(low)])
-
-def create_filter(frequency_response, taps=511, kernel_bits=18):
-
-    #take inverse fft of desired response
-    frequency_response = np.fft.fftshift(frequency_response)
-
-    #create a filter kernel by windowing the desired response
-    impulse_response = np.fft.ifft(frequency_response)
-    impulse_response = np.concatenate([impulse_response[-taps/2:], impulse_response[0:taps/2]])
-    kernel = impulse_response * np.blackman(taps)
-
-    #quantise kernel
-    kernel = np.round(kernel*(2**kernel_bits - 1)) 
-
+def make_kernel(taps, kernel_bits, fc):
+    kernel = signal.firwin(taps, fc, window="blackman")
+    kernel = np.round(kernel * (2.0**kernel_bits-1.0))
     return kernel
 
-def make_kernel(taps, kernel_bits):
-
-    #each step represents 1/512 of 100kHz ~200Hz
-    usb_response_0 = make_response(50e3, 200, 3.4e3)#SSB
-    usb_response_1 = make_response(50e3, 6e3)  #AM
-    usb_response_2 = make_response(50e3, 15e3) #FM
-    usb_response_3 = make_response(50e3, 9e3)  #NFM
-
-    #In Max10 9k block ram supports 512*18 so 1 BRAM can store 128
-    return np.concatenate([
-        create_filter(usb_response_0, taps, kernel_bits), [0], 
-        create_filter(usb_response_1, taps, kernel_bits), [0], 
-        create_filter(usb_response_2, taps, kernel_bits), [0], 
-        create_filter(usb_response_3, taps, kernel_bits), [0] 
-        ]
-    )
-
-def frequency_response(response, taps, kernel_bits):
-    response = create_filter(response, taps, kernel_bits)
-    response = np.concatenate([np.zeros(1024), response, np.zeros(1024)])
+def frequency_response(kernel, kernel_bits):
+    response = np.concatenate([kernel, np.zeros(1024)])
     response /= (2.0**kernel_bits - 1.0) 
     response = 20*np.log10(abs(np.fft.fftshift(np.fft.fft(response))))
     return response
 
 def plot_kernel(taps, kernel_bits):
-
-    #each step represents 1/512 of 100kHz ~200Hz
-    response_0 = frequency_response(make_response(50e3, 200, 3.4e3), taps, kernel_bits)#SSB
-    response_1 = frequency_response(make_response(50e3, 6e3), taps, kernel_bits) #AM
-    response_2 = frequency_response(make_response(50e3, 15e3), taps, kernel_bits) #FM
-    response_3 = frequency_response(make_response(50e3, 9e3), taps, kernel_bits)  #NFM
+    response_0 = frequency_response(make_kernel(taps, kernel_bits, 0.0935), kernel_bits)  #Narrow
+    response_1 = frequency_response(make_kernel(taps, kernel_bits, 0.125), kernel_bits)   #Medium
+    response_2 = frequency_response(make_kernel(taps, kernel_bits, 0.15625), kernel_bits) #Wide
+    response_3 = frequency_response(make_kernel(taps, kernel_bits, 0.01), kernel_bits)    #CW
 
     plt.figure()
 
     plt.subplot(221)
     plt.grid(True)
-    plt.title("SSB")
+    plt.title("Narrow")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-25, 25, len(response_0)), 
+            np.linspace(-12.5, 12.5, len(response_0)), 
             response_0
     )
     plt.subplot(222)
     plt.grid(True)
-    plt.title("AM")
+    plt.title("Normal")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-25, 25, len(response_1)), 
+            np.linspace(-12.5, 12.5, len(response_1)), 
             response_1
     )
     plt.subplot(223)
     plt.grid(True)
-    plt.title("FM (Wide)")
+    plt.title("Wide")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-25, 25, len(response_2)), 
+            np.linspace(-12.5, 12.5, len(response_2)), 
             response_2
     )
     plt.subplot(224)
     plt.grid(True)
-    plt.title("FM (Narrow)")
+    plt.title("CW")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-25, 25, len(response_3)), 
+            np.linspace(-12.2, 12.2, len(response_3)), 
             response_3
     )
     plt.show()
@@ -113,11 +73,14 @@ def multiply(clk, data, kernel):
 
 def filter(clk, data_i, data_q, stb, settings):
 
-    taps = 127 #chose a power of 2 - 1
+    taps = 255 #chose a power of 2 - 1
     kernel_type = Signed(settings.filter_kernel_bits)
-    kernel = make_kernel(taps, settings.filter_kernel_bits)
-    kernel_i = np.real(kernel)
-    kernel_q = np.imag(kernel)
+    kernel = np.concatenate([
+        make_kernel(taps, settings.filter_kernel_bits, 0.09375), [0], #Narrow
+        make_kernel(taps, settings.filter_kernel_bits, 0.125),   [0], #Normal
+        make_kernel(taps, settings.filter_kernel_bits, 0.05625), [0], #Wide
+        make_kernel(taps, settings.filter_kernel_bits, 0.001),   [0]  #CW
+    ])
 
     #generate addresses
     en = Boolean().wire()
@@ -146,44 +109,18 @@ def filter(clk, data_i, data_q, stb, settings):
     count = count.label("read_address")
     data_i = data_i.label("read_data_i")
     data_q = data_q.label("read_data_q")
-    kernel_i = kernel_type.rom(settings.mode.cat(count), *kernel_i)
-    kernel_q = kernel_type.rom(settings.mode.cat(count), *kernel_q)
+    filter_select = Unsigned(2).select(settings.mode, 1, 0, 2, 1, 1, 3)#AM, FM, FM, LSB, USB, CW
+    kernel = kernel_type.rom(filter_select.cat(count), *kernel)
 
     data_i = data_i.subtype.register(clk, d=data_i)
     data_q = data_q.subtype.register(clk, d=data_q)
-    kernel_i = kernel_i.subtype.register(clk, d=kernel_i)
-    kernel_q = kernel_q.subtype.register(clk, d=kernel_q)
-    sop = sop.subtype.register(clk, d=sop)
-    eop = eop.subtype.register(clk, d=eop)
-
-    #select sideband
-    #0=lsb
-    #1=usb
-    t_i = kernel_type.select(settings.sideband, kernel_q, kernel_i)
-    t_q = kernel_type.select(settings.sideband, kernel_i, kernel_q)
-    kernel_i = t_i
-    kernel_q = t_q
-
-    data_i = data_i.subtype.register(clk, d=data_i)
-    data_q = data_q.subtype.register(clk, d=data_q)
-    kernel_i = kernel_i.subtype.register(clk, d=kernel_i)
-    kernel_q = kernel_q.subtype.register(clk, d=kernel_q)
+    kernel = kernel.subtype.register(clk, d=kernel)
     sop = sop.subtype.register(clk, d=sop)
     eop = eop.subtype.register(clk, d=eop)
 
     #multiply kernel by data
-    product_i_0 = multiply(clk, data_i, kernel_i)
-    product_i_1 = multiply(clk, data_q, kernel_q)
-    product_q_0 = multiply(clk, data_i, kernel_q)
-    product_q_1 = multiply(clk, data_q, kernel_i)
-    sop = sop.subtype.register(clk, d=sop)
-    eop = eop.subtype.register(clk, d=eop)
-
-    #product_bits = product_i_0.subtype.bits
-    product_i = product_i_0 - product_i_1
-    product_q = product_q_0 + product_q_1
-    product_i = product_i.subtype.register(clk, d=product_i)
-    product_q = product_q.subtype.register(clk, d=product_q)
+    product_i = multiply(clk, data_i, kernel)
+    product_q = multiply(clk, data_q, kernel)
     sop = sop.subtype.register(clk, d=sop)
     eop = eop.subtype.register(clk, d=eop)
 
@@ -200,12 +137,12 @@ def filter(clk, data_i, data_q, stb, settings):
     accumulator_q = (accumulator_q>>(settings.filter_kernel_bits+1)).resize(data_q.subtype.bits)
     return  accumulator_i, accumulator_q, eop
 
-def test_filter(stimulus, filt, sideband):
+def test_filter(stimulus, mode):
 
     settings = Settings()
     settings.filter_kernel_bits = 18 
-    settings.mode   = Unsigned(2).input("mode")
-    settings.sideband               = Unsigned(2).input("sideband_select")
+    settings.mode = Unsigned(3).input("mode")
+    settings.sideband = Unsigned(2).input("sideband_select")
 
     taps = 127
 
@@ -215,9 +152,7 @@ def test_filter(stimulus, filt, sideband):
     data_q_in = Signed(16).input("data_q_in")
     data_i_out, data_q_out, stb_out = filter(clk, data_i_in, data_q_in, stb_in, settings)
 
-    settings.mode.set(filt)
-    settings.sideband.set(sideband)
-
+    settings.mode.set(mode)
     plt.plot(np.real(stimulus))
     plt.plot(np.imag(stimulus))
     plt.show()
@@ -270,75 +205,90 @@ if __name__ == "__main__":
 
     if "sim" in sys.argv:
 
-        #mode wbfm
-        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
-        frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
-        phase = np.cumsum(frequency)
-        stimulus = (
-            np.exp(1.0j*phase)*
-            ((2**7)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, FM, USB)
-
-        #mode nfm
-        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
-        frequency = audio * 0.025 * pi#0.1*+/-50kHZ = +/-5KHz
-        phase = np.cumsum(frequency)
-        stimulus = (
-            np.exp(1.0j*phase)*
-            ((2**7)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, NBFM, LSB)
-
-        #mode usb stim dsb
+#        #mode wbfm
+#        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+#        frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
+#        phase = np.cumsum(frequency)
+#        stimulus = (
+#            np.exp(1.0j*phase)*
+#            ((2**7)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, FM)
+#
+#        #mode nfm
+#        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+#        frequency = audio * 0.025 * pi#0.1*+/-50kHZ = +/-5KHz
+#        phase = np.cumsum(frequency)
+#        stimulus = (
+#            np.exp(1.0j*phase)*
+#            ((2**7)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, NBFM)
+#
+        #mode usb stim usb
         stimulus=(
-            (np.sin(np.arange(4000)*2.0*pi*0.01)+1j*np.sin(np.arange(4000)*2.0*pi*0.01))*
-            ((2**7)-1)#scale to 16 bits
+            (
+                np.sin(np.arange(4000)*2.0*pi*0.01) + 
+                np.sin(np.arange(4000)*2.0*pi*0.02) + 
+                np.sin(np.arange(4000)*2.0*pi*0.03) + 
+                np.sin(np.arange(4000)*2.0*pi*0.04) + 
+                np.sin(np.arange(4000)*2.0*pi*0.05) + 
+                np.sin(np.arange(4000)*2.0*pi*0.06) + 
+                np.sin(np.arange(4000)*2.0*pi*0.07) + 
+                np.sin(np.arange(4000)*2.0*pi*0.08) + 
+                np.sin(np.arange(4000)*2.0*pi*0.09) + 
+                np.sin(np.arange(4000)*2.0*pi*0.10) + 
+                np.sin(np.arange(4000)*2.0*pi*0.11) + 
+                np.sin(np.arange(4000)*2.0*pi*0.12) + 
+                np.sin(np.arange(4000)*2.0*pi*0.13) + 
+                np.sin(np.arange(4000)*2.0*pi*0.14) + 
+                np.sin(np.arange(4000)*2.0*pi*0.15) 
+            ) * ((2**8)-1)#scale to 16 bits
         )
-        test_filter(stimulus, SSB, USB)
+        test_filter(stimulus, USB)
 
-        #mode am stim am
-        stimulus=(
-            np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
-            (np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)* #The signal a tone
-            ((2**15)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, AM, 0)
-
-        #mode usb stim dsb
-        stimulus=(
-            np.sin(np.arange(4000)*2.0*pi*0.01)*
-            ((2**15)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, SSB, USB)
-
-        #mode am tx
-        stimulus=(
-            ((np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)+ #The signal a tone
-            (1j*np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5j))* #The signal a tone
-            ((2**15)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, AM, LSB)
-
-        #mode wbfm
-        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
-        frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
-        phase = np.cumsum(frequency)
-        stimulus = (
-            np.exp(1.0j*phase)*
-            ((2**15)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, FM, USB)
-
-        #mode nfm
-        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
-        frequency = audio * 0.025 * pi#0.1*+/-50kHZ = +/-5KHz
-        phase = np.cumsum(frequency)
-        stimulus = (
-            np.exp(1.0j*phase)*
-            ((2**15)-1)#scale to 16 bits
-        )
-        test_filter(stimulus, NBFM, LSB)
+#        #mode am stim am
+#        stimulus=(
+#            np.exp(1j*np.arange(4000)*2.0*pi*0.0005)* #represents the effect of a slight mis-tuning so that the power circulates between +ve and -ve in i and q channels
+#            (np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)* #The signal a tone
+#            ((2**15)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, AM)
+#
+#        #mode usb stim dsb
+#        stimulus=(
+#            np.sin(np.arange(4000)*2.0*pi*0.01)*
+#            ((2**15)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, USB)
+#
+#        #mode am tx
+#        stimulus=(
+#            ((np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5)+ #The signal a tone
+#            (1j*np.sin(np.arange(4000)*2.0*pi*0.01)*0.5+0.5j))* #The signal a tone
+#            ((2**15)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, AM)
+#
+#        #mode wbfm
+#        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+#        frequency = audio * 0.05 * pi#0.1*+/-50kHZ = +/-5KHz
+#        phase = np.cumsum(frequency)
+#        stimulus = (
+#            np.exp(1.0j*phase)*
+#            ((2**15)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, FM)
+#
+#        #mode nfm
+#        audio=np.sin(np.arange(4000)*2.0*pi*0.01)
+#        frequency = audio * 0.025 * pi#0.1*+/-50kHZ = +/-5KHz
+#        phase = np.cumsum(frequency)
+#        stimulus = (
+#            np.exp(1.0j*phase)*
+#            ((2**15)-1)#scale to 16 bits
+#        )
+#        test_filter(stimulus, NBFM)
 
 
     if "gen" in sys.argv:
