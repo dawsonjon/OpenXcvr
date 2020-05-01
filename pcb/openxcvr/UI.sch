@@ -27,21 +27,18 @@ Connection ~ 4950 5550
 Connection ~ 5500 5900
 Connection ~ 7000 1000
 Connection ~ 7000 2750
+Connection ~ 7000 4650
 Connection ~ 7300 4900
 Connection ~ 9600 3100
+Connection ~ 9750 4700
 Connection ~ 10200 3650
 Connection ~ 10200 5250
 NoConn ~ 6600 1800
 NoConn ~ 6600 1900
 NoConn ~ 6600 2000
 NoConn ~ 6600 2100
-NoConn ~ 7750 4700
 NoConn ~ 7750 4800
 NoConn ~ 7750 5000
-NoConn ~ 9450 1250
-NoConn ~ 9450 1350
-NoConn ~ 9450 1450
-NoConn ~ 9450 1550
 NoConn ~ 9950 1650
 NoConn ~ 10000 3200
 NoConn ~ 10000 4800
@@ -156,6 +153,8 @@ Wire Wire Line
 Wire Wire Line
 	6400 1650 6400 1400
 Wire Wire Line
+	6850 4650 7000 4650
+Wire Wire Line
 	7000 750  7000 1000
 Wire Wire Line
 	7000 1000 7000 1100
@@ -164,11 +163,17 @@ Wire Wire Line
 Wire Wire Line
 	7000 2750 7000 2850
 Wire Wire Line
+	7000 4050 7000 4150
+Wire Wire Line
+	7000 4450 7000 4650
+Wire Wire Line
+	7000 4700 7000 4650
+Wire Wire Line
 	7150 4900 7300 4900
 Wire Wire Line
-	7300 4300 7300 4400
+	7300 4050 7300 4150
 Wire Wire Line
-	7300 4700 7300 4900
+	7300 4450 7300 4900
 Wire Wire Line
 	7300 4900 7750 4900
 Wire Wire Line
@@ -185,6 +190,8 @@ Wire Wire Line
 	7500 1700 7500 2750
 Wire Wire Line
 	7500 2750 7000 2750
+Wire Wire Line
+	7750 4700 7000 4700
 Wire Wire Line
 	7950 5200 7950 5300
 Wire Wire Line
@@ -208,9 +215,19 @@ Wire Wire Line
 Wire Wire Line
 	9350 1150 9450 1150
 Wire Wire Line
+	9350 1250 9450 1250
+Wire Wire Line
+	9350 1350 9450 1350
+Wire Wire Line
+	9350 1450 9450 1450
+Wire Wire Line
+	9350 1550 9450 1550
+Wire Wire Line
 	9350 1850 9450 1850
 Wire Wire Line
 	9350 1950 9350 1850
+Wire Wire Line
+	9400 4700 9750 4700
 Wire Wire Line
 	9400 4900 10000 4900
 Wire Wire Line
@@ -222,7 +239,9 @@ Wire Wire Line
 Wire Wire Line
 	9600 3300 9600 3100
 Wire Wire Line
-	9750 4300 9750 4400
+	9750 4200 9750 4250
+Wire Wire Line
+	9750 4550 9750 4700
 Wire Wire Line
 	9750 4700 10000 4700
 Wire Wire Line
@@ -262,7 +281,9 @@ Wire Wire Line
 Wire Wire Line
 	10200 5250 9850 5250
 Wire Wire Line
-	10200 5250 10200 5300
+	10200 5250 10200 5550
+Wire Wire Line
+	10450 5550 10200 5550
 Text GLabel 1050 2800 0    50   Input ~ 0
 PB_1
 Text GLabel 1050 3000 0    50   Input ~ 0
@@ -293,8 +314,10 @@ Text GLabel 6250 2400 0    50   Input ~ 0
 LCD6
 Text GLabel 6250 2500 0    50   Input ~ 0
 LCD7
+Text GLabel 6850 4650 0    50   Output ~ 0
+DIT
 Text GLabel 7150 4900 0    50   Output ~ 0
-TX_ENABLE
+DAH
 Text GLabel 7600 1300 2    50   Input ~ 0
 LCD_CONTRAST
 Text GLabel 9350 950  0    50   Output ~ 0
@@ -303,6 +326,16 @@ Text GLabel 9350 1050 0    50   Output ~ 0
 MIC_HDR
 Text GLabel 9350 1150 0    50   Output ~ 0
 TX_ENABLE
+Text GLabel 9350 1250 0    50   Output ~ 0
+PTT
+Text GLabel 9350 1350 0    50   Output ~ 0
+DIT
+Text GLabel 9350 1450 0    50   Output ~ 0
+DAH
+Text GLabel 9350 1550 0    50   Output ~ 0
+MIC_GND
+Text GLabel 9400 4700 0    50   Output ~ 0
+PTT
 Text GLabel 9400 4900 0    50   Output ~ 0
 MIC_HDR
 Text GLabel 9450 3100 0    50   Output ~ 0
@@ -325,6 +358,8 @@ Text GLabel 10450 1750 2    50   Input ~ 0
 PB_0
 Text GLabel 10450 1850 2    50   Input ~ 0
 PB_1
+Text GLabel 10450 5550 2    50   Output ~ 0
+MIC_GND
 $Comp
 L power:+3V3 #PWR0126
 U 1 1 5E55F1BE
@@ -414,14 +449,25 @@ F 3 "" H 7000 750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L power:+3V3 #PWR?
+U 1 1 5EA6AACC
+P 7000 4050
+F 0 "#PWR?" H 7000 3900 50  0001 C CNN
+F 1 "+3V3" H 7015 4223 50  0000 C CNN
+F 2 "" H 7000 4050 50  0001 C CNN
+F 3 "" H 7000 4050 50  0001 C CNN
+	1    7000 4050
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:+3V3 #PWR0119
 U 1 1 5E515EBC
-P 7300 4300
-F 0 "#PWR0119" H 7300 4150 50  0001 C CNN
-F 1 "+3V3" H 7315 4473 50  0000 C CNN
-F 2 "" H 7300 4300 50  0001 C CNN
-F 3 "" H 7300 4300 50  0001 C CNN
-	1    7300 4300
+P 7300 4050
+F 0 "#PWR0119" H 7300 3900 50  0001 C CNN
+F 1 "+3V3" H 7315 4223 50  0000 C CNN
+F 2 "" H 7300 4050 50  0001 C CNN
+F 3 "" H 7300 4050 50  0001 C CNN
+	1    7300 4050
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -449,12 +495,12 @@ $EndComp
 $Comp
 L power:+3V3 #PWR0114
 U 1 1 5E4D310F
-P 9750 4300
-F 0 "#PWR0114" H 9750 4150 50  0001 C CNN
-F 1 "+3V3" H 9765 4473 50  0000 C CNN
-F 2 "" H 9750 4300 50  0001 C CNN
-F 3 "" H 9750 4300 50  0001 C CNN
-	1    9750 4300
+P 9750 4200
+F 0 "#PWR0114" H 9750 4050 50  0001 C CNN
+F 1 "+3V3" H 9765 4373 50  0000 C CNN
+F 2 "" H 9750 4200 50  0001 C CNN
+F 3 "" H 9750 4200 50  0001 C CNN
+	1    9750 4200
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -623,17 +669,6 @@ F 3 "" H 10200 3700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR0113
-U 1 1 5E4D7AF9
-P 10200 5300
-F 0 "#PWR0113" H 10200 5050 50  0001 C CNN
-F 1 "GND" H 10205 5127 50  0000 C CNN
-F 2 "" H 10200 5300 50  0001 C CNN
-F 3 "" H 10200 5300 50  0001 C CNN
-	1    10200 5300
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:R R11
 U 1 1 5E55F1AC
 P 1350 2500
@@ -766,25 +801,36 @@ F 3 "~" H 5500 4350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L Device:R R?
+U 1 1 5EA6AAE4
+P 7000 4300
+F 0 "R?" H 7070 4345 50  0000 L CNN
+F 1 "2K2" H 7070 4255 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 6930 4300 50  0001 C CNN
+F 3 "~" H 7000 4300 50  0001 C CNN
+	1    7000 4300
+	1    0    0    -1  
+$EndComp
+$Comp
 L Device:R R6
 U 1 1 5E515ED7
-P 7300 4550
-F 0 "R6" H 7370 4595 50  0000 L CNN
-F 1 "2K2" H 7370 4505 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 7230 4550 50  0001 C CNN
-F 3 "~" H 7300 4550 50  0001 C CNN
-	1    7300 4550
+P 7300 4300
+F 0 "R6" H 7370 4345 50  0000 L CNN
+F 1 "2K2" H 7370 4255 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7230 4300 50  0001 C CNN
+F 3 "~" H 7300 4300 50  0001 C CNN
+	1    7300 4300
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R5
 U 1 1 5E4CDEB1
-P 9750 4550
-F 0 "R5" H 9820 4595 50  0000 L CNN
-F 1 "1K" H 9820 4505 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 9680 4550 50  0001 C CNN
-F 3 "~" H 9750 4550 50  0001 C CNN
-	1    9750 4550
+P 9750 4400
+F 0 "R5" H 9820 4445 50  0000 L CNN
+F 1 "1K" H 9820 4355 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 9680 4400 50  0001 C CNN
+F 3 "~" H 9750 4400 50  0001 C CNN
+	1    9750 4400
 	1    0    0    -1  
 $EndComp
 $Comp

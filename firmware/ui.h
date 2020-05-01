@@ -105,6 +105,73 @@ int get_enum(char * title, char * options[], int max, int *value){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//  Load settings from memory
+////////////////////////////////////////////////////////////////////////////////
+
+int load_memory(){
+
+    int page=1;
+    unsigned buffer[16];
+    unsigned i;
+
+    //store current settings
+    store_settings(&bus, 0);
+
+    while(1){
+	i = get_position_change();
+		page += i;
+		if(page < 1) page = 499;
+		if(page > 499) page = 1;
+
+		//temporarily load settings
+		load_settings(&bus, page);
+		apply_settings();
+
+		//read the page into memory
+		eeprom_page_read(&bus, page, buffer);
+
+		//print memory content
+		LCD_CLEAR()
+		lcd_print("memory load: ");
+		lcd_write('0' + (page / 100));
+		lcd_write('0' + (page % 100) / 10);
+		lcd_write('0' + (page % 100) % 10);
+		LCD_LINE2()
+
+		for(i=0; i<16; i++){
+			print_uhex(buffer[i]);
+			putc('\n');
+		}
+
+		if(buffer[15]==0){
+			for(i=11; i<15; i++){
+				lcd_write(buffer[i]);
+				lcd_write(buffer[i]>>8);
+				lcd_write(buffer[i]>>16);
+				lcd_write(buffer[i]>>24);
+			}
+
+			//OK
+			if(get_button(1)){
+				return 1;
+			}
+
+		} else {
+			lcd_print("empty");
+		}
+
+
+
+	//cancel
+	if(get_button(2)){
+		load_settings(&bus, 0);
+		return 0;
+	}
+
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Frequency menu item (digit by digit)
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -232,8 +299,9 @@ int do_ui(){
     options[3] = "AGC";
     options[4] = "squelch";
     options[5] = "step";
-    options[6] = "factory reset";
-    if(!get_enum("menu:", options, 6, &setting)) return 1;
+    options[6] = "load memory";
+    options[7] = "factory reset";
+    if(!get_enum("menu:", options, 7, &setting)) return 1;
     title = options[setting];
 
     switch(setting){
@@ -279,6 +347,10 @@ int do_ui(){
 		return 1;
 
 	case 6 : 
+		load_memory();
+		return 1;
+
+	case 7 : 
 		options[0]="No";
 		options[1]="Yes";
 		get_enum("confirm", options, 2, &setting);

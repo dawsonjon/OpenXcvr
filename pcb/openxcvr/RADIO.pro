@@ -1,4 +1,4 @@
-update=Sat 21 Mar 2020 11:46:46 GMT
+update=Wed 29 Apr 2020 18:58:45 BST
 version=1
 last_client=kicad
 [general]
@@ -28,8 +28,6 @@ ERC_CheckBusDriverConflicts=1
 ERC_CheckBusEntryConflicts=1
 ERC_CheckBusToBusConflicts=1
 ERC_CheckBusToNetConflicts=1
-[SchematicFrame]
-version=1
 [pcbnew]
 version=1
 PageLayoutDescrFile=
@@ -267,4 +265,6 @@ dPairViaGap=0.25
 [LibeditFrame]
 version=1
 [ModEditFrame]
+version=1
+[SchematicFrame]
 version=1

@@ -24,6 +24,8 @@ unsigned i2c_out = output("i2c_out");
 typedef struct{
     unsigned volume;
     unsigned frequency;
+    unsigned max_frequency;
+    unsigned min_frequency;
     unsigned squelch;
     unsigned mode;
     unsigned band;
@@ -35,6 +37,8 @@ typedef struct{
     unsigned step;
 } struct_settings;
 struct_settings settings;
+
+void apply_settings();
 
 #include "i2c.h"
 i2c bus;
@@ -147,6 +151,10 @@ void apply_settings (){
 
     fputc(control, control_out);
 
+
+}
+
+void update_lcd(){
     //update display status
     LCD_CLEAR()
     LCD_LINE1()
@@ -155,7 +163,6 @@ void apply_settings (){
     lcd_print(modes[settings.mode]);
     LCD_LINE2()
     lcd_print(smeter[read_smeter()]);
-
 }
 
 void main(){
@@ -164,10 +171,10 @@ void main(){
     stdin = debug_in;
     puts("FPGA transceiver v 0.01\n");
 
-    unsigned int cmd, power, i, pps_count, last_smeter=0;
+    unsigned int cmd, power, i, page, pps_count, last_smeter=0;
     unsigned wake_time = 0;
     int audio;
-    int capture[8], temp;
+    int capture[16], temp;
     
     //initialise peripherals
     lcdInit();
@@ -176,6 +183,7 @@ void main(){
 
     load_settings(&bus, 0);//page 0 contains power up settings
     apply_settings();
+    update_lcd();
 
     while(1){
 
@@ -183,15 +191,15 @@ void main(){
         if(ready(stdin)){ 
             cmd = getc();
             switch(cmd){
-                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); break;
-                case 'm': settings.mode        = scan_udecimal(); apply_settings(); break;
-                case 'b': settings.band        = scan_udecimal(); apply_settings(); break;
-                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); break;
-                case 't': settings.tx          = scan_udecimal(); apply_settings(); break;
-                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); break;
-                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); break;
-                case 'v': settings.volume      = scan_udecimal(); apply_settings(); break;
-                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); break;
+                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'm': settings.mode        = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'b': settings.band        = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 't': settings.tx          = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'v': settings.volume      = scan_udecimal(); apply_settings(); update_lcd(); break;
+                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); update_lcd(); break;
                 //case 'h':
                 //print help
                     //euts("fxxxxxxxx: frequency\n");
@@ -209,6 +217,7 @@ void main(){
                     //puts("O: get audio\n");
                     //puts("I: put audio\n");
                     //puts("U: set_usb_audio\n");
+                    //puts("S: memory store\n");
                     //puts("\n");
                     //break;
 
@@ -250,6 +259,18 @@ void main(){
                         putc(temp >> 24 & 0xff);
                     }
                     break;
+                case 'S':
+                    page = getc();
+                    for(i=0;i<16;i++){
+                        temp = getc();
+                        temp |= getc() << 8;
+                        temp |= getc() << 16;
+                        temp |= getc() << 24;
+                        capture[i] = temp;
+                    }
+                    eeprom_page_write(&bus, page, capture);
+                    putc('k');//send acknowledgement
+                    break;
                 case 'O':
                     for(i=0;i<1000;i++){
                         audio =  fgetc(audio_in);
@@ -280,13 +301,17 @@ void main(){
             position_change = get_position_change();
             if(position_change){
                settings.frequency += position_change * step_sizes[settings.step];
+               if (settings.frequency > settings.max_frequency) settings.frequency = settings.min_frequency;
+               if ((int)settings.frequency < (int)settings.min_frequency) settings.frequency = settings.max_frequency;
                apply_settings();
+               update_lcd();
             }
 
             //if the menu was entered, update settings and
             //store them in EEPROM
             if(do_ui()){
                 apply_settings();
+                update_lcd();
                 store_settings(&bus, 0);
             }
 

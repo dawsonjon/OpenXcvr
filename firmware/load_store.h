@@ -6,6 +6,8 @@ void store_settings(i2c *bus, unsigned page){
     buffer[3] = settings.step;
     buffer[4] = settings.squelch;
     buffer[5] = settings.volume;
+    buffer[6] = settings.max_frequency;
+    buffer[7] = settings.min_frequency;
    
     //program to 0 to indicate that data has been stored
     buffer[15] = 0;
@@ -22,6 +24,8 @@ void load_settings(i2c *bus, unsigned page){
     settings.agc_speed = buffer[2];
     settings.step      = buffer[3];
     settings.squelch   = buffer[4];
+    settings.max_frequency = buffer[6];
+    settings.min_frequency = buffer[7];
     settings.tx=0;
     settings.mute=0;
 
@@ -36,16 +40,27 @@ void factory_reset(i2c *bus){
     unsigned buffer[16], i;
 
     //factory default settings (page 0)
-    settings.frequency = buffer[0] = 1215000;
-    settings.mode      = buffer[1] = 1; //AM
-    settings.agc_speed = buffer[2] = 2; //normal
-    settings.step      = buffer[3] = 3; //1kHz
-    settings.squelch   = buffer[4] = 0; //Off
-    settings.volume    = buffer[5] = 5; //mid way
+    buffer[0] = 1215000;
+    buffer[1] = 0; //AM
+    buffer[2] = 2; //normal
+    buffer[3] = 3; //1kHz
+    buffer[4] = 0; //Off
+    buffer[5] = 5; //mid way
+    buffer[6] = 29999999;
+    buffer[7] = 100;
+
+    settings.frequency = 1215000;
+    settings.mode      = 0; //AM
+    settings.agc_speed = 2; //normal
+    settings.step      = 3; //1kHz
+    settings.squelch   = 0; //Off
+    settings.volume    = 5; //mid way
+    settings.max_frequency = 29999999;
+    settings.min_frequency = 100;
     buffer[15] = 0;
     eeprom_page_write(bus, 0, buffer);
 
     //clear all memories (page 1-511)
-    for(i=0; i<15; i++) buffer[i] = 0xffffffffu;
+    for(i=0; i<16; i++) buffer[i] = 0xffffffffu;
     for(i=1; i<512; i++) eeprom_page_write(bus, i, buffer);
 }

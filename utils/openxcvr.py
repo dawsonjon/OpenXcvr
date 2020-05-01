@@ -11,6 +11,33 @@ import matplotlib.pyplot as plt
 import time
 import sys
 
+modes = {
+"AM": "\x00",
+"NFM":"\x01",
+"FM": "\x02",
+"LSB":"\x03",
+"USB":"\x04",
+"CW":"\x05",
+}
+agc_speeds = {
+"FAST": "\x00",
+"NORMAL":"\x01",
+"SLOW": "\x02",
+"VERY SLOW":"\x03"
+}
+steps = {
+"10Hz":"\x00",
+"50Hz": "\x01",
+"100Hz": "\x02",
+"1kHz":"\x03",
+"5kHz":"\x04",
+"10kHz":"\x05",
+"12.5kHz":"\x06",
+"25kHz":"\x07",
+"50kHz":"\x08",
+"100kHz":"\x09",
+}
+
 class Xcvr:
 
     def __init__(self, device="/dev/ttyUSB0"):
@@ -37,6 +64,14 @@ class Xcvr:
             return
         self.port.write("I")
         self.port.write(data[:1000])
+
+    def store_memory(self, location, data):
+        assert len(data) == 64
+        assert location >= 1 <= 499
+        self.port.write("S")
+        self.port.write(chr(location))
+        self.port.write(data)
+        print self.port.read(1)
 
     def set_frequency(self, frequency):
         self.port.write("f%u\n"%int(frequency))

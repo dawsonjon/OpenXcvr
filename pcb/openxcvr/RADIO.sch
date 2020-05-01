@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 6
+Sheet 1 7
 Title "Open XCVR"
 Date "2020-01-26"
 Rev "0.1"
@@ -47,5 +47,11 @@ S 6850 1300 2600 2250
 U 5E2CD207
 F0 "max1000" 50
 F1 "MAX1000.sch" 50
+$EndSheet
+$Sheet
+S 6850 4000 2550 2150
+U 5EA9DF7D
+F0 "user_interface" 50
+F1 "user_interface.sch" 50
 $EndSheet
 $EndSCHEMATC
