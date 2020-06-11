@@ -1,4 +1,4 @@
-update=Wed 29 Apr 2020 18:58:45 BST
+update=Thu 11 Jun 2020 20:33:08 BST
 version=1
 last_client=kicad
 [general]
@@ -264,7 +264,7 @@ dPairGap=0.25
 dPairViaGap=0.25
 [LibeditFrame]
 version=1
-[ModEditFrame]
-version=1
 [SchematicFrame]
+version=1
+[ModEditFrame]
 version=1

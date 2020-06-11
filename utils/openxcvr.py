@@ -97,8 +97,37 @@ class Xcvr:
     def set_AGC(self, gain):
         self.port.write("A%u\n"%gain)
 
+    def get_ADC(self):
+        self.port.write("a\n")
+        channels = {}
+        for i in range(10):
+            data = self.port.readline()
+            channel = int(data[0:4], 16)
+            value = int(data[4:8], 16)
+            channels[channel] = 3.3*value/4096.0
+        return channels
+
+    def get_batt_voltage(self):
+        channels = self.get_ADC()
+        return channels[5] * (11.5/1.5)
+
+    def get_fwd_power(self):
+        channels = self.get_ADC()
+        rms_voltage = (channels[1]+0.401) * 10.0 * (1/np.sqrt(2.0))
+        power = rms_voltage * rms_voltage / 50.0
+        return power
+
+    def get_rev_power(self):
+        channels = self.get_ADC()
+        rms_voltage = (channels[3]+0.401) * 10.0 * (1/np.sqrt(2.0))
+        power = rms_voltage * rms_voltage / 50.0
+        return power
+
+
     def set_USB_audio(self, gain):
-        self.port.write("U%u\n"%gain)
+        value = self.port.readline()
+        value = int(value, 16)
+        return value
 
     def get_power(self):
         self.port.write("p\n")

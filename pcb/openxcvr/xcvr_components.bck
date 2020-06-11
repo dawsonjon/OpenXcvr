@@ -1,19 +1,17 @@
 EESchema-DOCLIB  Version 2.0
 #
-$CMP FST5253
-D Dual 1 to 4 Analog Multiplexer
-K TTL Analog Multiplexer
-F https://www.onsemi.com/pub/Collateral/FST3253-D.pdf
+$CMP DMC3026LSD
+F https://www.diodes.com/assets/Datasheets/DMC3026LSD.pdf
 $ENDCMP
 #
-$CMP MAX_1000
-F https://www.trenz-electronic.de/fileadmin/docs/Trenz_Electronic/Modules_and_Module_Carriers/2.5x6.15/TEI0001/User_Guide/MAX1000%20User%20Guide.pdf
+$CMP MCP1406
+D 6A High Speed Mosfet Driver
+F http://ww1.microchip.com/downloads/en/DeviceDoc/20002019C.pdf
 $ENDCMP
 #
-$CMP cx2074NL
-D Transformer, single primary, split secondary
-K transformer coil magnet
-F https://datasheet.octopart.com/CX2074NL-Pulse-datasheet-123678.pdf
+$CMP TPA711
+D Low-Voltage Audio Power Amplifier
+F https://www.ti.com/lit/ds/symlink/tpa711.pdf?ts=1590773198998
 $ENDCMP
 #
 #End Doc Library

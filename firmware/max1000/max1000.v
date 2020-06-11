@@ -1,5 +1,5 @@
 module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, 
-rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out, pps_in, 
+rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out,  
 band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_pu);
 
   input clk_in;
@@ -9,7 +9,6 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
   input bclk_in;
   input lrclk_in;
   input dout_in;
-  input pps_in;
   output sclk_out;
   output rf;
   output lo_i;
@@ -330,7 +329,7 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
   .cpu_clk(clk_50),
   
   //GPS 1pps counter input
-  .pps_in(pps_in),
+  .pps_in(0),
   
   //Transceiver Control
   .control_in(control),
@@ -395,17 +394,17 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
 		{rf_1, rf_0}, 
       rf
   );
-  output_buffer output_buffer_1(
+  output_buffer output_buffer_2(
 		clk,           
 		{lo_i_1, lo_i_0}, 
       lo_i
   );
-  output_buffer output_buffer_2(
+  output_buffer output_buffer_3(
 		clk,           
 		{lo_q_1, lo_q_0}, 
       lo_q
   );
-  output_buffer output_buffer_3(
+  output_buffer output_buffer_4(
 		clk,           
 		{test_1, test_0}, 
       test

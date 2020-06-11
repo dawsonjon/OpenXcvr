@@ -18,6 +18,9 @@ Comment7 ""
 Comment8 ""
 Comment9 ""
 $EndDescr
+Connection ~ 2650 5000
+Connection ~ 3500 4800
+Connection ~ 3500 4900
 Connection ~ 6500 4600
 Connection ~ 6700 1100
 Connection ~ 6700 1750
@@ -32,33 +35,55 @@ Wire Wire Line
 Wire Wire Line
 	1900 950  1900 1050
 Wire Wire Line
-	2550 5450 2850 5450
+	2550 4200 2850 4200
 Wire Wire Line
-	2550 5550 2850 5550
+	2550 4300 2850 4300
 Wire Wire Line
-	2550 5650 2850 5650
+	2550 4400 2850 4400
 Wire Wire Line
-	2550 5750 2850 5750
+	2550 4500 2850 4500
 Wire Wire Line
-	2700 5850 2850 5850
+	2650 4900 2850 4900
 Wire Wire Line
-	2700 5950 2700 5850
+	2650 5000 2650 4900
+Wire Wire Line
+	2650 5000 3500 5000
+Wire Wire Line
+	2650 5150 2650 5000
 Wire Wire Line
 	2800 950  2800 1050
+Wire Wire Line
+	2850 4600 2550 4600
+Wire Wire Line
+	2850 4700 2550 4700
+Wire Wire Line
+	2850 4800 2550 4800
 Wire Wire Line
 	3050 6600 3550 6600
 Wire Wire Line
 	3300 6700 3300 6750
 Wire Wire Line
-	3350 5450 3950 5450
+	3350 4200 3950 4200
 Wire Wire Line
-	3350 5550 3950 5550
+	3350 4300 3950 4300
 Wire Wire Line
-	3350 5650 3950 5650
+	3350 4400 3950 4400
 Wire Wire Line
-	3350 5750 3950 5750
+	3350 4500 3950 4500
 Wire Wire Line
-	3350 5850 3950 5850
+	3350 4600 3950 4600
+Wire Wire Line
+	3350 4700 3500 4700
+Wire Wire Line
+	3350 4800 3500 4800
+Wire Wire Line
+	3350 4900 3500 4900
+Wire Wire Line
+	3500 4700 3500 4800
+Wire Wire Line
+	3500 4800 3500 4900
+Wire Wire Line
+	3500 5000 3500 4900
 Wire Wire Line
 	3550 6700 3300 6700
 Wire Wire Line
@@ -134,7 +159,7 @@ Wire Wire Line
 Wire Wire Line
 	6400 2750 8850 2750
 Wire Wire Line
-	6400 2850 7400 2850
+	6400 2850 7000 2850
 Wire Wire Line
 	6400 2950 7000 2950
 Wire Wire Line
@@ -192,8 +217,6 @@ Wire Wire Line
 Wire Wire Line
 	7700 1750 7700 1600
 Wire Wire Line
-	7700 2850 7900 2850
-Wire Wire Line
 	8600 2850 8600 3150
 Wire Wire Line
 	8600 3150 9250 3150
@@ -223,25 +246,31 @@ Text Notes 9000 1650 2    50   ~ 0
 Seperate supply for analogue
 Text Notes 9250 950  2    50   ~ 0
 Seperate supply for audio amplifier
-Text GLabel 2550 5450 0    50   Input ~ 0
+Text GLabel 2550 4200 0    50   Input ~ 0
 BATTERY
-Text GLabel 2550 5550 0    50   Input ~ 0
+Text GLabel 2550 4300 0    50   Input ~ 0
 FWD_PWR
-Text GLabel 2550 5650 0    50   Input ~ 0
+Text GLabel 2550 4400 0    50   Input ~ 0
 REV_PWR
-Text GLabel 2550 5750 0    50   Output ~ 0
+Text GLabel 2550 4500 0    50   Output ~ 0
 5V_IN
+Text GLabel 2550 4600 0    50   Output ~ 0
+RF_OUT
+Text GLabel 2550 4700 0    50   Output ~ 0
+LO_Q
+Text GLabel 2550 4800 0    50   Output ~ 0
+LO_I
 Text GLabel 3050 6600 0    50   BiDi ~ 0
 1PPS_TEST_SIGNAL
-Text GLabel 3950 5450 2    50   BiDi ~ 0
+Text GLabel 3950 4200 2    50   BiDi ~ 0
 TX_ENABLE
-Text GLabel 3950 5550 2    50   Output ~ 0
-RF_OUT
-Text GLabel 3950 5650 2    50   Output ~ 0
+Text GLabel 3950 4300 2    50   Output ~ 0
+BAND_2
+Text GLabel 3950 4400 2    50   Output ~ 0
 BAND_1
-Text GLabel 3950 5750 2    50   Output ~ 0
+Text GLabel 3950 4500 2    50   Output ~ 0
 BAND_0
-Text GLabel 3950 5850 2    50   Input ~ 0
+Text GLabel 3950 4600 2    50   Input ~ 0
 RF_IN
 Text GLabel 4200 3550 0    50   Input ~ 0
 LCD7
@@ -283,6 +312,8 @@ Text GLabel 7000 2450 2    50   Output ~ 0
 LO_Q
 Text GLabel 7000 2550 2    50   Output ~ 0
 LO_I
+Text GLabel 7000 2850 2    50   Output ~ 0
+RF_OUT
 Text GLabel 7000 2950 2    50   BiDi ~ 0
 TX_ENABLE
 Text GLabel 7000 3050 2    50   Output ~ 0
@@ -299,8 +330,6 @@ Text GLabel 7350 3750 2    50   Input ~ 0
 LCD_E
 Text GLabel 7350 3850 2    50   Input ~ 0
 PB_0
-Text GLabel 7900 2850 2    50   Output ~ 0
-RF_OUT
 $Comp
 L power:+5VD #PWR073
 U 1 1 5EA47579
@@ -381,12 +410,12 @@ $EndComp
 $Comp
 L power:GND #PWR068
 U 1 1 5E3AEBD5
-P 2700 5950
-F 0 "#PWR068" H 2700 5700 50  0001 C CNN
-F 1 "GND" H 2705 5777 50  0000 C CNN
-F 2 "" H 2700 5950 50  0001 C CNN
-F 3 "" H 2700 5950 50  0001 C CNN
-	1    2700 5950
+P 2650 5150
+F 0 "#PWR068" H 2650 4900 50  0001 C CNN
+F 1 "GND" H 2655 4977 50  0000 C CNN
+F 2 "" H 2650 5150 50  0001 C CNN
+F 3 "" H 2650 5150 50  0001 C CNN
+	1    2650 5150
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -621,17 +650,6 @@ F 3 "~" H 3750 6600 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Device:C C50
-U 1 1 5E4FFC23
-P 7550 2850
-F 0 "C50" V 7801 2850 50  0000 C CNN
-F 1 "100n" V 7710 2850 50  0000 C CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 7588 2700 50  0001 C CNN
-F 3 "~" H 7550 2850 50  0001 C CNN
-	1    7550 2850
-	0    -1   -1   0   
-$EndComp
-$Comp
 L Device:Ferrite_Bead FB1
 U 1 1 5EA397AC
 P 7150 1100
@@ -665,14 +683,14 @@ F 3 "~" H 7150 4600 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Connector_Generic:Conn_02x05_Odd_Even J5
-U 1 1 5E38CD1E
-P 3050 5650
-F 0 "J5" H 3100 6066 50  0000 C CNN
-F 1 "PA_CONNECTOR" H 3100 5975 50  0000 C CNN
-F 2 "Connector_IDC:IDC-Header_2x05_P2.54mm_Vertical" H 3050 5650 50  0001 C CNN
-F 3 "~" H 3050 5650 50  0001 C CNN
-	1    3050 5650
+L Connector_Generic:Conn_02x08_Odd_Even J5
+U 1 1 5ECB3DCF
+P 3050 4500
+F 0 "J5" H 3100 5016 50  0000 C CNN
+F 1 "Conn_02x08_Odd_Even" H 3100 4925 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical" H 3050 4500 50  0001 C CNN
+F 3 "~" H 3050 4500 50  0001 C CNN
+	1    3050 4500
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -687,7 +705,7 @@ F 3 "http://ww1.microchip.com/downloads/en/devicedoc/21203m.pdf" H 9250 2750 50 
 	-1   0    0    -1  
 $EndComp
 $Comp
-L xcvr_components:MAX_1000 U8
+L RADIO-rescue:MAX_1000-xcvr_components U8
 U 1 1 5E2CD29F
 P 5800 1800
 F 0 "U8" H 5875 1914 50  0000 C CNN

@@ -490,7 +490,7 @@ F 3 "~" H 4750 6300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L xcvr_components:PCM1802 U1
+L RADIO-rescue:PCM1802-xcvr_components U1
 U 1 1 5E385964
 P 5750 3300
 F 0 "U1" H 5675 4014 50  0000 C CNN

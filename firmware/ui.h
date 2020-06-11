@@ -138,10 +138,10 @@ int load_memory(){
 		lcd_write('0' + (page % 100) % 10);
 		LCD_LINE2()
 
-		for(i=0; i<16; i++){
-			print_uhex(buffer[i]);
-			putc('\n');
-		}
+		//for(i=0; i<16; i++){
+			//print_uhex(buffer[i]);
+			//putc('\n');
+		//}
 
 		if(buffer[15]==0){
 			for(i=11; i<15; i++){

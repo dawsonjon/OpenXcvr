@@ -138,7 +138,6 @@ void apply_settings (){
     rx_frequency_correction[4] = -4578;      //LSB   4   24414    -4578
     rx_frequency_correction[3] = -7629;      //USB   4   24414    -7629
     rx_frequency_correction[5] = -8138;      //CW    3   32552    -8138
-    print_uhex(rx_frequency_correction[settings.mode]);
 
     if(settings.tx)         control |= 0x00000008u;
     if(settings.tx){
@@ -179,8 +178,8 @@ void main(){
     //initialise peripherals
     lcdInit();
     init_ui();
-    i2c_init(&bus, i2c_in, i2c_out);
 
+    i2c_init(&bus, i2c_in, i2c_out);
     load_settings(&bus, 0);//page 0 contains power up settings
     apply_settings();
     update_lcd();
@@ -228,10 +227,10 @@ void main(){
                     break;
 
                 case 'a':
-                    for(i=0; i<5; i++){
+                    for(i=0; i<10; i++){
                         capture[i] = fgetc(adc_in);
                     }
-                    for(i=0; i<5; i++){
+                    for(i=0; i<10; i++){
                         print_uhex(capture[i]);
                         puts("\n");
                     }
@@ -291,7 +290,6 @@ void main(){
             }
        }
 
-
        
        if(timer_low() - wake_time > 2000000){ 
             settings.mute = read_smeter() < settings.squelch;
@@ -309,11 +307,12 @@ void main(){
 
             //if the menu was entered, update settings and
             //store them in EEPROM
-            if(do_ui()){
+            /*if(do_ui()){
                 apply_settings();
                 update_lcd();
                 store_settings(&bus, 0);
             }
+            */
 
             if(last_smeter != read_smeter()){
                 LCD_LINE2()

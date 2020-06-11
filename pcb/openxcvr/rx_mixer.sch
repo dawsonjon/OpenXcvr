@@ -32,6 +32,8 @@ Connection ~ 8750 3200
 Connection ~ 8750 3600
 Connection ~ 8750 4800
 Connection ~ 8750 5200
+Connection ~ 9450 3600
+Connection ~ 9450 5200
 Wire Wire Line
 	1050 4200 1400 4200
 Wire Wire Line
@@ -78,6 +80,10 @@ Wire Wire Line
 	3600 3800 3600 3900
 Wire Wire Line
 	3600 5100 3600 5350
+Wire Wire Line
+	4000 1150 4000 1300
+Wire Wire Line
+	4000 1600 4000 1700
 Wire Wire Line
 	4000 4100 4300 4100
 Wire Wire Line
@@ -171,9 +177,25 @@ Wire Wire Line
 Wire Wire Line
 	8750 5200 9000 5200
 Wire Wire Line
-	9300 3600 9600 3600
+	9100 4200 9450 4200
 Wire Wire Line
-	9300 5200 9600 5200
+	9100 4300 9800 4300
+Wire Wire Line
+	9100 4400 9450 4400
+Wire Wire Line
+	9300 3600 9450 3600
+Wire Wire Line
+	9300 5200 9450 5200
+Wire Wire Line
+	9450 3600 9600 3600
+Wire Wire Line
+	9450 4200 9450 3600
+Wire Wire Line
+	9450 4400 9450 5200
+Wire Wire Line
+	9450 5200 9600 5200
+Wire Wire Line
+	9800 4300 9800 4600
 Text Notes 2200 3450 2    50   ~ 0
 Primary 4T Unifilar\nSecondary 2T Bifilar\n
 Text GLabel 1200 3800 0    50   BiDi ~ 0
@@ -233,6 +255,17 @@ F 3 "" H 3600 3800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L power:+5V #PWR0102
+U 1 1 5ECD0B83
+P 4000 1150
+F 0 "#PWR0102" H 4000 1000 50  0001 C CNN
+F 1 "+5V" H 4015 1323 50  0000 C CNN
+F 2 "" H 4000 1150 50  0001 C CNN
+F 3 "" H 4000 1150 50  0001 C CNN
+	1    4000 1150
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:+2V5 #PWR050
 U 1 1 5E6C5245
 P 7500 3300
@@ -288,6 +321,17 @@ F 3 "" H 3600 5350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L power:GND #PWR0103
+U 1 1 5ECD0B93
+P 4000 1700
+F 0 "#PWR0103" H 4000 1450 50  0001 C CNN
+F 1 "GND" H 4005 1527 50  0000 C CNN
+F 2 "" H 4000 1700 50  0001 C CNN
+F 3 "" H 4000 1700 50  0001 C CNN
+	1    4000 1700
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:GND #PWR048
 U 1 1 5E73DEF2
 P 6150 4150
@@ -307,6 +351,17 @@ F 1 "GND" H 6155 5577 50  0000 C CNN
 F 2 "" H 6150 5750 50  0001 C CNN
 F 3 "" H 6150 5750 50  0001 C CNN
 	1    6150 5750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0105
+U 1 1 5EDC0D6C
+P 9800 4600
+F 0 "#PWR0105" H 9800 4350 50  0001 C CNN
+F 1 "GND" H 9805 4427 50  0000 C CNN
+F 2 "" H 9800 4600 50  0001 C CNN
+F 3 "" H 9800 4600 50  0001 C CNN
+	1    9800 4600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -398,6 +453,17 @@ F 3 "~" H 3550 1450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L Device:C C51
+U 1 1 5ECD0BA5
+P 4000 1450
+F 0 "C51" H 4115 1495 50  0000 L CNN
+F 1 "100n" H 4115 1405 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4038 1300 50  0001 C CNN
+F 3 "~" H 4000 1450 50  0001 C CNN
+	1    4000 1450
+	1    0    0    -1  
+$EndComp
+$Comp
 L Device:C C21
 U 1 1 5E72F21F
 P 6150 3850
@@ -464,6 +530,17 @@ F 3 "~" H 9150 5200 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
+L Connector:Conn_01x03_Male J8
+U 1 1 5EDBE7DA
+P 8900 4300
+F 0 "J8" H 9008 4579 50  0000 C CNN
+F 1 "Conn_01x03_Male" H 9008 4488 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 8900 4300 50  0001 C CNN
+F 3 "~" H 8900 4300 50  0001 C CNN
+	1    8900 4300
+	1    0    0    -1  
+$EndComp
+$Comp
 L Amplifier_Operational:LM4562 U4
 U 2 1 5E26166E
 P 8250 3600
@@ -486,20 +563,22 @@ F 3 "http://www.ti.com/lit/ds/symlink/lm4562.pdf" H 8250 5200 50  0001 C CNN
 	1    0    0    1   
 $EndComp
 $Comp
-L xcvr_components:cx2074NL T1
+L RADIO-rescue:cx2074NL-xcvr_components T1
 U 1 1 5E6894D6
 P 1800 4000
 F 0 "T1" H 1800 4379 50  0000 C CNN
-F 1 "BN43-24023" H 1800 4288 50  0000 C CNN
+F 1 "BN43-2402" H 1800 4288 50  0000 C CNN
 F 2 "openxcvr:bn43-2402-transformer" H 1800 4000 50  0001 C CNN
 F 3 "https://datasheet.octopart.com/CX2074NL-Pulse-datasheet-123678.pdf" H 1800 4000 50  0001 C CNN
 	1    1800 4000
 	1    0    0    -1  
 $EndComp
 $Comp
-L xcvr_components:FST5253 U5
+L RADIO-rescue:FST5253-xcvr_components U5
 U 1 1 5E2AF6E6
 P 3600 4500
+AR Path="/5E2AF6E6" Ref="U5"  Part="1" 
+AR Path="/5E35BCF5/5E2AF6E6" Ref="U5"  Part="1" 
 F 0 "U5" H 4000 5200 50  0000 C CNN
 F 1 "FST5253" H 4000 5100 50  0000 C CNN
 F 2 "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm" H 3600 4500 50  0001 C CNN

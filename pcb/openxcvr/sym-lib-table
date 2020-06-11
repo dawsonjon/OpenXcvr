@@ -1,3 +1,5 @@
 (sym_lib_table
   (lib (name "xcvr_components")(type "Legacy")(uri "${KIPRJMOD}/xcvr_components.lib")(options "")(descr ""))
+  (lib (name "RADIO-rescue")(type "Legacy")(uri "${KIPRJMOD}/RADIO-rescue.lib")(options "")(descr ""))
+  (lib (name "TX_BOARD-rescue")(type "Legacy")(uri "${KIPRJMOD}/TX_BOARD-rescue.lib")(options "")(descr ""))
 )

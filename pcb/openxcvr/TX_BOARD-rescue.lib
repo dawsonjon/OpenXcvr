@@ -1,0 +1,25 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# FT50-43Transformer-xcvr_components
+#
+DEF FT50-43Transformer-xcvr_components TR 0 0 Y N 1 F N
+F0 "TR" 0 -50 50 H V C CNN
+F1 "FT50-43Transformer-xcvr_components" 0 50 50 H V C CNN
+F2 "openxcvr:FT50-43 Transformer" 0 50 50 H I C CNN
+F3 "" 0 50 50 H I C CNN
+DRAW
+A -106 -250 50 833 -833 0 1 0 N -100 -200 -100 -300
+A -101 -450 50 884 -884 0 1 0 N -100 -400 -100 -500
+A -101 -350 50 884 -884 0 1 0 N -100 -300 -100 -400
+A 152 -350 50 -923 923 0 1 0 N 150 -400 150 -300
+P 2 0 1 0 0 -100 0 -600 N
+P 2 0 1 0 50 -100 50 -600 N
+X ~ 1 -200 -200 100 R 50 50 1 1 B
+X ~ 2 -200 -500 100 R 50 50 1 1 B
+X ~ 3 250 -300 100 L 50 50 1 1 B
+X ~ 4 250 -400 100 L 50 50 1 1 B
+ENDDRAW
+ENDDEF
+#
+#End Library
