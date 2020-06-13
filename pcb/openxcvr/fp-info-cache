@@ -1,4 +1,4 @@
-3154482887667673
+3156075080492673
 Button_Switch_THT
 KSA_Tactile_SPST
 KSA{space}http://www.ckswitches.com/media/1457/ksa_ksl.pdf
@@ -13936,6 +13936,13 @@ Bourns{space}SRR1260{space}SMD{space}inductor
 0
 2
 2
+openxcvr
+RS PCB Toggle Switch
+
+
+0
+5
+5
 openxcvr
 SSOP-20_5.3x7.2mm_P0.65mm
 SSOP,{space}20{space}Pin{space}(http://ww1.microchip.com/downloads/en/DeviceDoc/40001800C.pdf),{space}generated{space}with{space}kicad-footprint-generator{space}ipc_gullwing_generator.py

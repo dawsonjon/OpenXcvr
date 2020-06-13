@@ -28,7 +28,9 @@ Connection ~ 3275 4850
 Connection ~ 3275 5225
 Connection ~ 3275 5675
 Connection ~ 3775 5050
-Connection ~ 4475 4950
+Connection ~ 3800 5450
+Connection ~ 4500 5450
+Connection ~ 4525 4950
 Connection ~ 4550 1650
 Connection ~ 4650 1550
 Connection ~ 5800 1650
@@ -41,7 +43,7 @@ Connection ~ 7125 5200
 Connection ~ 8225 4550
 Connection ~ 9450 4100
 Connection ~ 9450 5000
-NoConn ~ 1450 5350
+NoConn ~ 1550 4950
 Wire Wire Line
 	1350 5350 1350 5400
 Wire Wire Line
@@ -127,19 +129,31 @@ Wire Wire Line
 Wire Wire Line
 	3775 5450 3775 5050
 Wire Wire Line
+	3800 5450 3775 5450
+Wire Wire Line
+	3800 5800 3800 5450
+Wire Wire Line
 	3900 1650 4100 1650
 Wire Wire Line
-	3975 5450 3775 5450
+	3950 5800 3800 5800
 Wire Wire Line
-	4275 5450 4475 5450
+	3975 5450 3800 5450
+Wire Wire Line
+	4250 5800 4500 5800
+Wire Wire Line
+	4275 5450 4500 5450
 Wire Wire Line
 	4400 1650 4550 1650
 Wire Wire Line
-	4475 4950 4425 4950
+	4500 5450 4525 5450
 Wire Wire Line
-	4475 4950 4825 4950
+	4500 5800 4500 5450
 Wire Wire Line
-	4475 5450 4475 4950
+	4525 4950 4425 4950
+Wire Wire Line
+	4525 4950 4825 4950
+Wire Wire Line
+	4525 5450 4525 4950
 Wire Wire Line
 	4550 1650 4550 1950
 Wire Wire Line
@@ -596,7 +610,7 @@ L Device:R R9
 U 1 1 5ED3BE3F
 P 5200 1950
 F 0 "R9" H 5270 1995 50  0000 L CNN
-F 1 "50k" H 5270 1905 50  0000 L CNN
+F 1 "47k" H 5270 1905 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 5130 1950 50  0001 C CNN
 F 3 "~" H 5200 1950 50  0001 C CNN
 	1    5200 1950
@@ -713,6 +727,17 @@ F 3 "~" H 3750 1650 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
+L Device:C C50
+U 1 1 5F00647E
+P 4100 5800
+F 0 "C50" V 4351 5800 50  0000 C CNN
+F 1 "47p" V 4260 5800 50  0000 C CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4138 5650 50  0001 C CNN
+F 3 "~" H 4100 5800 50  0001 C CNN
+	1    4100 5800
+	0    -1   -1   0   
+$EndComp
+$Comp
 L Device:C C10
 U 1 1 5ED58F0A
 P 4600 2300
@@ -816,7 +841,7 @@ L xcvr_components:TPA711 U2
 U 1 1 5ED2CB53
 P 5250 1250
 F 0 "U2" H 5250 1373 50  0000 C CNN
-F 1 "TPA711" H 5250 1282 50  0000 C CNN
+F 1 "TPA711D" H 5250 1282 50  0000 C CNN
 F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 4900 1250 50  0001 C CNN
 F 3 "https://www.ti.com/lit/ds/symlink/tpa711.pdf?ts=1590773198998" H 5250 1250 50  0001 C CNN
 	1    5250 1250

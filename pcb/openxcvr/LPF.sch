@@ -305,6 +305,30 @@ Wire Wire Line
 	9360 4970 9560 4970
 Wire Wire Line
 	9360 5420 9360 5620
+Text Notes 8000 1500 2    50   ~ 0
+10T T37-6
+Text Notes 8000 2700 2    50   ~ 0
+16T T37-6
+Text Notes 8000 3900 2    50   ~ 0
+19T T37-6
+Text Notes 8000 5100 2    50   ~ 0
+25T T37-2
+Text Notes 8600 3900 2    50   ~ 0
+21T T37-6
+Text Notes 8600 5100 2    50   ~ 0
+27T T37-2
+Text Notes 8650 1500 2    50   ~ 0
+11T T37-6
+Text Notes 8650 2700 2    50   ~ 0
+17T T37-6
+Text Notes 9250 1500 2    50   ~ 0
+10T T37-6
+Text Notes 9250 2700 2    50   ~ 0
+16T T37-6
+Text Notes 9250 3900 2    50   ~ 0
+19T T37-6
+Text Notes 9250 5100 2    50   ~ 0
+25T T37-2
 Text Notes 10850 1650 2    50   ~ 0
 Fc=31.66MHz (16-30MHz)
 Text Notes 10850 2900 2    50   ~ 0

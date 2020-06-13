@@ -1,4 +1,4 @@
-update=Mon 08 Jun 2020 21:38:13 BST
+update=Sat 13 Jun 2020 13:04:48 BST
 version=1
 last_client=kicad
 [general]
@@ -12,6 +12,12 @@ NetIExt=net
 version=1
 LibDir=
 [eeschema/libraries]
+[PcbFrame]
+version=1
+[LibeditFrame]
+version=1
+[ModEditFrame]
+version=1
 [pcbnew]
 version=1
 PageLayoutDescrFile=
@@ -35,7 +41,8 @@ MinMicroViaDrill=0.09999999999999999
 MinHoleToHole=0.25
 CopperEdgeClearance=0
 TrackWidth1=0.25
-TrackWidth2=1
+TrackWidth2=0.5
+TrackWidth3=1
 ViaDiameter1=0.8
 ViaDrill1=0.4
 dPairWidth1=0.2
@@ -66,7 +73,7 @@ DimensionPrecision=1
 SolderMaskClearance=0
 SolderMaskMinWidth=0
 SolderPasteClearance=0
-SolderPasteRatio=0
+SolderPasteRatio=-0
 [pcbnew/Layer.F.Cu]
 Name=F.Cu
 Type=0
@@ -245,11 +252,5 @@ uViaDrill=0.1
 dPairWidth=0.2
 dPairGap=0.25
 dPairViaGap=0.25
-[PcbFrame]
-version=1
-[ModEditFrame]
-version=1
 [SchematicFrame]
-version=1
-[LibeditFrame]
 version=1

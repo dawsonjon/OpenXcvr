@@ -25,15 +25,15 @@ F0 "LPF" 50
 F1 "LPF.sch" 50
 $EndSheet
 $Sheet
+S 7150 2050 2600 900 
+U 5EBEA4A7
+F0 "TX_PA" 50
+F1 "tx_pa.sch" 50
+$EndSheet
+$Sheet
 S 4360 3290 2530 950 
 U 5E5B8C32
 F0 "TX_RX" 50
 F1 "TX_RX.sch" 50
-$EndSheet
-$Sheet
-S 7150 2050 2600 900 
-U 5EBEA4A7
-F0 "tx_oa" 50
-F1 "tx_pa.sch" 50
 $EndSheet
 $EndSCHEMATC

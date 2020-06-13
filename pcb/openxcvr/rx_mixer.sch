@@ -19,8 +19,8 @@ Comment8 ""
 Comment9 ""
 $EndDescr
 Connection ~ 3100 4800
-Connection ~ 4200 4400
-Connection ~ 4300 4100
+Connection ~ 4200 4100
+Connection ~ 4250 4200
 Connection ~ 6150 3500
 Connection ~ 6150 5100
 Connection ~ 7500 3700
@@ -34,6 +34,10 @@ Connection ~ 8750 4800
 Connection ~ 8750 5200
 Connection ~ 9450 3600
 Connection ~ 9450 5200
+NoConn ~ 4000 4300
+NoConn ~ 4000 4400
+NoConn ~ 4000 4600
+NoConn ~ 4000 4700
 Wire Wire Line
 	1050 4200 1400 4200
 Wire Wire Line
@@ -85,27 +89,27 @@ Wire Wire Line
 Wire Wire Line
 	4000 1600 4000 1700
 Wire Wire Line
-	4000 4100 4300 4100
+	4000 4100 4200 4100
 Wire Wire Line
-	4000 4400 4200 4400
+	4000 4200 4250 4200
 Wire Wire Line
-	4000 4600 4200 4600
+	4000 4800 4250 4800
 Wire Wire Line
-	4000 4900 4300 4900
+	4000 4900 4200 4900
 Wire Wire Line
-	4200 4400 4600 4400
+	4200 4100 4600 4100
 Wire Wire Line
-	4200 4600 4200 4400
+	4200 4900 4200 4100
 Wire Wire Line
-	4300 4100 4300 4900
+	4250 4200 4600 4200
 Wire Wire Line
-	4300 4100 4600 4100
+	4250 4800 4250 4200
 Wire Wire Line
 	4600 3500 6150 3500
 Wire Wire Line
 	4600 4100 4600 3500
 Wire Wire Line
-	4600 4400 4600 5100
+	4600 4200 4600 5100
 Wire Wire Line
 	4600 5100 6150 5100
 Wire Wire Line
@@ -580,7 +584,7 @@ P 3600 4500
 AR Path="/5E2AF6E6" Ref="U5"  Part="1" 
 AR Path="/5E35BCF5/5E2AF6E6" Ref="U5"  Part="1" 
 F 0 "U5" H 4000 5200 50  0000 C CNN
-F 1 "FST5253" H 4000 5100 50  0000 C CNN
+F 1 "FST3253" H 4000 5100 50  0000 C CNN
 F 2 "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm" H 3600 4500 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74cbt3253" H 3600 4500 50  0001 C CNN
 	1    3600 4500
