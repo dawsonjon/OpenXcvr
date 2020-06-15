@@ -3,10 +3,10 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 7
+Sheet 3 7
 Title "Open XCVR"
-Date "2020-01-26"
-Rev "0.1"
+Date "2020-06-14"
+Rev "0.2"
 Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
@@ -45,11 +45,15 @@ Wire Wire Line
 Wire Wire Line
 	1200 3800 1400 3800
 Wire Wire Line
-	2200 3800 2500 3800
+	2200 3800 2250 3800
 Wire Wire Line
 	2200 4000 2350 4000
 Wire Wire Line
 	2200 4200 2500 4200
+Wire Wire Line
+	2250 3550 2500 3550
+Wire Wire Line
+	2250 3800 2250 3550
 Wire Wire Line
 	2350 4000 2350 3900
 Wire Wire Line
@@ -59,11 +63,11 @@ Wire Wire Line
 Wire Wire Line
 	2350 4800 3100 4800
 Wire Wire Line
-	2800 3800 3000 3800
+	2800 3550 3000 3550
 Wire Wire Line
 	2800 4200 3200 4200
 Wire Wire Line
-	3000 3800 3000 4100
+	3000 3550 3000 4100
 Wire Wire Line
 	3000 4100 3200 4100
 Wire Wire Line
@@ -371,12 +375,12 @@ $EndComp
 $Comp
 L Device:R R13
 U 1 1 5E2D04D7
-P 2650 3800
-F 0 "R13" V 2856 3800 50  0000 C CNN
-F 1 "82" V 2765 3800 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 2580 3800 50  0001 C CNN
-F 3 "~" H 2650 3800 50  0001 C CNN
-	1    2650 3800
+P 2650 3550
+F 0 "R13" V 2856 3550 50  0000 C CNN
+F 1 "82" V 2765 3550 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2580 3550 50  0001 C CNN
+F 3 "~" H 2650 3550 50  0001 C CNN
+	1    2650 3550
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -537,8 +541,8 @@ $Comp
 L Connector:Conn_01x03_Male J8
 U 1 1 5EDBE7DA
 P 8900 4300
-F 0 "J8" H 9008 4579 50  0000 C CNN
-F 1 "Conn_01x03_Male" H 9008 4488 50  0000 C CNN
+F 0 "J8" H 9000 4600 50  0000 C CNN
+F 1 "IQ TEST" H 9050 4500 50  0000 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 8900 4300 50  0001 C CNN
 F 3 "~" H 8900 4300 50  0001 C CNN
 	1    8900 4300

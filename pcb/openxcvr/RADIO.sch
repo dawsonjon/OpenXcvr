@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 7
 Title "Open XCVR"
-Date "2020-01-26"
-Rev "0.1"
+Date "2020-06-14"
+Rev "0.2"
 Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
@@ -25,21 +25,21 @@ F0 "ADC" 50
 F1 "adc.sch" 50
 $EndSheet
 $Sheet
-S 1000 1000 1050 1050
-U 5E371E22
-F0 "AUDIO" 50
-F1 "audio.sch" 50
-$EndSheet
-$Sheet
 S 650  6550 1050 1100
 U 5E35BCF5
-F0 "RX_MIXER" 50
+F0 "RX mixer" 50
 F1 "rx_mixer.sch" 50
+$EndSheet
+$Sheet
+S 1000 1000 1050 1050
+U 5E371E22
+F0 "audio" 50
+F1 "audio.sch" 50
 $EndSheet
 $Sheet
 S 2200 3850 1900 1300
 U 5E421DE9
-F0 "bandpass" 50
+F0 "bandpass filters" 50
 F1 "bandpass.sch" 50
 $EndSheet
 $Sheet
@@ -51,7 +51,7 @@ $EndSheet
 $Sheet
 S 6850 4000 2550 2150
 U 5EA9DF7D
-F0 "user_interface" 50
+F0 "user interface" 50
 F1 "user_interface.sch" 50
 $EndSheet
 $EndSCHEMATC

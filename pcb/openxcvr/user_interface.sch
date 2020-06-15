@@ -4,10 +4,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 7 7
-Title ""
-Date ""
-Rev ""
-Comp ""
+Title "Open XCVR"
+Date "2020-06-14"
+Rev "0.2"
+Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -211,6 +211,8 @@ Wire Wire Line
 	8700 2050 8500 2050
 Wire Wire Line
 	8700 2150 8700 2050
+Text Notes 4400 1750 2    50   ~ 0
+Contrast
 Text GLabel 1350 1700 0    50   Input ~ 0
 LCD_E
 Text GLabel 1350 1900 0    50   Input ~ 0

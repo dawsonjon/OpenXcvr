@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 7
 Title "Open XCVR"
-Date "2020-01-26"
-Rev "0.1"
+Date "2020-06-14"
+Rev "0.2"
 Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
@@ -18,7 +18,7 @@ Comment7 ""
 Comment8 ""
 Comment9 ""
 $EndDescr
-Connection ~ 4050 3150
+Connection ~ 3550 3150
 Connection ~ 4050 6150
 Connection ~ 4300 4250
 Connection ~ 4750 3150
@@ -26,13 +26,15 @@ Connection ~ 4750 4250
 Connection ~ 4900 6150
 NoConn ~ 5050 3650
 Wire Wire Line
-	3400 2850 5050 2850
+	3100 3350 3100 3850
 Wire Wire Line
-	3400 2950 5050 2950
+	3350 2650 3350 3450
 Wire Wire Line
-	3600 3350 3600 3850
+	3550 3150 3550 2650
 Wire Wire Line
-	3900 2650 3900 3450
+	3550 3150 3850 3150
+Wire Wire Line
+	3550 3250 3550 3150
 Wire Wire Line
 	3900 6150 4050 6150
 Wire Wire Line
@@ -42,15 +44,11 @@ Wire Wire Line
 Wire Wire Line
 	3950 4550 3950 4650
 Wire Wire Line
-	4050 3150 4050 2650
-Wire Wire Line
-	4050 3150 4350 3150
-Wire Wire Line
-	4050 3250 4050 3150
-Wire Wire Line
 	4050 6000 4050 6150
 Wire Wire Line
 	4050 6150 4250 6150
+Wire Wire Line
+	4150 3150 4750 3150
 Wire Wire Line
 	4250 6450 4250 6550
 Wire Wire Line
@@ -60,7 +58,13 @@ Wire Wire Line
 Wire Wire Line
 	4300 4550 4300 4650
 Wire Wire Line
-	4650 3150 4750 3150
+	4700 2800 2700 2800
+Wire Wire Line
+	4700 2950 4700 2800
+Wire Wire Line
+	4750 2700 2700 2700
+Wire Wire Line
+	4750 2850 4750 2700
 Wire Wire Line
 	4750 3150 4750 4250
 Wire Wire Line
@@ -86,13 +90,17 @@ Wire Wire Line
 Wire Wire Line
 	4950 3850 7150 3850
 Wire Wire Line
+	5050 2850 4750 2850
+Wire Wire Line
+	5050 2950 4700 2950
+Wire Wire Line
 	5050 3150 4750 3150
 Wire Wire Line
-	5050 3250 4050 3250
+	5050 3250 3550 3250
 Wire Wire Line
-	5050 3350 3600 3350
+	5050 3350 3100 3350
 Wire Wire Line
-	5050 3450 3900 3450
+	5050 3450 3350 3450
 Wire Wire Line
 	5050 3750 4950 3750
 Wire Wire Line
@@ -147,9 +155,9 @@ Text Notes 8900 2050 2    50   ~ 0
 OSR\n
 Text Notes 9250 2050 2    50   ~ 0
 BYPAS\n
-Text GLabel 3400 2850 0    50   Input ~ 0
+Text GLabel 2700 2700 0    50   Input ~ 0
 RX_I
-Text GLabel 3400 2950 0    50   Input ~ 0
+Text GLabel 2700 2800 0    50   Input ~ 0
 RX_Q
 Text GLabel 7150 3350 2    50   Input ~ 0
 SCK
@@ -162,23 +170,23 @@ LRCK
 $Comp
 L power:+3V3 #PWR02
 U 1 1 5E38F1B7
-P 3900 2650
-F 0 "#PWR02" H 3900 2500 50  0001 C CNN
-F 1 "+3V3" H 3915 2823 50  0000 C CNN
-F 2 "" H 3900 2650 50  0001 C CNN
-F 3 "" H 3900 2650 50  0001 C CNN
-	1    3900 2650
+P 3350 2650
+F 0 "#PWR02" H 3350 2500 50  0001 C CNN
+F 1 "+3V3" H 3365 2823 50  0000 C CNN
+F 2 "" H 3350 2650 50  0001 C CNN
+F 3 "" H 3350 2650 50  0001 C CNN
+	1    3350 2650
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+5V #PWR05
 U 1 1 5E38C061
-P 4050 2650
-F 0 "#PWR05" H 4050 2500 50  0001 C CNN
-F 1 "+5V" H 4065 2823 50  0000 C CNN
-F 2 "" H 4050 2650 50  0001 C CNN
-F 3 "" H 4050 2650 50  0001 C CNN
-	1    4050 2650
+P 3550 2650
+F 0 "#PWR05" H 3550 2500 50  0001 C CNN
+F 1 "+5V" H 3565 2823 50  0000 C CNN
+F 2 "" H 3550 2650 50  0001 C CNN
+F 3 "" H 3550 2650 50  0001 C CNN
+	1    3550 2650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -239,12 +247,12 @@ $EndComp
 $Comp
 L power:GND #PWR01
 U 1 1 5E38B1EC
-P 3600 3850
-F 0 "#PWR01" H 3600 3600 50  0001 C CNN
-F 1 "GND" H 3605 3677 50  0000 C CNN
-F 2 "" H 3600 3850 50  0001 C CNN
-F 3 "" H 3600 3850 50  0001 C CNN
-	1    3600 3850
+P 3100 3850
+F 0 "#PWR01" H 3100 3600 50  0001 C CNN
+F 1 "GND" H 3105 3677 50  0000 C CNN
+F 2 "" H 3100 3850 50  0001 C CNN
+F 3 "" H 3100 3850 50  0001 C CNN
+	1    3100 3850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -393,12 +401,12 @@ $EndComp
 $Comp
 L Device:R R1
 U 1 1 5E61E083
-P 4500 3150
-F 0 "R1" V 4706 3150 50  0000 C CNN
-F 1 "1K" V 4615 3150 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 4430 3150 50  0001 C CNN
-F 3 "~" H 4500 3150 50  0001 C CNN
-	1    4500 3150
+P 4000 3150
+F 0 "R1" V 4206 3150 50  0000 C CNN
+F 1 "1K" V 4115 3150 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3930 3150 50  0001 C CNN
+F 3 "~" H 4000 3150 50  0001 C CNN
+	1    4000 3150
 	0    -1   -1   0   
 $EndComp
 $Comp

@@ -1,4 +1,4 @@
-update=Sat 13 Jun 2020 13:04:48 BST
+update=Sun 14 Jun 2020 17:18:25 BST
 version=1
 last_client=kicad
 [general]
@@ -12,11 +12,7 @@ NetIExt=net
 version=1
 LibDir=
 [eeschema/libraries]
-[PcbFrame]
-version=1
 [LibeditFrame]
-version=1
-[ModEditFrame]
 version=1
 [pcbnew]
 version=1
@@ -253,4 +249,24 @@ dPairWidth=0.2
 dPairGap=0.25
 dPairViaGap=0.25
 [SchematicFrame]
+version=1
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=tx_pcb_pdfs/
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceAjustPassiveValues=0
+LabSize=50
+ERC_WriteFile=0
+ERC_TestSimilarLabels=1
+ERC_CheckUniqueGlobalLabels=1
+ERC_CheckBusDriverConflicts=1
+ERC_CheckBusEntryConflicts=1
+ERC_CheckBusToBusConflicts=1
+ERC_CheckBusToNetConflicts=1
+[ModEditFrame]
+version=1
+[PcbFrame]
 version=1

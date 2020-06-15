@@ -3,11 +3,11 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 4
-Title ""
-Date ""
-Rev ""
-Comp ""
+Sheet 3 4
+Title "Open XCVR"
+Date "2020-06-14"
+Rev "0.2"
+Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -48,9 +48,7 @@ Connection ~ 9360 2570
 Connection ~ 9360 3790
 Connection ~ 9360 4970
 Wire Wire Line
-	1150 1050 1150 1150
-Wire Wire Line
-	1450 1050 1450 1150
+	1150 850  1150 950 
 Wire Wire Line
 	1650 4300 2150 4300
 Wire Wire Line
@@ -66,11 +64,9 @@ Wire Wire Line
 Wire Wire Line
 	1700 5750 2050 5750
 Wire Wire Line
-	1750 1050 1750 1150
-Wire Wire Line
 	1850 2550 2850 2550
 Wire Wire Line
-	2050 1050 2050 1150
+	2000 850  2000 950 
 Wire Wire Line
 	2050 3400 2300 3400
 Wire Wire Line
@@ -103,6 +99,8 @@ Wire Wire Line
 	2800 5650 2800 5700
 Wire Wire Line
 	2800 5700 3150 5700
+Wire Wire Line
+	2850 850  2850 950 
 Wire Wire Line
 	2850 1300 2850 2550
 Wire Wire Line
@@ -143,6 +141,8 @@ Wire Wire Line
 	3200 4600 3200 4400
 Wire Wire Line
 	3250 3000 3050 3000
+Wire Wire Line
+	3700 850  3700 950 
 Wire Wire Line
 	3700 1700 3950 1700
 Wire Wire Line
@@ -382,45 +382,23 @@ LPF_BAND_3_B
 $Comp
 L power:GND #PWR01
 U 1 1 5E3CE5BD
-P 1150 1150
-F 0 "#PWR01" H 1150 900 50  0001 C CNN
-F 1 "GND" H 1155 977 50  0000 C CNN
-F 2 "" H 1150 1150 50  0001 C CNN
-F 3 "" H 1150 1150 50  0001 C CNN
-	1    1150 1150
+P 1150 950
+F 0 "#PWR01" H 1150 700 50  0001 C CNN
+F 1 "GND" H 1155 777 50  0000 C CNN
+F 2 "" H 1150 950 50  0001 C CNN
+F 3 "" H 1150 950 50  0001 C CNN
+	1    1150 950 
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR02
 U 1 1 5E3CEA8A
-P 1450 1150
-F 0 "#PWR02" H 1450 900 50  0001 C CNN
-F 1 "GND" H 1455 977 50  0000 C CNN
-F 2 "" H 1450 1150 50  0001 C CNN
-F 3 "" H 1450 1150 50  0001 C CNN
-	1    1450 1150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR03
-U 1 1 5E3CEEAD
-P 1750 1150
-F 0 "#PWR03" H 1750 900 50  0001 C CNN
-F 1 "GND" H 1755 977 50  0000 C CNN
-F 2 "" H 1750 1150 50  0001 C CNN
-F 3 "" H 1750 1150 50  0001 C CNN
-	1    1750 1150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR04
-U 1 1 5E3CFEDB
-P 2050 1150
-F 0 "#PWR04" H 2050 900 50  0001 C CNN
-F 1 "GND" H 2055 977 50  0000 C CNN
-F 2 "" H 2050 1150 50  0001 C CNN
-F 3 "" H 2050 1150 50  0001 C CNN
-	1    2050 1150
+P 2000 950
+F 0 "#PWR02" H 2000 700 50  0001 C CNN
+F 1 "GND" H 2005 777 50  0000 C CNN
+F 2 "" H 2000 950 50  0001 C CNN
+F 3 "" H 2000 950 50  0001 C CNN
+	1    2000 950 
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -435,6 +413,17 @@ F 3 "" H 2050 5800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L power:GND #PWR03
+U 1 1 5E3CEEAD
+P 2850 950
+F 0 "#PWR03" H 2850 700 50  0001 C CNN
+F 1 "GND" H 2855 777 50  0000 C CNN
+F 2 "" H 2850 950 50  0001 C CNN
+F 3 "" H 2850 950 50  0001 C CNN
+	1    2850 950 
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:GND #PWR06
 U 1 1 5E478F23
 P 3150 5750
@@ -443,6 +432,17 @@ F 1 "GND" H 3155 5577 50  0000 C CNN
 F 2 "" H 3150 5750 50  0001 C CNN
 F 3 "" H 3150 5750 50  0001 C CNN
 	1    3150 5750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR04
+U 1 1 5E3CFEDB
+P 3700 950
+F 0 "#PWR04" H 3700 700 50  0001 C CNN
+F 1 "GND" H 3705 777 50  0000 C CNN
+F 2 "" H 3700 950 50  0001 C CNN
+F 3 "" H 3700 950 50  0001 C CNN
+	1    3700 950 
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -778,45 +778,45 @@ $EndComp
 $Comp
 L Mechanical:MountingHole_Pad H1
 U 1 1 5E3C8D4A
-P 1150 950
-F 0 "H1" H 1250 999 50  0000 L CNN
-F 1 "MountingHole_Pad" H 1250 908 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1150 950 50  0001 C CNN
-F 3 "~" H 1150 950 50  0001 C CNN
-	1    1150 950 
+P 1150 750
+F 0 "H1" H 1250 799 50  0000 L CNN
+F 1 "MountingHole_Pad" H 1250 708 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1150 750 50  0001 C CNN
+F 3 "~" H 1150 750 50  0001 C CNN
+	1    1150 750 
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole_Pad H2
 U 1 1 5E3C9BDE
-P 1450 950
-F 0 "H2" H 1550 999 50  0000 L CNN
-F 1 "MountingHole_Pad" H 1550 908 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1450 950 50  0001 C CNN
-F 3 "~" H 1450 950 50  0001 C CNN
-	1    1450 950 
+P 2000 750
+F 0 "H2" H 2100 799 50  0000 L CNN
+F 1 "MountingHole_Pad" H 2100 708 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2000 750 50  0001 C CNN
+F 3 "~" H 2000 750 50  0001 C CNN
+	1    2000 750 
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole_Pad H3
 U 1 1 5E3CC23B
-P 1750 950
-F 0 "H3" H 1850 999 50  0000 L CNN
-F 1 "MountingHole_Pad" H 1850 908 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1750 950 50  0001 C CNN
-F 3 "~" H 1750 950 50  0001 C CNN
-	1    1750 950 
+P 2850 750
+F 0 "H3" H 2950 799 50  0000 L CNN
+F 1 "MountingHole_Pad" H 2950 708 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2850 750 50  0001 C CNN
+F 3 "~" H 2850 750 50  0001 C CNN
+	1    2850 750 
 	1    0    0    -1  
 $EndComp
 $Comp
 L Mechanical:MountingHole_Pad H4
 U 1 1 5E3CDA31
-P 2050 950
-F 0 "H4" H 2150 999 50  0000 L CNN
-F 1 "MountingHole_Pad" H 2150 908 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2050 950 50  0001 C CNN
-F 3 "~" H 2050 950 50  0001 C CNN
-	1    2050 950 
+P 3700 750
+F 0 "H4" H 3800 799 50  0000 L CNN
+F 1 "MountingHole_Pad" H 3800 708 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 3700 750 50  0001 C CNN
+F 3 "~" H 3700 750 50  0001 C CNN
+	1    3700 750 
 	1    0    0    -1  
 $EndComp
 $Comp

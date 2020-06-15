@@ -3,10 +3,10 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 7
+Sheet 4 7
 Title "Open XCVR"
-Date "2020-01-26"
-Rev "0.1"
+Date "2020-06-14"
+Rev "0.2"
 Comp "Jon Dawson"
 Comment1 ""
 Comment2 ""
@@ -341,6 +341,16 @@ Wire Wire Line
 	9450 3800 9550 3800
 Wire Wire Line
 	9450 4950 9550 4950
+Text Notes 10050 4150 2    50   ~ 0
+Band 2 4-8 MHz
+Text Notes 10050 5300 2    50   ~ 0
+Band 3 2-4 MHz
+Text Notes 10050 5850 2    50   ~ 0
+Band 4-7 Bypass
+Text Notes 10100 3050 2    50   ~ 0
+Band 1 8-16 MHz
+Text Notes 10150 1850 2    50   ~ 0
+Band 0 16-30 MHz
 Text GLabel 1950 5550 0    50   Input ~ 0
 BAND_0
 Text GLabel 1950 5650 0    50   Input ~ 0
