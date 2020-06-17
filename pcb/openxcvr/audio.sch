@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 7
+Sheet 4 7
 Title "Open XCVR"
 Date "2020-06-14"
 Rev "0.2"
@@ -21,7 +21,7 @@ $EndDescr
 Connection ~ 1350 5400
 Connection ~ 1800 4850
 Connection ~ 2450 5050
-Connection ~ 3150 1650
+Connection ~ 2700 1650
 Connection ~ 3250 4050
 Connection ~ 3250 4550
 Connection ~ 3250 4700
@@ -29,17 +29,24 @@ Connection ~ 3250 5250
 Connection ~ 3250 5650
 Connection ~ 3800 5050
 Connection ~ 3800 5450
+Connection ~ 4250 2500
+Connection ~ 4250 2550
 Connection ~ 4550 1650
 Connection ~ 4600 4950
 Connection ~ 4600 5450
-Connection ~ 4650 1550
+Connection ~ 4650 2000
 Connection ~ 5800 1650
 Connection ~ 6100 1550
+Connection ~ 6100 1900
+Connection ~ 6500 1650
+Connection ~ 6500 2600
 Connection ~ 7125 3875
 Connection ~ 7125 4325
 Connection ~ 7125 4450
 Connection ~ 7125 4750
 Connection ~ 7125 5200
+Connection ~ 7200 1350
+Connection ~ 7550 1350
 Connection ~ 8225 4550
 Connection ~ 9450 4100
 Connection ~ 9450 5000
@@ -52,6 +59,8 @@ Wire Wire Line
 	1350 5400 1700 5400
 Wire Wire Line
 	1550 5050 2450 5050
+Wire Wire Line
+	1650 1650 2100 1650
 Wire Wire Line
 	1700 5400 1700 5500
 Wire Wire Line
@@ -69,9 +78,9 @@ Wire Wire Line
 Wire Wire Line
 	2050 5400 1800 5400
 Wire Wire Line
-	2100 1650 2550 1650
-Wire Wire Line
 	2150 4850 1800 4850
+Wire Wire Line
+	2400 1650 2700 1650
 Wire Wire Line
 	2450 4350 2450 4400
 Wire Wire Line
@@ -79,7 +88,11 @@ Wire Wire Line
 Wire Wire Line
 	2450 5050 2850 5050
 Wire Wire Line
-	2850 1650 3150 1650
+	2700 1650 2700 1750
+Wire Wire Line
+	2700 1650 3150 1650
+Wire Wire Line
+	2700 2050 2700 2100
 Wire Wire Line
 	2850 4050 3250 4050
 Wire Wire Line
@@ -96,12 +109,6 @@ Wire Wire Line
 	2850 5600 2850 5650
 Wire Wire Line
 	2850 5650 3250 5650
-Wire Wire Line
-	3150 1650 3150 1750
-Wire Wire Line
-	3150 1650 3600 1650
-Wire Wire Line
-	3150 2050 3150 2100
 Wire Wire Line
 	3150 5050 3400 5050
 Wire Wire Line
@@ -123,7 +130,11 @@ Wire Wire Line
 Wire Wire Line
 	3250 5650 3250 5750
 Wire Wire Line
+	3450 1650 3500 1650
+Wire Wire Line
 	3700 5050 3800 5050
+Wire Wire Line
+	3800 1650 4550 1650
 Wire Wire Line
 	3800 4850 3800 4700
 Wire Wire Line
@@ -133,7 +144,11 @@ Wire Wire Line
 Wire Wire Line
 	3800 5800 3800 5450
 Wire Wire Line
-	3900 1650 4100 1650
+	3900 1350 3900 2500
+Wire Wire Line
+	3900 1350 4700 1350
+Wire Wire Line
+	3900 2500 4250 2500
 Wire Wire Line
 	3900 4850 3800 4850
 Wire Wire Line
@@ -141,11 +156,21 @@ Wire Wire Line
 Wire Wire Line
 	4000 5800 3800 5800
 Wire Wire Line
+	4250 1450 4700 1450
+Wire Wire Line
+	4250 2100 4250 1450
+Wire Wire Line
+	4250 2400 4250 2500
+Wire Wire Line
+	4250 2500 4250 2550
+Wire Wire Line
+	4250 2550 4250 2650
+Wire Wire Line
+	4250 2550 4650 2550
+Wire Wire Line
 	4300 5450 4600 5450
 Wire Wire Line
 	4300 5800 4600 5800
-Wire Wire Line
-	4400 1650 4550 1650
 Wire Wire Line
 	4500 4950 4600 4950
 Wire Wire Line
@@ -155,57 +180,75 @@ Wire Wire Line
 Wire Wire Line
 	4550 1950 5050 1950
 Wire Wire Line
-	4600 1450 4600 2150
-Wire Wire Line
-	4600 2450 4600 2600
-Wire Wire Line
 	4600 4950 4900 4950
 Wire Wire Line
 	4600 5450 4600 4950
 Wire Wire Line
 	4600 5800 4600 5450
 Wire Wire Line
-	4650 1350 4650 1550
-Wire Wire Line
-	4650 1550 4650 2150
+	4650 1550 4650 2000
 Wire Wire Line
 	4650 1550 4700 1550
 Wire Wire Line
-	4650 2150 4850 2150
+	4650 2000 4650 2100
 Wire Wire Line
-	4700 1350 4650 1350
+	4650 2000 4950 2000
 Wire Wire Line
-	4700 1450 4600 1450
+	4650 2550 4650 2400
 Wire Wire Line
-	4850 2150 4850 2600
+	4950 2000 4950 2600
+Wire Wire Line
+	4950 2600 5350 2600
 Wire Wire Line
 	5350 1950 5800 1950
 Wire Wire Line
-	5800 1350 7400 1350
+	5650 2600 6500 2600
+Wire Wire Line
+	5800 1350 5900 1350
 Wire Wire Line
 	5800 1450 6000 1450
 Wire Wire Line
 	5800 1550 6100 1550
 Wire Wire Line
-	5800 1650 6550 1650
+	5800 1650 6500 1650
 Wire Wire Line
 	5800 1950 5800 1650
 Wire Wire Line
+	5900 1200 6500 1200
+Wire Wire Line
+	5900 1350 5900 1200
+Wire Wire Line
 	6000 1450 6000 1950
 Wire Wire Line
-	6100 1550 6100 1200
+	6100 1100 6100 1550
 Wire Wire Line
-	6100 1550 6100 2150
+	6100 1550 6100 1900
 Wire Wire Line
-	6100 2450 6100 2650
+	6100 1900 6100 2150
 Wire Wire Line
-	6550 1550 7400 1550
+	6100 1900 6500 1900
 Wire Wire Line
-	6550 1650 6550 1550
+	6100 2450 6100 2700
 Wire Wire Line
-	6650 1900 7100 1900
+	6450 1450 6500 1450
 Wire Wire Line
-	6650 2000 7200 2000
+	6450 1550 6500 1550
+Wire Wire Line
+	6500 1450 6500 1200
+Wire Wire Line
+	6500 1650 6500 1550
+Wire Wire Line
+	6500 1650 6600 1650
+Wire Wire Line
+	6500 1900 6500 2150
+Wire Wire Line
+	6500 2450 6500 2600
+Wire Wire Line
+	6500 2600 7550 2600
+Wire Wire Line
+	6600 1350 6700 1350
+Wire Wire Line
+	6600 1650 6600 1350
 Wire Wire Line
 	6675 3875 7125 3875
 Wire Wire Line
@@ -223,9 +266,7 @@ Wire Wire Line
 Wire Wire Line
 	6675 5200 7125 5200
 Wire Wire Line
-	7100 1450 7100 1900
-Wire Wire Line
-	7100 1450 7400 1450
+	7000 1350 7200 1350
 Wire Wire Line
 	7125 3750 7125 3875
 Wire Wire Line
@@ -245,17 +286,29 @@ Wire Wire Line
 Wire Wire Line
 	7125 5200 7125 5525
 Wire Wire Line
-	7200 1650 7400 1650
+	7200 1350 7200 1500
 Wire Wire Line
-	7200 2000 7200 1650
+	7200 1350 7550 1350
+Wire Wire Line
+	7200 1800 7200 1900
 Wire Wire Line
 	7500 4650 7500 4825
 Wire Wire Line
 	7500 4825 8225 4825
 Wire Wire Line
+	7550 1350 7800 1350
+Wire Wire Line
+	7550 1550 7550 1350
+Wire Wire Line
+	7550 1650 7550 2600
+Wire Wire Line
+	7550 1650 7800 1650
+Wire Wire Line
 	7550 4650 7500 4650
 Wire Wire Line
-	7600 1850 7600 1950
+	7800 1550 7550 1550
+Wire Wire Line
+	8000 1850 8000 1950
 Wire Wire Line
 	8225 4550 8150 4550
 Wire Wire Line
@@ -289,19 +342,19 @@ Wire Notes Line
 Wire Notes Line
 	1025 3525 1025 3550
 Wire Notes Line
-	2400 1250 2400 2400
+	1950 1250 1950 2400
 Wire Notes Line
-	2400 1250 3550 1250
+	1950 1250 3100 1250
 Wire Notes Line
-	2400 2400 3550 2400
+	1950 2400 3100 2400
 Wire Notes Line
-	3550 2400 3550 1250
+	3100 2400 3100 1250
 Wire Notes Line
-	3600 850  3600 2950
+	3150 800  3150 3000
 Wire Notes Line
-	3600 850  8300 850 
+	3150 800  8300 800 
 Wire Notes Line
-	3600 2950 8300 2950
+	3150 3000 8300 3000
 Wire Notes Line
 	5950 6500 5950 3500
 Wire Notes Line
@@ -311,20 +364,20 @@ Wire Notes Line
 Wire Notes Line
 	6350 6075 10250 6075
 Wire Notes Line
-	8300 2950 8300 850 
+	8300 3000 8300 800 
 Wire Notes Line
 	10250 3275 6350 3275
 Wire Notes Line
 	10250 6075 10250 3275
 Text Notes 1975 3650 2    50   ~ 0
 Microphone Preamplifier
-Text Notes 3450 1350 2    50   ~ 0
+Text Notes 3000 1350 2    50   ~ 0
 1st order low pass filter
 Text Notes 5600 950  2    50   ~ 0
 Audio Amplifier
 Text Notes 7250 3400 2    50   ~ 0
 5v Power Rail Splitter
-Text GLabel 2100 1650 0    50   Input ~ 0
+Text GLabel 1650 1650 0    50   Input ~ 0
 SPEAKER
 Text GLabel 2150 4850 2    50   Output ~ 0
 PTT
@@ -366,12 +419,12 @@ $EndComp
 $Comp
 L power:+5VA #PWR031
 U 1 1 5EA439C3
-P 6100 1200
-F 0 "#PWR031" H 6100 1050 50  0001 C CNN
-F 1 "+5VA" H 6115 1373 50  0000 C CNN
-F 2 "" H 6100 1200 50  0001 C CNN
-F 3 "" H 6100 1200 50  0001 C CNN
-	1    6100 1200
+P 6100 1100
+F 0 "#PWR031" H 6100 950 50  0001 C CNN
+F 1 "+5VA" H 6115 1273 50  0000 C CNN
+F 2 "" H 6100 1100 50  0001 C CNN
+F 3 "" H 6100 1100 50  0001 C CNN
+	1    6100 1100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -421,12 +474,12 @@ $EndComp
 $Comp
 L power:GND #PWR024
 U 1 1 5E299D37
-P 3150 2100
-F 0 "#PWR024" H 3150 1850 50  0001 C CNN
-F 1 "GND" H 3155 1927 50  0000 C CNN
-F 2 "" H 3150 2100 50  0001 C CNN
-F 3 "" H 3150 2100 50  0001 C CNN
-	1    3150 2100
+P 2700 2100
+F 0 "#PWR024" H 2700 1850 50  0001 C CNN
+F 1 "GND" H 2705 1927 50  0000 C CNN
+F 2 "" H 2700 2100 50  0001 C CNN
+F 3 "" H 2700 2100 50  0001 C CNN
+	1    2700 2100
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -443,23 +496,12 @@ $EndComp
 $Comp
 L power:GND #PWR026
 U 1 1 5E373542
-P 4600 2600
-F 0 "#PWR026" H 4600 2350 50  0001 C CNN
-F 1 "GND" H 4605 2427 50  0000 C CNN
-F 2 "" H 4600 2600 50  0001 C CNN
-F 3 "" H 4600 2600 50  0001 C CNN
-	1    4600 2600
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR032
-U 1 1 5E3731A7
-P 4850 2600
-F 0 "#PWR032" H 4850 2350 50  0001 C CNN
-F 1 "GND" H 4855 2427 50  0000 C CNN
-F 2 "" H 4850 2600 50  0001 C CNN
-F 3 "" H 4850 2600 50  0001 C CNN
-	1    4850 2600
+P 4250 2650
+F 0 "#PWR026" H 4250 2400 50  0001 C CNN
+F 1 "GND" H 4255 2477 50  0000 C CNN
+F 2 "" H 4250 2650 50  0001 C CNN
+F 3 "" H 4250 2650 50  0001 C CNN
+	1    4250 2650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -476,12 +518,12 @@ $EndComp
 $Comp
 L power:GND #PWR0104
 U 1 1 5ED7B378
-P 6100 2650
-F 0 "#PWR0104" H 6100 2400 50  0001 C CNN
-F 1 "GND" H 6105 2477 50  0000 C CNN
-F 2 "" H 6100 2650 50  0001 C CNN
-F 3 "" H 6100 2650 50  0001 C CNN
-	1    6100 2650
+P 6100 2700
+F 0 "#PWR0104" H 6100 2450 50  0001 C CNN
+F 1 "GND" H 6105 2527 50  0000 C CNN
+F 2 "" H 6100 2700 50  0001 C CNN
+F 3 "" H 6100 2700 50  0001 C CNN
+	1    6100 2700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -496,14 +538,25 @@ F 3 "" H 7125 5525 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L power:GND #PWR0109
+U 1 1 5EEA3210
+P 7200 1900
+F 0 "#PWR0109" H 7200 1650 50  0001 C CNN
+F 1 "GND" H 7205 1727 50  0000 C CNN
+F 2 "" H 7200 1900 50  0001 C CNN
+F 3 "" H 7200 1900 50  0001 C CNN
+	1    7200 1900
+	1    0    0    -1  
+$EndComp
+$Comp
 L power:GND #PWR034
 U 1 1 5E4DC291
-P 7600 1950
-F 0 "#PWR034" H 7600 1700 50  0001 C CNN
-F 1 "GND" H 7605 1777 50  0000 C CNN
-F 2 "" H 7600 1950 50  0001 C CNN
-F 3 "" H 7600 1950 50  0001 C CNN
-	1    7600 1950
+P 8000 1950
+F 0 "#PWR034" H 8000 1700 50  0001 C CNN
+F 1 "GND" H 8005 1777 50  0000 C CNN
+F 2 "" H 8000 1950 50  0001 C CNN
+F 3 "" H 8000 1950 50  0001 C CNN
+	1    8000 1950
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -529,6 +582,17 @@ F 3 "~" H 1800 4550 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
+L Device:R R3
+U 1 1 5E299A83
+P 2250 1650
+F 0 "R3" V 2456 1650 50  0000 C CNN
+F 1 "1K" V 2365 1650 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2180 1650 50  0001 C CNN
+F 3 "~" H 2250 1650 50  0001 C CNN
+	1    2250 1650
+	0    -1   -1   0   
+$EndComp
+$Comp
 L Device:R R4
 U 1 1 5E35DAC3
 P 2450 4550
@@ -538,17 +602,6 @@ F 2 "Resistor_SMD:R_0805_2012Metric" V 2380 4550 50  0001 C CNN
 F 3 "~" H 2450 4550 50  0001 C CNN
 	1    2450 4550
 	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R R3
-U 1 1 5E299A83
-P 2700 1650
-F 0 "R3" V 2906 1650 50  0000 C CNN
-F 1 "1K" V 2815 1650 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 2630 1650 50  0001 C CNN
-F 3 "~" H 2700 1650 50  0001 C CNN
-	1    2700 1650
-	0    -1   -1   0   
 $EndComp
 $Comp
 L Device:R R6
@@ -584,6 +637,17 @@ F 3 "~" H 3550 5050 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
+L Device:R R5
+U 1 1 5E37E5B2
+P 3650 1650
+F 0 "R5" H 3720 1695 50  0000 L CNN
+F 1 "10K" H 3720 1605 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 3580 1650 50  0001 C CNN
+F 3 "~" H 3650 1650 50  0001 C CNN
+	1    3650 1650
+	0    -1   -1   0   
+$EndComp
+$Comp
 L Device:R R10
 U 1 1 5E2E16E9
 P 4150 5450
@@ -592,17 +656,6 @@ F 1 "1M" V 4265 5450 50  0000 C CNN
 F 2 "Resistor_SMD:R_0805_2012Metric" V 4080 5450 50  0001 C CNN
 F 3 "~" H 4150 5450 50  0001 C CNN
 	1    4150 5450
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:R R5
-U 1 1 5E37E5B2
-P 4250 1650
-F 0 "R5" H 4320 1695 50  0000 L CNN
-F 1 "10K" H 4320 1605 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" V 4180 1650 50  0001 C CNN
-F 3 "~" H 4250 1650 50  0001 C CNN
-	1    4250 1650
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -615,6 +668,28 @@ F 2 "Resistor_SMD:R_0805_2012Metric" V 5130 1950 50  0001 C CNN
 F 3 "~" H 5200 1950 50  0001 C CNN
 	1    5200 1950
 	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R45
+U 1 1 5EEACE57
+P 5500 2600
+F 0 "R45" V 5350 2500 50  0000 L CNN
+F 1 "100K" V 5250 2500 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 5430 2600 50  0001 C CNN
+F 3 "~" H 5500 2600 50  0001 C CNN
+	1    5500 2600
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R46
+U 1 1 5EEA6708
+P 6500 2300
+F 0 "R46" H 6570 2345 50  0000 L CNN
+F 1 "100K" H 6570 2255 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 6430 2300 50  0001 C CNN
+F 3 "~" H 6500 2300 50  0001 C CNN
+	1    6500 2300
+	-1   0    0    1   
 $EndComp
 $Comp
 L Device:R R11
@@ -639,6 +714,17 @@ F 3 "~" H 7125 4975 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L Device:R R47
+U 1 1 5EE9F537
+P 7200 1650
+F 0 "R47" H 7270 1695 50  0000 L CNN
+F 1 "1K" H 7270 1605 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7130 1650 50  0001 C CNN
+F 3 "~" H 7200 1650 50  0001 C CNN
+	1    7200 1650
+	-1   0    0    1   
+$EndComp
+$Comp
 L Connector:Conn_01x02_Male J2
 U 1 1 5E4DFD08
 P 2250 5400
@@ -652,12 +738,12 @@ $EndComp
 $Comp
 L Connector:Conn_01x02_Male J3
 U 1 1 5E4DE8D2
-P 6450 1900
-F 0 "J3" H 6558 2079 50  0000 C CNN
-F 1 "Speaker" H 6450 2000 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 6450 1900 50  0001 C CNN
-F 3 "~" H 6450 1900 50  0001 C CNN
-	1    6450 1900
+P 6250 1450
+F 0 "J3" H 6358 1629 50  0000 C CNN
+F 1 "Speaker" H 6250 1550 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 6250 1450 50  0001 C CNN
+F 3 "~" H 6250 1450 50  0001 C CNN
+	1    6250 1450
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -669,6 +755,17 @@ F 1 "MCP6002-xSN" H 9800 4400 50  0000 C CNN
 F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 9550 4500 50  0001 C CNN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21733j.pdf" H 9550 4500 50  0001 C CNN
 	3    9550 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C9
+U 1 1 5E2994A3
+P 2700 1900
+F 0 "C9" H 2815 1945 50  0000 L CNN
+F 1 "47n" H 2815 1855 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 2738 1750 50  0001 C CNN
+F 3 "~" H 2700 1900 50  0001 C CNN
+	1    2700 1900
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -705,25 +802,14 @@ F 3 "~" H 3000 5050 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Device:C C9
-U 1 1 5E2994A3
-P 3150 1900
-F 0 "C9" H 3265 1945 50  0000 L CNN
-F 1 "47n" H 3265 1855 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 3188 1750 50  0001 C CNN
-F 3 "~" H 3150 1900 50  0001 C CNN
-	1    3150 1900
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:C C13
 U 1 1 5E7745A5
-P 3750 1650
-F 0 "C13" H 3865 1695 50  0000 L CNN
-F 1 "100n" H 3865 1605 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 3788 1500 50  0001 C CNN
-F 3 "~" H 3750 1650 50  0001 C CNN
-	1    3750 1650
+P 3300 1650
+F 0 "C13" H 3415 1695 50  0000 L CNN
+F 1 "100n" H 3415 1605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3338 1500 50  0001 C CNN
+F 3 "~" H 3300 1650 50  0001 C CNN
+	1    3300 1650
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -740,12 +826,23 @@ $EndComp
 $Comp
 L Device:C C10
 U 1 1 5ED58F0A
-P 4600 2300
-F 0 "C10" H 4715 2345 50  0000 L CNN
-F 1 "100n" H 4715 2255 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 4638 2150 50  0001 C CNN
-F 3 "~" H 4600 2300 50  0001 C CNN
-	1    4600 2300
+P 4250 2250
+F 0 "C10" H 4365 2295 50  0000 L CNN
+F 1 "100n" H 4365 2205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4288 2100 50  0001 C CNN
+F 3 "~" H 4250 2250 50  0001 C CNN
+	1    4250 2250
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:C C52
+U 1 1 5EEC9553
+P 4650 2250
+F 0 "C52" H 4765 2295 50  0000 L CNN
+F 1 "100n" H 4765 2205 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 4688 2100 50  0001 C CNN
+F 3 "~" H 4650 2250 50  0001 C CNN
+	1    4650 2250
 	-1   0    0    1   
 $EndComp
 $Comp
@@ -793,6 +890,17 @@ F 3 "~" H 9000 4550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
+L Device:CP C53
+U 1 1 5EE93C38
+P 6850 1350
+F 0 "C53" V 7104 1350 50  0000 C CNN
+F 1 "100u" V 7013 1350 50  0000 C CNN
+F 2 "Capacitor_Tantalum_SMD:CP_EIA-7343-31_Kemet-D" H 6888 1200 50  0001 C CNN
+F 3 "~" H 6850 1350 50  0001 C CNN
+	1    6850 1350
+	0    -1   -1   0   
+$EndComp
+$Comp
 L Connector:AudioJack2_Ground_Switch J1
 U 1 1 5E4A78CB
 P 1350 5050
@@ -806,12 +914,12 @@ $EndComp
 $Comp
 L Connector:AudioJack2_Ground_Switch J4
 U 1 1 5E4A3804
-P 7600 1550
-F 0 "J4" H 7420 1567 50  0000 R CNN
-F 1 "Headphone" H 7420 1477 50  0000 R CNN
-F 2 "openxcvr:jack3.5mm switched" H 7600 1750 50  0001 C CNN
-F 3 "~" H 7600 1750 50  0001 C CNN
-	1    7600 1550
+P 8000 1550
+F 0 "J4" H 8050 2050 50  0000 R CNN
+F 1 "Headphone" H 8200 1950 50  0000 R CNN
+F 2 "openxcvr:jack3.5mm switched" H 8000 1750 50  0001 C CNN
+F 3 "~" H 8000 1750 50  0001 C CNN
+	1    8000 1550
 	-1   0    0    -1  
 $EndComp
 $Comp

@@ -1,4 +1,4 @@
-update=Sun 14 Jun 2020 17:18:25 BST
+update=Tue 16 Jun 2020 18:52:26 BST
 version=1
 last_client=kicad
 [general]
@@ -266,7 +266,7 @@ ERC_CheckBusDriverConflicts=1
 ERC_CheckBusEntryConflicts=1
 ERC_CheckBusToBusConflicts=1
 ERC_CheckBusToNetConflicts=1
-[ModEditFrame]
-version=1
 [PcbFrame]
+version=1
+[ModEditFrame]
 version=1
