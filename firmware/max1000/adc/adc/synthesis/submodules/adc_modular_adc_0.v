@@ -32,7 +32,7 @@ module adc_modular_adc_0 (
 		.refsel                          (1),
 		.device_partname_fivechar_prefix ("10M08"),
 		.is_this_first_or_second_adc     (1),
-		.analog_input_pin_mask           (151),
+		.analog_input_pin_mask           (223),
 		.dual_adc_mode                   (0),
 		.enable_usr_sim                  (0),
 		.reference_voltage_sim           (65536),

@@ -45,6 +45,7 @@ i2c bus;
 #include "eeprom.h"
 #include "load_store.h"
 #include "ui.h"
+#include "transmit.h"
 
 //convert a frequency in Hertz into a frequency in NCO step size.
 unsigned convert_to_steps(unsigned x){
@@ -250,7 +251,7 @@ void main(){
                     break;
 
                 case 'c':
-                    for(i=0;i<1000;i++){
+                    for(i=0;i<4000;i++){
                         temp = fgetc(capture_in);
                         putc(temp & 0xff);
                         putc(temp >> 8  & 0xff);
@@ -292,7 +293,14 @@ void main(){
 
        
        if(timer_low() - wake_time > 2000000){ 
+           wake_time = timer_low();
             settings.mute = read_smeter() < settings.squelch;
+
+            //check transmit button
+            if(check_ptt()){
+                transmit();
+                last_smeter = 1234567; //force smeter to be updated straight away.
+            }
 
             //If knob is turned adjust frequency
             //don't store this in EEPROM to avoid wear
@@ -307,18 +315,19 @@ void main(){
 
             //if the menu was entered, update settings and
             //store them in EEPROM
-            /*if(do_ui()){
+            if(do_ui()){
                 apply_settings();
                 update_lcd();
                 store_settings(&bus, 0);
             }
-            */
+            
 
             if(last_smeter != read_smeter()){
                 LCD_LINE2()
                 lcd_print(smeter[read_smeter()]);
                 last_smeter = read_smeter();
             }
+
        }
 
     }

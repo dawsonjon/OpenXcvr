@@ -9,12 +9,12 @@ import sys
 
 def make_kernel(taps, kernel_bits, fc):
     kernel = signal.firwin(taps, fc, window="blackman")
-    kernel = np.round(kernel * (2.0**kernel_bits-1.0))
+    kernel = np.round(kernel * (2.0**(kernel_bits-1.0)))
     return kernel
 
 def frequency_response(kernel, kernel_bits):
     response = np.concatenate([kernel, np.zeros(1024)])
-    response /= (2.0**kernel_bits - 1.0) 
+    response /= (2.0**(kernel_bits - 1.0)) 
     response = 20*np.log10(abs(np.fft.fftshift(np.fft.fft(response))))
     return response
 
@@ -24,44 +24,31 @@ def plot_kernel(taps, kernel_bits):
     response_2 = frequency_response(make_kernel(taps, kernel_bits, 0.15625), kernel_bits) #Wide
     response_3 = frequency_response(make_kernel(taps, kernel_bits, 0.01), kernel_bits)    #CW
 
-    plt.figure()
-
-    plt.subplot(221)
     plt.grid(True)
-    plt.title("Narrow")
+    plt.title("Filter Magnitude Response")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
-    plt.plot(
+    a, = plt.plot(
             np.linspace(-12.5, 12.5, len(response_0)), 
-            response_0
+            response_0,
+            label="Narrow"
     )
-    plt.subplot(222)
-    plt.grid(True)
-    plt.title("Normal")
-    plt.xlabel("Frequency (kHz)")
-    plt.ylabel("Gain (dB)")
-    plt.plot(
+    b, = plt.plot(
             np.linspace(-12.5, 12.5, len(response_1)), 
-            response_1
+            response_1,
+            label="Medium"
     )
-    plt.subplot(223)
-    plt.grid(True)
-    plt.title("Wide")
-    plt.xlabel("Frequency (kHz)")
-    plt.ylabel("Gain (dB)")
-    plt.plot(
-            np.linspace(-12.5, 12.5, len(response_2)), 
-            response_2
+    c, = plt.plot(
+            np.linspace(-12.5, 12.5, len(response_2)),
+            response_2,
+            label="Wide"
     )
-    plt.subplot(224)
-    plt.grid(True)
-    plt.title("CW")
-    plt.xlabel("Frequency (kHz)")
-    plt.ylabel("Gain (dB)")
-    plt.plot(
-            np.linspace(-12.2, 12.2, len(response_3)), 
-            response_3
+    d, = plt.plot(
+            np.linspace(-12.5, 12.5, len(response_3)),
+            response_3,
+            label="CW"
     )
+    plt.legend(handles=[a, b, c, d])
     plt.show()
 
 

@@ -15,7 +15,7 @@ def nco(clk, frequency, channels):
     #add phase shift to I output
     pi_over_4 = (2**bits)/4
     lo_i = lo
-    lo_q = [i + pi_over_4 for i in lo]
+    lo_q = [i - pi_over_4 for i in lo]
 
     #register outputs
     lo_i = [i.subtype.register(clk, d=i) for i in lo_i]

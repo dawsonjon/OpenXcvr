@@ -86,7 +86,7 @@ program(60, "20m RTTY        ", 14083000, 14000000, 14099000, "LSB", "SLOW", "10
 program(61, "40m RTTY        ", 7043000,  7000000,  7060000,  "LSB", "SLOW", "100Hz", 0)
 program(62, "80m RTTY        ", 3590000,  3500000,  3620000,  "LSB", "SLOW", "100Hz", 0)
 program(70,  "BBC RADIO 5 Live", 693000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)
-program(71,  "BBC Her and worc", 783000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)
+program(71,  "BBC Her and worc", 738000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)
 program(72,  "855 Sunshine    ", 855000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)
 program(73,  "Talk Sport      ",1053000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)
 program(74,  "Absolute        ",1215000,  531000,   1602000,  "AM", "VERY SLOW", "1kHz", 0)

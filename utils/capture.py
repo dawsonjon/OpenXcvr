@@ -12,7 +12,7 @@ from openxcvr import Xcvr
 
 xcvr = Xcvr("/dev/ttyUSB0")
 
-xcvr.set_frequency(1.053e6)
+xcvr.set_frequency(1.215e6)
 xcvr.set_mode(0)
 #xcvr.set_band(2)
 #xcvr.set_squelch(0)

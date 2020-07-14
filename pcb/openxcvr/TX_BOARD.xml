@@ -2,14 +2,14 @@
 <export version="D">
   <design>
     <source>/home/jon/fpgatx2/pcb/openxcvr/TX_BOARD.sch</source>
-    <date>Sun 14 Jun 2020 11:23:43 BST</date>
+    <date>Sat 04 Jul 2020 10:24:40 BST</date>
     <tool>Eeschema 5.99.0-unknown-43514a1~86~ubuntu18.04.1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>Open XCVR</title>
         <company>Jon Dawson</company>
-        <rev>0.1</rev>
-        <date>2020-01-26</date>
+        <rev>0.2</rev>
+        <date>2020-06-14</date>
         <source>TX_BOARD.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -22,12 +22,12 @@
         <comment number="9" value=""/>
       </title_block>
     </sheet>
-    <sheet number="2" name="/LPF/" tstamps="/5E3F7669/">
+    <sheet number="2" name="/low pass filters/" tstamps="/5E3F7669/">
       <title_block>
-        <title/>
-        <company/>
-        <rev/>
-        <date/>
+        <title>Open XCVR</title>
+        <company>Jon Dawson</company>
+        <rev>0.2</rev>
+        <date>2020-06-14</date>
         <source>LPF.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -40,12 +40,12 @@
         <comment number="9" value=""/>
       </title_block>
     </sheet>
-    <sheet number="3" name="/TX_PA/" tstamps="/5EBEA4A7/">
+    <sheet number="3" name="/transmit power amplifier/" tstamps="/5EBEA4A7/">
       <title_block>
-        <title/>
-        <company/>
-        <rev/>
-        <date/>
+        <title>Open XCVR</title>
+        <company>Jon Dawson</company>
+        <rev>0.2</rev>
+        <date>2020-06-14</date>
         <source>tx_pa.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -58,12 +58,12 @@
         <comment number="9" value=""/>
       </title_block>
     </sheet>
-    <sheet number="4" name="/TX_RX/" tstamps="/5E5B8C32/">
+    <sheet number="4" name="/transmit receive switching /" tstamps="/5E5B8C32/">
       <title_block>
-        <title/>
-        <company/>
-        <rev/>
-        <date/>
+        <title>Open XCVR</title>
+        <company>Jon Dawson</company>
+        <rev>0.2</rev>
+        <date>2020-06-14</date>
         <source>TX_RX.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -83,7 +83,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E520791</tstamp>
     </comp>
     <comp ref="C10">
@@ -91,7 +91,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF11F</tstamp>
     </comp>
     <comp ref="C11">
@@ -99,7 +99,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED3E2</tstamp>
     </comp>
     <comp ref="C12">
@@ -107,7 +107,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4C0CA8</tstamp>
     </comp>
     <comp ref="C13">
@@ -115,7 +115,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E520800</tstamp>
     </comp>
     <comp ref="C14">
@@ -123,7 +123,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF160</tstamp>
     </comp>
     <comp ref="C15">
@@ -131,7 +131,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED452</tstamp>
     </comp>
     <comp ref="C16">
@@ -139,7 +139,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4C588B</tstamp>
     </comp>
     <comp ref="C2">
@@ -147,7 +147,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF139</tstamp>
     </comp>
     <comp ref="C3">
@@ -155,7 +155,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED47D</tstamp>
     </comp>
     <comp ref="C4">
@@ -163,7 +163,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4C4691</tstamp>
     </comp>
     <comp ref="C5">
@@ -171,7 +171,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E5207EB</tstamp>
     </comp>
     <comp ref="C6">
@@ -179,7 +179,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF1BC</tstamp>
     </comp>
     <comp ref="C7">
@@ -187,7 +187,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED3F7</tstamp>
     </comp>
     <comp ref="C8">
@@ -195,7 +195,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4C09BF</tstamp>
     </comp>
     <comp ref="C9">
@@ -203,7 +203,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E5207D3</tstamp>
     </comp>
     <comp ref="D1">
@@ -211,7 +211,7 @@
       <footprint>Diode_SMD:D_SOD-123</footprint>
       <datasheet>https://www.vishay.com/docs/85748/1n4148w.pdf</datasheet>
       <libsource lib="" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E47D401</tstamp>
     </comp>
     <comp ref="D2">
@@ -219,7 +219,7 @@
       <footprint>Diode_SMD:D_SOD-123</footprint>
       <datasheet>https://www.vishay.com/docs/85748/1n4148w.pdf</datasheet>
       <libsource lib="" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E484217</tstamp>
     </comp>
     <comp ref="D3">
@@ -227,7 +227,7 @@
       <footprint>Diode_SMD:D_SOD-123</footprint>
       <datasheet>https://www.vishay.com/docs/85748/1n4148w.pdf</datasheet>
       <libsource lib="" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E45364E</tstamp>
     </comp>
     <comp ref="H1">
@@ -235,7 +235,7 @@
       <footprint>MountingHole:MountingHole_3.2mm_M3_Pad</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E3C8D4A</tstamp>
     </comp>
     <comp ref="H2">
@@ -243,7 +243,7 @@
       <footprint>MountingHole:MountingHole_3.2mm_M3_Pad</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E3C9BDE</tstamp>
     </comp>
     <comp ref="H3">
@@ -251,7 +251,7 @@
       <footprint>MountingHole:MountingHole_3.2mm_M3_Pad</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E3CC23B</tstamp>
     </comp>
     <comp ref="H4">
@@ -259,7 +259,7 @@
       <footprint>MountingHole:MountingHole_3.2mm_M3_Pad</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E3CDA31</tstamp>
     </comp>
     <comp ref="K1">
@@ -267,7 +267,7 @@
       <footprint>Relay_THT:Relay_DPDT_Omron_G5V-2</footprint>
       <datasheet>http://omronfs.omron.com/en_US/ecb/products/pdf/en-g5v_2.pdf</datasheet>
       <libsource lib="Relay" part="G5V-2" description="Relay Miniature Omron DPDT"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4236F2</tstamp>
     </comp>
     <comp ref="K2">
@@ -275,7 +275,7 @@
       <footprint>Relay_THT:Relay_DPDT_Omron_G5V-2</footprint>
       <datasheet>http://omronfs.omron.com/en_US/ecb/products/pdf/en-g5v_2.pdf</datasheet>
       <libsource lib="Relay" part="G5V-2" description="Relay Miniature Omron DPDT"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E41F5CB</tstamp>
     </comp>
     <comp ref="K3">
@@ -283,7 +283,7 @@
       <footprint>Relay_THT:Relay_DPDT_Omron_G5V-2</footprint>
       <datasheet>http://omronfs.omron.com/en_US/ecb/products/pdf/en-g5v_2.pdf</datasheet>
       <libsource lib="Relay" part="G5V-2" description="Relay Miniature Omron DPDT"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E422225</tstamp>
     </comp>
     <comp ref="L1">
@@ -291,7 +291,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E52083D</tstamp>
     </comp>
     <comp ref="L10">
@@ -299,7 +299,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF1D5</tstamp>
     </comp>
     <comp ref="L11">
@@ -307,7 +307,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED40E</tstamp>
     </comp>
     <comp ref="L12">
@@ -315,7 +315,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4BC770</tstamp>
     </comp>
     <comp ref="L2">
@@ -323,7 +323,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF178</tstamp>
     </comp>
     <comp ref="L3">
@@ -331,7 +331,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED3CD</tstamp>
     </comp>
     <comp ref="L4">
@@ -339,7 +339,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4B96DE</tstamp>
     </comp>
     <comp ref="L5">
@@ -347,7 +347,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E520764</tstamp>
     </comp>
     <comp ref="L6">
@@ -355,7 +355,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4FF190</tstamp>
     </comp>
     <comp ref="L7">
@@ -363,7 +363,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4ED43C</tstamp>
     </comp>
     <comp ref="L8">
@@ -371,7 +371,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4BB44C</tstamp>
     </comp>
     <comp ref="L9">
@@ -379,7 +379,7 @@
       <footprint>openxcvr:FT37-INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E5207A9</tstamp>
     </comp>
     <comp ref="Q1">
@@ -387,7 +387,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E45E79C</tstamp>
     </comp>
     <comp ref="Q2">
@@ -395,7 +395,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E461F5D</tstamp>
     </comp>
     <comp ref="R1">
@@ -403,7 +403,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E43438E</tstamp>
     </comp>
     <comp ref="R2">
@@ -411,7 +411,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/LPF/" tstamps="/5E3F7669/"/>
+      <sheetpath names="/low pass filters/" tstamps="/5E3F7669/"/>
       <tstamp>5E4485B3</tstamp>
     </comp>
     <comp ref="C21">
@@ -419,7 +419,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EEA3A2C</tstamp>
     </comp>
     <comp ref="C22">
@@ -427,7 +427,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDDC930</tstamp>
     </comp>
     <comp ref="C23">
@@ -435,7 +435,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDDDA4A</tstamp>
     </comp>
     <comp ref="C24">
@@ -443,7 +443,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDDE916</tstamp>
     </comp>
     <comp ref="C25">
@@ -451,7 +451,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE31528</tstamp>
     </comp>
     <comp ref="C26">
@@ -459,7 +459,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EEA5D3A</tstamp>
     </comp>
     <comp ref="C27">
@@ -467,7 +467,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EEF3AB1</tstamp>
     </comp>
     <comp ref="C28">
@@ -475,7 +475,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE4D707</tstamp>
     </comp>
     <comp ref="D7">
@@ -483,7 +483,7 @@
       <footprint>openxcvr:D_SOD-106</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="D_Schottky" description="Schottky diode"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE0832C</tstamp>
     </comp>
     <comp ref="D8">
@@ -491,7 +491,7 @@
       <footprint>Diode_SMD:D_SOD-123</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="D_Zener" description="Zener diode"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EEB888B</tstamp>
     </comp>
     <comp ref="L13">
@@ -499,7 +499,7 @@
       <footprint>openxcvr:L_SMT_INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE2B574</tstamp>
     </comp>
     <comp ref="L14">
@@ -507,15 +507,15 @@
       <footprint>openxcvr:L_SMT_INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE2BE83</tstamp>
     </comp>
     <comp ref="L15">
-      <value>L</value>
+      <value>44 u</value>
       <footprint>openxcvr:FT50-43 INDUCTOR</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="L" description="Inductor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE13B4D</tstamp>
     </comp>
     <comp ref="Q4">
@@ -523,7 +523,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDD4484</tstamp>
     </comp>
     <comp ref="Q5">
@@ -531,7 +531,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDD6E27</tstamp>
     </comp>
     <comp ref="Q6">
@@ -539,7 +539,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDD7CB7</tstamp>
     </comp>
     <comp ref="R14">
@@ -547,7 +547,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE22A3C</tstamp>
     </comp>
     <comp ref="R15">
@@ -555,7 +555,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE232F1</tstamp>
     </comp>
     <comp ref="R16">
@@ -563,7 +563,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDE87C2</tstamp>
     </comp>
     <comp ref="R17">
@@ -571,7 +571,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDE8D90</tstamp>
     </comp>
     <comp ref="R18">
@@ -579,7 +579,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDEA16B</tstamp>
     </comp>
     <comp ref="R19">
@@ -587,7 +587,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EF0B35C</tstamp>
     </comp>
     <comp ref="R21">
@@ -595,7 +595,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EEE4F11</tstamp>
     </comp>
     <comp ref="RV1">
@@ -603,7 +603,7 @@
       <footprint>Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R_POT_TRIM" description="Trim-potentiometer"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDEE078</tstamp>
     </comp>
     <comp ref="U4">
@@ -611,7 +611,7 @@
       <footprint>Package_SO:SOIC-8_3.9x4.9mm_P1.27mm</footprint>
       <datasheet>http://ww1.microchip.com/downloads/en/DeviceDoc/20002019C.pdf</datasheet>
       <libsource lib="xcvr_components" part="MCP1406" description="6A High Speed Mosfet Driver"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EE20EC8</tstamp>
     </comp>
     <comp ref="U5">
@@ -619,7 +619,7 @@
       <footprint>Package_SO:SOP-8_3.9x4.9mm_P1.27mm</footprint>
       <datasheet>https://www.diodes.com/assets/Datasheets/ds31419.pdfhttps://www.diodes.com/assets/Datasheets/ds31419.pdf</datasheet>
       <libsource lib="xcvr_components" part="DMC3056LSS" description=""/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5EDFC644</tstamp>
     </comp>
     <comp ref="U6">
@@ -627,7 +627,7 @@
       <footprint>Package_SO:SOIC-14_3.9x8.7mm_P1.27mm</footprint>
       <datasheet>http://www.ti.com/lit/gpn/sn74hc00</datasheet>
       <libsource lib="" part="74HC00" description="quad 2-input NAND gate"/>
-      <sheetpath names="/TX_PA/" tstamps="/5EBEA4A7/"/>
+      <sheetpath names="/transmit power amplifier/" tstamps="/5EBEA4A7/"/>
       <tstamp>5ED755B8</tstamp>
     </comp>
     <comp ref="C17">
@@ -635,7 +635,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4FD25E</tstamp>
     </comp>
     <comp ref="C18">
@@ -643,7 +643,7 @@
       <footprint>Capacitor_Tantalum_SMD:CP_EIA-3216-18_Kemet-A</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="CP" description="Polarized capacitor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E54E9BD</tstamp>
     </comp>
     <comp ref="C19">
@@ -651,7 +651,7 @@
       <footprint>Capacitor_Tantalum_SMD:CP_EIA-3216-18_Kemet-A</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="CP" description="Polarized capacitor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E54F1DB</tstamp>
     </comp>
     <comp ref="C20">
@@ -659,7 +659,7 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4FCBB2</tstamp>
     </comp>
     <comp ref="D4">
@@ -667,7 +667,7 @@
       <footprint>Diode_SMD:D_SOD-123</footprint>
       <datasheet>https://www.vishay.com/docs/85748/1n4148w.pdf</datasheet>
       <libsource lib="" part="1N4148W" description="75V 0.15A Fast Switching Diode, SOD-123"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5F09BEFA</tstamp>
     </comp>
     <comp ref="D5">
@@ -675,7 +675,7 @@
       <footprint>Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal</footprint>
       <datasheet>https://www.microsemi.com/document-portal/doc_download/8865-lds-0040-datasheet</datasheet>
       <libsource lib="" part="1N5711" description="70V 33mA Schottky diode, DO-35"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4D596D</tstamp>
     </comp>
     <comp ref="D6">
@@ -683,15 +683,15 @@
       <footprint>Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal</footprint>
       <datasheet>https://www.microsemi.com/document-portal/doc_download/8865-lds-0040-datasheet</datasheet>
       <libsource lib="" part="1N5711" description="70V 33mA Schottky diode, DO-35"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4D6B3F</tstamp>
     </comp>
     <comp ref="J1">
-      <value>Conn_Coaxial</value>
+      <value>Antenna BNC Connector</value>
       <footprint>Connector_Coaxial:BNC_Amphenol_B6252HB-NPP3G-50_Horizontal</footprint>
       <datasheet> ~</datasheet>
       <libsource lib="Connector" part="Conn_Coaxial" description="coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, ...)"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5EEC5A6F</tstamp>
     </comp>
     <comp ref="J2">
@@ -699,7 +699,7 @@
       <footprint>Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Connector_Generic" part="Conn_02x08_Odd_Even" description="Generic connector, double row, 02x08, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5ED5DF3E</tstamp>
     </comp>
     <comp ref="J3">
@@ -707,7 +707,7 @@
       <footprint>Connector_BarrelJack:BarrelJack_Horizontal</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Connector" part="Barrel_Jack_Switch" description="DC Barrel Jack with an internal switch"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5EED3FA3</tstamp>
     </comp>
     <comp ref="J4">
@@ -715,7 +715,7 @@
       <footprint>Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Connector" part="Conn_01x02_Male" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5EE42CD2</tstamp>
     </comp>
     <comp ref="K4">
@@ -723,7 +723,7 @@
       <footprint>Relay_THT:Relay_DPDT_Omron_G5V-2</footprint>
       <datasheet>http://omronfs.omron.com/en_US/ecb/products/pdf/en-g5v_2.pdf</datasheet>
       <libsource lib="Relay" part="G5V-2" description="Relay Miniature Omron DPDT"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5F09BEF9</tstamp>
     </comp>
     <comp ref="Q3">
@@ -731,7 +731,7 @@
       <footprint>Package_TO_SOT_THT:TO-92_Inline</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/BS/BS170.pdf</datasheet>
       <libsource lib="" part="BS170" description="0.5A Id, 60V Vds, N-Channel MOSFET, TO-92"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E5D45B9</tstamp>
     </comp>
     <comp ref="R10">
@@ -739,7 +739,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4B41E2</tstamp>
     </comp>
     <comp ref="R11">
@@ -747,7 +747,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E429FB4</tstamp>
     </comp>
     <comp ref="R12">
@@ -755,7 +755,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4903A8</tstamp>
     </comp>
     <comp ref="R13">
@@ -763,7 +763,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5ED57456</tstamp>
     </comp>
     <comp ref="R3">
@@ -771,7 +771,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E559AE8</tstamp>
     </comp>
     <comp ref="R4">
@@ -779,7 +779,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5ED509D3</tstamp>
     </comp>
     <comp ref="R5">
@@ -787,7 +787,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E488207</tstamp>
     </comp>
     <comp ref="R6">
@@ -795,7 +795,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E428E8E</tstamp>
     </comp>
     <comp ref="R7">
@@ -803,7 +803,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E53FC46</tstamp>
     </comp>
     <comp ref="R8">
@@ -811,7 +811,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E54006B</tstamp>
     </comp>
     <comp ref="R9">
@@ -819,7 +819,7 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="R" description="Resistor"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4B1A8E</tstamp>
     </comp>
     <comp ref="SW1">
@@ -827,21 +827,21 @@
       <footprint>openxcvr:RS PCB Toggle Switch</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Switch" part="SW_SPDT" description="Switch, single pole double throw"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5EE515E6</tstamp>
     </comp>
     <comp ref="TR1">
       <value>FT50-43Transformer</value>
       <footprint>openxcvr:FT50-43 Transformer</footprint>
       <libsource lib="TX_BOARD-rescue" part="FT50-43Transformer-xcvr_components" description=""/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4A501F</tstamp>
     </comp>
     <comp ref="TR2">
       <value>FT50-43Transformer</value>
       <footprint>openxcvr:FT50-43 Transformer</footprint>
       <libsource lib="TX_BOARD-rescue" part="FT50-43Transformer-xcvr_components" description=""/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E4A7548</tstamp>
     </comp>
     <comp ref="U1">
@@ -849,21 +849,21 @@
       <footprint>Package_TO_SOT_THT:TO-220-3_Vertical</footprint>
       <datasheet>http://www.fairchildsemi.com/ds/LM/LM7805.pdf</datasheet>
       <libsource lib="Regulator_Linear" part="LM7805_TO220" description="Positive 1A 35V Linear Regulator, Fixed Output 5V, TO-220"/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5E52BD67</tstamp>
     </comp>
     <comp ref="U2">
       <value>to220heatsink</value>
       <footprint>openxcvr:to220 heatsink</footprint>
       <libsource lib="xcvr_components" part="to220heatsink" description=""/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5ED50314</tstamp>
     </comp>
     <comp ref="U3">
       <value>to220heatsink</value>
       <footprint>openxcvr:to220 heatsink</footprint>
       <libsource lib="xcvr_components" part="to220heatsink" description=""/>
-      <sheetpath names="/TX_RX/" tstamps="/5E5B8C32/"/>
+      <sheetpath names="/transmit receive switching /" tstamps="/5E5B8C32/"/>
       <tstamp>5ED50E93</tstamp>
     </comp>
   </components>
@@ -1353,16 +1353,11 @@
       <node ref="Q1" pin="2" pinfunction="G"/>
       <node ref="R1" pin="1"/>
     </net>
-    <net code="6" name="BATTERY">
-      <node ref="J2" pin="1" pinfunction="Pin_1"/>
-      <node ref="R7" pin="2"/>
-      <node ref="R8" pin="1"/>
-    </net>
-    <net code="7" name="FWD_PWR">
+    <net code="6" name="FWD_PWR">
       <node ref="J2" pin="3" pinfunction="Pin_3"/>
       <node ref="R4" pin="1"/>
     </net>
-    <net code="8" name="GND">
+    <net code="7" name="GND">
       <node ref="C1" pin="2"/>
       <node ref="C10" pin="2"/>
       <node ref="C11" pin="2"/>
@@ -1428,52 +1423,52 @@
       <node ref="U4" pin="5" pinfunction="GND"/>
       <node ref="U6" pin="7" pinfunction="GND"/>
     </net>
-    <net code="9" name="LO_I">
+    <net code="8" name="LO_I">
       <node ref="J2" pin="13" pinfunction="Pin_13"/>
       <node ref="R21" pin="1"/>
       <node ref="U6" pin="12"/>
     </net>
-    <net code="10" name="LPF_BAND_0_A">
+    <net code="9" name="LPF_BAND_0_A">
       <node ref="C1" pin="1"/>
       <node ref="K2" pin="11"/>
       <node ref="L1" pin="1" pinfunction="1"/>
     </net>
-    <net code="11" name="LPF_BAND_0_B">
+    <net code="10" name="LPF_BAND_0_B">
       <node ref="C13" pin="1"/>
       <node ref="K3" pin="6"/>
       <node ref="L9" pin="2" pinfunction="2"/>
     </net>
-    <net code="12" name="LPF_BAND_1_A">
+    <net code="11" name="LPF_BAND_1_A">
       <node ref="C2" pin="1"/>
       <node ref="K2" pin="9"/>
       <node ref="L2" pin="1" pinfunction="1"/>
     </net>
-    <net code="13" name="LPF_BAND_1_B">
+    <net code="12" name="LPF_BAND_1_B">
       <node ref="C14" pin="1"/>
       <node ref="K3" pin="8"/>
       <node ref="L10" pin="2" pinfunction="2"/>
     </net>
-    <net code="14" name="LPF_BAND_2_A">
+    <net code="13" name="LPF_BAND_2_A">
       <node ref="C3" pin="1"/>
       <node ref="K2" pin="6"/>
       <node ref="L3" pin="1" pinfunction="1"/>
     </net>
-    <net code="15" name="LPF_BAND_2_B">
+    <net code="14" name="LPF_BAND_2_B">
       <node ref="C15" pin="1"/>
       <node ref="K3" pin="11"/>
       <node ref="L11" pin="2" pinfunction="2"/>
     </net>
-    <net code="16" name="LPF_BAND_3_A">
+    <net code="15" name="LPF_BAND_3_A">
       <node ref="C4" pin="1"/>
       <node ref="K2" pin="8"/>
       <node ref="L4" pin="1" pinfunction="1"/>
     </net>
-    <net code="17" name="LPF_BAND_3_B">
+    <net code="16" name="LPF_BAND_3_B">
       <node ref="C16" pin="1"/>
       <node ref="K3" pin="9"/>
       <node ref="L12" pin="2" pinfunction="2"/>
     </net>
-    <net code="18" name="LPF_ENABLE">
+    <net code="17" name="LPF_ENABLE">
       <node ref="D1" pin="1" pinfunction="K"/>
       <node ref="D2" pin="1" pinfunction="K"/>
       <node ref="D3" pin="1" pinfunction="K"/>
@@ -1482,34 +1477,34 @@
       <node ref="K3" pin="1"/>
       <node ref="K4" pin="13"/>
     </net>
-    <net code="19" name="Net-(C10-Pad1)">
+    <net code="18" name="Net-(C10-Pad1)">
       <node ref="C10" pin="1"/>
       <node ref="L10" pin="1" pinfunction="1"/>
       <node ref="L6" pin="2" pinfunction="2"/>
     </net>
-    <net code="20" name="Net-(C11-Pad1)">
+    <net code="19" name="Net-(C11-Pad1)">
       <node ref="C11" pin="1"/>
       <node ref="L11" pin="1" pinfunction="1"/>
       <node ref="L7" pin="2" pinfunction="2"/>
     </net>
-    <net code="21" name="Net-(C12-Pad1)">
+    <net code="20" name="Net-(C12-Pad1)">
       <node ref="C12" pin="1"/>
       <node ref="L12" pin="1" pinfunction="1"/>
       <node ref="L8" pin="2" pinfunction="2"/>
     </net>
-    <net code="22" name="Net-(C17-Pad1)">
+    <net code="21" name="Net-(C17-Pad1)">
       <node ref="C17" pin="1"/>
       <node ref="D5" pin="1" pinfunction="K"/>
       <node ref="R4" pin="2"/>
       <node ref="R5" pin="1"/>
     </net>
-    <net code="23" name="Net-(C20-Pad1)">
+    <net code="22" name="Net-(C20-Pad1)">
       <node ref="C20" pin="1"/>
       <node ref="D6" pin="1" pinfunction="K"/>
       <node ref="R12" pin="1"/>
       <node ref="R13" pin="1"/>
     </net>
-    <net code="24" name="Net-(C21-Pad1)">
+    <net code="23" name="Net-(C21-Pad1)">
       <node ref="C21" pin="1"/>
       <node ref="D7" pin="1" pinfunction="K"/>
       <node ref="L13" pin="1" pinfunction="1"/>
@@ -1518,44 +1513,44 @@
       <node ref="U5" pin="7" pinfunction="D"/>
       <node ref="U5" pin="8" pinfunction="D"/>
     </net>
-    <net code="25" name="Net-(C22-Pad1)">
+    <net code="24" name="Net-(C22-Pad1)">
       <node ref="C22" pin="1"/>
       <node ref="U6" pin="3"/>
     </net>
-    <net code="26" name="Net-(C22-Pad2)">
+    <net code="25" name="Net-(C22-Pad2)">
       <node ref="C22" pin="2"/>
       <node ref="Q4" pin="2" pinfunction="G"/>
       <node ref="R16" pin="1"/>
     </net>
-    <net code="27" name="Net-(C23-Pad1)">
+    <net code="26" name="Net-(C23-Pad1)">
       <node ref="C23" pin="1"/>
       <node ref="U6" pin="6"/>
     </net>
-    <net code="28" name="Net-(C23-Pad2)">
+    <net code="27" name="Net-(C23-Pad2)">
       <node ref="C23" pin="2"/>
       <node ref="Q5" pin="2" pinfunction="G"/>
       <node ref="R17" pin="1"/>
     </net>
-    <net code="29" name="Net-(C24-Pad1)">
+    <net code="28" name="Net-(C24-Pad1)">
       <node ref="C24" pin="1"/>
       <node ref="U6" pin="8"/>
     </net>
-    <net code="30" name="Net-(C24-Pad2)">
+    <net code="29" name="Net-(C24-Pad2)">
       <node ref="C24" pin="2"/>
       <node ref="Q6" pin="2" pinfunction="G"/>
       <node ref="R18" pin="1"/>
     </net>
-    <net code="31" name="Net-(C25-Pad1)">
+    <net code="30" name="Net-(C25-Pad1)">
       <node ref="C25" pin="1"/>
       <node ref="L13" pin="2" pinfunction="2"/>
       <node ref="L14" pin="1" pinfunction="1"/>
     </net>
-    <net code="32" name="Net-(C26-Pad1)">
+    <net code="31" name="Net-(C26-Pad1)">
       <node ref="C26" pin="1"/>
       <node ref="L14" pin="2" pinfunction="2"/>
       <node ref="L15" pin="1" pinfunction="1"/>
     </net>
-    <net code="33" name="Net-(C28-Pad1)">
+    <net code="32" name="Net-(C28-Pad1)">
       <node ref="C28" pin="1"/>
       <node ref="D8" pin="1" pinfunction="K"/>
       <node ref="L15" pin="2" pinfunction="2"/>
@@ -1563,119 +1558,119 @@
       <node ref="Q5" pin="1" pinfunction="D"/>
       <node ref="Q6" pin="1" pinfunction="D"/>
     </net>
-    <net code="34" name="Net-(C5-Pad1)">
+    <net code="33" name="Net-(C5-Pad1)">
       <node ref="C5" pin="1"/>
       <node ref="L1" pin="2" pinfunction="2"/>
       <node ref="L5" pin="1" pinfunction="1"/>
     </net>
-    <net code="35" name="Net-(C6-Pad1)">
+    <net code="34" name="Net-(C6-Pad1)">
       <node ref="C6" pin="1"/>
       <node ref="L2" pin="2" pinfunction="2"/>
       <node ref="L6" pin="1" pinfunction="1"/>
     </net>
-    <net code="36" name="Net-(C7-Pad1)">
+    <net code="35" name="Net-(C7-Pad1)">
       <node ref="C7" pin="1"/>
       <node ref="L3" pin="2" pinfunction="2"/>
       <node ref="L7" pin="1" pinfunction="1"/>
     </net>
-    <net code="37" name="Net-(C8-Pad1)">
+    <net code="36" name="Net-(C8-Pad1)">
       <node ref="C8" pin="1"/>
       <node ref="L4" pin="2" pinfunction="2"/>
       <node ref="L8" pin="1" pinfunction="1"/>
     </net>
-    <net code="38" name="Net-(C9-Pad1)">
+    <net code="37" name="Net-(C9-Pad1)">
       <node ref="C9" pin="1"/>
       <node ref="L5" pin="2" pinfunction="2"/>
       <node ref="L9" pin="1" pinfunction="1"/>
     </net>
-    <net code="39" name="Net-(D1-Pad2)">
+    <net code="38" name="Net-(D1-Pad2)">
       <node ref="D1" pin="2" pinfunction="A"/>
       <node ref="K1" pin="16"/>
       <node ref="Q1" pin="1" pinfunction="D"/>
     </net>
-    <net code="40" name="Net-(D2-Pad2)">
+    <net code="39" name="Net-(D2-Pad2)">
       <node ref="D2" pin="2" pinfunction="A"/>
       <node ref="D3" pin="2" pinfunction="A"/>
       <node ref="K2" pin="16"/>
       <node ref="K3" pin="16"/>
       <node ref="Q2" pin="1" pinfunction="D"/>
     </net>
-    <net code="41" name="Net-(D4-Pad2)">
+    <net code="40" name="Net-(D4-Pad2)">
       <node ref="D4" pin="2" pinfunction="A"/>
       <node ref="K4" pin="16"/>
       <node ref="Q3" pin="1" pinfunction="D"/>
     </net>
-    <net code="42" name="Net-(D5-Pad2)">
+    <net code="41" name="Net-(D5-Pad2)">
       <node ref="D5" pin="2" pinfunction="A"/>
       <node ref="R6" pin="1"/>
       <node ref="R9" pin="1"/>
       <node ref="TR2" pin="4"/>
     </net>
-    <net code="43" name="Net-(D6-Pad2)">
+    <net code="42" name="Net-(D6-Pad2)">
       <node ref="D6" pin="2" pinfunction="A"/>
       <node ref="R10" pin="1"/>
       <node ref="R11" pin="1"/>
       <node ref="TR1" pin="2"/>
       <node ref="TR2" pin="3"/>
     </net>
-    <net code="44" name="Net-(J2-Pad11)">
+    <net code="43" name="Net-(J2-Pad11)">
       <node ref="J2" pin="11" pinfunction="Pin_11"/>
     </net>
-    <net code="45" name="Net-(J2-Pad4)">
+    <net code="44" name="Net-(J2-Pad4)">
       <node ref="J2" pin="4" pinfunction="Pin_4"/>
     </net>
-    <net code="46" name="Net-(J3-Pad1)">
+    <net code="45" name="Net-(J3-Pad1)">
       <node ref="J3" pin="1"/>
       <node ref="J4" pin="2" pinfunction="Pin_2"/>
       <node ref="SW1" pin="2" pinfunction="B"/>
     </net>
-    <net code="47" name="Net-(J3-Pad3)">
+    <net code="46" name="Net-(J3-Pad3)">
       <node ref="J3" pin="3"/>
       <node ref="J4" pin="1" pinfunction="Pin_1"/>
     </net>
-    <net code="48" name="Net-(K1-Pad11)">
+    <net code="47" name="Net-(K1-Pad11)">
       <node ref="K1" pin="11"/>
       <node ref="K3" pin="4"/>
     </net>
-    <net code="49" name="Net-(K1-Pad6)">
+    <net code="48" name="Net-(K1-Pad6)">
       <node ref="K1" pin="6"/>
       <node ref="K2" pin="13"/>
     </net>
-    <net code="50" name="Net-(K1-Pad8)">
+    <net code="49" name="Net-(K1-Pad8)">
       <node ref="K1" pin="8"/>
       <node ref="K2" pin="4"/>
     </net>
-    <net code="51" name="Net-(K1-Pad9)">
+    <net code="50" name="Net-(K1-Pad9)">
       <node ref="K1" pin="9"/>
       <node ref="K3" pin="13"/>
     </net>
-    <net code="52" name="Net-(K4-Pad11)">
+    <net code="51" name="Net-(K4-Pad11)">
       <node ref="K4" pin="11"/>
     </net>
-    <net code="53" name="Net-(R14-Pad1)">
+    <net code="52" name="Net-(R14-Pad1)">
       <node ref="R14" pin="1"/>
       <node ref="R15" pin="1"/>
       <node ref="U4" pin="6" pinfunction="OUT_N"/>
       <node ref="U4" pin="7" pinfunction="OUT_N"/>
     </net>
-    <net code="54" name="Net-(R14-Pad2)">
+    <net code="53" name="Net-(R14-Pad2)">
       <node ref="R14" pin="2"/>
       <node ref="R15" pin="2"/>
       <node ref="U5" pin="4" pinfunction="G"/>
     </net>
-    <net code="55" name="Net-(R16-Pad2)">
+    <net code="54" name="Net-(R16-Pad2)">
       <node ref="R16" pin="2"/>
       <node ref="R17" pin="2"/>
       <node ref="R18" pin="2"/>
       <node ref="RV1" pin="2" pinfunction="2"/>
     </net>
-    <net code="56" name="Net-(SW1-Pad1)">
+    <net code="55" name="Net-(SW1-Pad1)">
       <node ref="SW1" pin="1" pinfunction="A"/>
     </net>
-    <net code="57" name="Net-(U4-Pad3)">
+    <net code="56" name="Net-(U4-Pad3)">
       <node ref="U4" pin="3" pinfunction="NC"/>
     </net>
-    <net code="58" name="Net-(U6-Pad1)">
+    <net code="57" name="Net-(U6-Pad1)">
       <node ref="U6" pin="1"/>
       <node ref="U6" pin="10"/>
       <node ref="U6" pin="11"/>
@@ -1684,33 +1679,38 @@
       <node ref="U6" pin="5"/>
       <node ref="U6" pin="9"/>
     </net>
-    <net code="59" name="PA_OUT">
+    <net code="58" name="PA_OUT">
       <node ref="C28" pin="2"/>
       <node ref="K1" pin="13"/>
     </net>
-    <net code="60" name="REV_PWR">
+    <net code="59" name="REV_PWR">
       <node ref="J2" pin="5" pinfunction="Pin_5"/>
       <node ref="R13" pin="2"/>
     </net>
-    <net code="61" name="RF_ENVELOPE">
+    <net code="60" name="RF_ENVELOPE">
       <node ref="J2" pin="9" pinfunction="Pin_9"/>
       <node ref="R19" pin="1"/>
       <node ref="U4" pin="2" pinfunction="INPUT"/>
     </net>
-    <net code="62" name="RF_OUT">
+    <net code="61" name="RF_OUT">
       <node ref="J2" pin="10" pinfunction="Pin_10"/>
       <node ref="K4" pin="4"/>
     </net>
-    <net code="63" name="SWR_IN">
+    <net code="62" name="SWR_IN">
       <node ref="K1" pin="4"/>
       <node ref="TR1" pin="3"/>
       <node ref="TR2" pin="2"/>
     </net>
-    <net code="64" name="TX_ENABLE">
+    <net code="63" name="TX_ENABLE">
       <node ref="J2" pin="2" pinfunction="Pin_2"/>
       <node ref="Q3" pin="2" pinfunction="G"/>
       <node ref="R3" pin="1"/>
       <node ref="U6" pin="13"/>
+    </net>
+    <net code="64" name="VBATT">
+      <node ref="J2" pin="1" pinfunction="Pin_1"/>
+      <node ref="R7" pin="2"/>
+      <node ref="R8" pin="1"/>
     </net>
   </nets>
 </export>

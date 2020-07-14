@@ -47,7 +47,7 @@ class Xcvr:
     def capture(self):
         self.port.flush()
         self.port.write("c\n")
-        buf = self.port.read(4000)
+        buf = self.port.read(16000)
         values = np.frombuffer(buf, dtype="int16")
         i_values = values[::2]
         q_values = values[1::2]

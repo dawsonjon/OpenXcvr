@@ -8,7 +8,7 @@ def demodulator(clk, i, q, stb, settings):
     q = q.subtype.register(clk, d=q, init=0)
 
     #AM/FM demodulator
-    magnitude, phase, magnitude_phase_stb = rectangular_to_polar(clk, i, q, stb)
+    magnitude, phase, magnitude_phase_stb, _ = rectangular_to_polar(clk, i, q, stb)
     am  = magnitude.subtype.register(clk, d=magnitude, en=magnitude_phase_stb)
     last_phase=phase.subtype.register(clk, d=phase, en=magnitude_phase_stb)
     fm  = phase.subtype.register(clk, d=phase-last_phase, en=magnitude_phase_stb)

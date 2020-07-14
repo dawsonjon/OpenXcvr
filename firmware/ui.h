@@ -1,6 +1,7 @@
 #include "lcd.h"
 
 #define WAIT_10MS wait_clocks(500000);
+#define WAIT_100MS wait_clocks(5000000);
 
 char * smeter[13];
 char * modes[6];
@@ -275,6 +276,40 @@ int get_digit(char * title, int max, int *value){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Procedure to read and display battery voltage
+////////////////////////////////////////////////////////////////////////////////
+unsigned read_adc_batt_v(){
+    unsigned int raw;
+    while(1){
+        raw = fgetc(adc_in);
+        if(raw >> 16 == 2) return raw;
+    }
+}
+
+void battery_voltage(){
+    unsigned int i, voltage;
+    LCD_CLEAR()
+    lcd_print("Battery Voltage");
+    while(1){
+	LCD_LINE2()
+	voltage = 0;
+	for(i=0; i<10; i++){
+	    voltage += read_adc_batt_v();
+	}
+        voltage = ((voltage & 0xffff)*33*11)/(4096*10);
+	lcd_write('0'+voltage/100); voltage %= 100;
+	lcd_write('0'+voltage/10); voltage %= 10;
+	lcd_write('.');
+	lcd_write('0'+voltage);
+	lcd_write('V');
+	if(get_button(3)){
+		return;
+	}
+	WAIT_100MS
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // This is the main UI loop. Should get called about 100 times/second
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -295,13 +330,14 @@ int do_ui(){
 
     options[0] = "frequency";
     options[1] = "volume";
-    options[2] = "mode";
-    options[3] = "AGC";
-    options[4] = "squelch";
-    options[5] = "step";
-    options[6] = "load memory";
-    options[7] = "factory reset";
-    if(!get_enum("menu:", options, 7, &setting)) return 1;
+    options[2] = "load memory";
+    options[3] = "mode";
+    options[4] = "AGC";
+    options[5] = "squelch";
+    options[6] = "step";
+    options[7] = "check battery";
+    options[8] = "factory reset";
+    if(!get_enum("menu:", options, 8, &setting)) return 1;
     title = options[setting];
 
     switch(setting){
@@ -312,10 +348,14 @@ int do_ui(){
 		 return 1;
 
 	case 2 : 
+		load_memory();
+		return 1;
+
+	case 3 : 
 		get_enum(title, modes, 5, &settings.mode);
 		return 1;
 
-	case 3 :
+	case 4 :
 		//Select AGC Speed
 		options[0]="fast";
 		options[1]="normal";
@@ -324,12 +364,12 @@ int do_ui(){
 		get_enum(title, options, 3, &settings.agc_speed);
 		return 1;
 
-	case 4 :
+	case 5 :
 		//Select Squelch
 		get_enum(title, smeter, 12, &settings.squelch);
 		return 1;
 
-	case 5 : 
+	case 6 : 
 		options[0]="10Hz";
 		options[1]="50Hz";
 		options[2]="100Hz";
@@ -346,11 +386,11 @@ int do_ui(){
 		settings.frequency -= settings.frequency%step_sizes[settings.step];
 		return 1;
 
-	case 6 : 
-		load_memory();
+	case 7 :
+		battery_voltage();
 		return 1;
 
-	case 7 : 
+	case 8 : 
 		options[0]="No";
 		options[1]="Yes";
 		get_enum("confirm", options, 2, &setting);

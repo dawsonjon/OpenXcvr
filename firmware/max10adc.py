@@ -7,13 +7,15 @@ def max_adc(clk, adc_clk, command_ready, response_valid, response_channel, respo
     #reading 10 channels at 500KHz means that each channel gets sampled at 50KHz
     #channel sequence 8, 2, 5, 1, 3
     #8 = mic
-    #2 = line-in
-    #5 = batt voltage
-    #1 = fwd power
-    #3 = rev power
+    #2 = battery voltage
+    #5 = fwd power
+    #1 = rev power
+    #3 = ptt
+    #7 = dit
+    #4 = dah
     idx, command_endofpacket = counter(adc_clk, 0, 9, 1, en=command_ready)
     command_startofpacket = (idx==0)
-    command_channel = Unsigned(5).select(idx, 8, 2, 5, 1, 3, 2, 2, 2, 2, 2)
+    command_channel = Unsigned(5).select(idx, 8, 2, 5, 1, 3, 7, 4, 2, 2, 2)
 
     #response interface
     mic = Unsigned(12).register(adc_clk, d=response_data, en=((response_channel==8) & response_valid), init=0)

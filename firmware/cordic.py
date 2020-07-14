@@ -60,7 +60,7 @@ def rectangular_to_polar(clk, i, q, stb):
     phase >>= extra_bits
     stb = stb.subtype.register(clk, d=last_iteration)
 
-    return (i>>2).resize(t_data.bits-2), phase.resize(t_data.bits-2), stb
+    return (i>>2).resize(t_data.bits-2), phase.resize(t_data.bits-2), stb, calculate_gain(iterations)
 
 
 def polar_to_rectangular(clk, magnitude, phase, stb):
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         q_in = Signed(8).input("in")
         stb_in = Boolean().input("stb")
         clk = Clock("clk")
-        magnitude, phase, stb = rectangular_to_polar(clk, i_in, q_in, stb_in)
+        magnitude, phase, stb, _ = rectangular_to_polar(clk, i_in, q_in, stb_in)
 
         stimulus = [
         [127, 0], 

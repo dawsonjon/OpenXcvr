@@ -1,3 +1,6 @@
+#ifndef LCD_H
+#define LCD_H
+
 unsigned lcd_out = output("lcd_out");
 
 #define OE 0x400
@@ -100,3 +103,5 @@ void lcd_print(char * string)
     lcd_write(character);
   }
 }
+
+#endif
