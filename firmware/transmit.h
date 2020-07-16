@@ -29,23 +29,8 @@ unsigned check_ptt(){
     return 0;
 }
 
-unsigned max(unsigned a, unsigned b){
-	if(a > b) return a;
-	return b;
-}
-
-//crude sqrt approximation
-unsigned sqrt(unsigned a){
-	unsigned guess;
-	guess = 0;
-	while(guess*guess < a){
-		guess++;
-	}
-	return guess;
-}
-
 void transmit(){
-    unsigned int fwd, rev, dit, dah, ptt, hang_timer=0, vswr, start_time, frame,
+    unsigned int fwd, rev, dit, dah, ptt, hang_timer=0, vswr, start_time, frame, ratio,
     pk_fwd_voltage=0, pk_rev_voltage=0, rms_fwd_voltage, rms_rev_voltage, fwd_power, rev_power, p;
 
     //switch on the transmitter
@@ -72,10 +57,17 @@ void transmit(){
 	//this should be programmable say 30-3000ms
         if(timer_low() - start_time > 5000000) break;
 
-
 	//leaky max hold to obtain peak voltage
-	pk_fwd_voltage = max(pk_fwd_voltage*999/1000, fwd);
-	pk_rev_voltage = max(pk_rev_voltage*999/1000, rev);
+	if (fwd > pk_fwd_voltage){
+		pk_fwd_voltage = fwd;
+	} else {
+		pk_fwd_voltage = pk_fwd_voltage*999/1000;
+	}
+	if (rev > pk_rev_voltage){
+		pk_rev_voltage = rev;
+	} else {
+		pk_rev_voltage = pk_rev_voltage*999/1000;
+	}
 
 	//compensate for diode drop
 	rms_fwd_voltage = pk_fwd_voltage + 150;
@@ -94,7 +86,11 @@ void transmit(){
 	//calculate vswr
 	fwd_power = rms_fwd_voltage * rms_fwd_voltage / 50000;
 	rev_power = rms_rev_voltage * rms_rev_voltage / 50000;
-	p = sqrt(10000*rev_power/fwd_power);
+	ratio = 10000*rev_power/fwd_power;
+	p = 0;
+	while(p*p < ratio){
+		p++;
+	}
 	vswr = (1000+p)/(100-p);
 
 	LCD_LINE2()

@@ -2,6 +2,7 @@
 
 #define WAIT_10MS wait_clocks(500000);
 #define WAIT_100MS wait_clocks(5000000);
+#define WAIT_500MS wait_clocks(25000000);
 
 char * smeter[13];
 char * modes[6];
@@ -139,11 +140,6 @@ int load_memory(){
 		lcd_write('0' + (page % 100) % 10);
 		LCD_LINE2()
 
-		//for(i=0; i<16; i++){
-			//print_uhex(buffer[i]);
-			//putc('\n');
-		//}
-
 		if(buffer[15]==0){
 			for(i=11; i<15; i++){
 				lcd_write(buffer[i]);
@@ -278,31 +274,88 @@ int get_digit(char * title, int max, int *value){
 ////////////////////////////////////////////////////////////////////////////////
 // Procedure to read and display battery voltage
 ////////////////////////////////////////////////////////////////////////////////
-unsigned read_adc_batt_v(){
+#define CHAN_BATTERY 2
+#define CHAN_MICROPHONE 8
+unsigned read_adc_chan(unsigned chan){
     unsigned int raw;
     while(1){
         raw = fgetc(adc_in);
-        if(raw >> 16 == 2) return raw;
+        if(raw >> 16 == chan) return raw & 0xffff;
     }
 }
 
 void battery_voltage(){
-    unsigned int i, voltage;
+    unsigned int i, voltage, raw_voltage=0;
     LCD_CLEAR()
-    lcd_print("Battery Voltage");
+    lcd_print("battery voltage");
     while(1){
 	LCD_LINE2()
-	voltage = 0;
-	for(i=0; i<10; i++){
-	    voltage += read_adc_batt_v();
-	}
-        voltage = ((voltage & 0xffff)*33*11)/(4096*10);
+	raw_voltage = (raw_voltage*9 + read_adc_chan(CHAN_BATTERY))/10;
+        voltage = (raw_voltage*33*11)/(4096);
 	lcd_write('0'+voltage/100); voltage %= 100;
 	lcd_write('0'+voltage/10); voltage %= 10;
 	lcd_write('.');
 	lcd_write('0'+voltage);
 	lcd_write('V');
 	if(get_button(3)){
+		return;
+	}
+	WAIT_100MS
+    }
+}
+
+void mic_level(){
+    int raw, amplitude, max = 0, min=4095, level;
+    int gain=settings.mic_gain, i;
+
+    LCD_CLEAR()
+    lcd_print("mic level");
+    while(1){
+
+	gain += get_position_change();
+	gain %= 10;
+	
+	raw = read_adc_chan(CHAN_MICROPHONE)-2047;
+	if (max > raw){
+		max = max*4/5;
+	} else {
+		max = raw;
+	}
+	if (min < raw){
+		min = min*4/5;
+	} else {
+		min = raw;
+	}
+	amplitude = (max-min)/2;
+	
+	level = 0;
+	while(amplitude > 3){
+		level++;
+		amplitude >>= 1;
+	}
+	level += gain;
+
+	LCD_LINE2()
+	lcd_write('<');
+	lcd_write('0'+gain);
+	lcd_write('>');
+	lcd_write(' ');
+	if(level>9){
+		lcd_write('X');
+	} else {
+		lcd_write('0'+level);
+	}
+	for(i=1; i<12; i++){
+		if(i==9||i==level){
+			lcd_write('|');
+		} else if(i<level){
+			lcd_write('-');
+		} else {
+			lcd_write(' ');
+		}
+	}
+	if(get_button(3)){
+		settings.mic_gain=gain;
 		return;
 	}
 	WAIT_100MS
@@ -336,8 +389,9 @@ int do_ui(){
     options[5] = "squelch";
     options[6] = "step";
     options[7] = "check battery";
-    options[8] = "factory reset";
-    if(!get_enum("menu:", options, 8, &setting)) return 1;
+    options[8] = "mic level";
+    options[9] = "factory reset";
+    if(!get_enum("menu:", options, 9, &setting)) return 1;
     title = options[setting];
 
     switch(setting){
@@ -390,7 +444,11 @@ int do_ui(){
 		battery_voltage();
 		return 1;
 
-	case 8 : 
+	case 8 :
+		mic_level();
+		return 1;
+
+	case 9 : 
 		options[0]="No";
 		options[1]="Yes";
 		get_enum("confirm", options, 2, &setting);
