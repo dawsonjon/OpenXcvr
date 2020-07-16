@@ -132,7 +132,9 @@ void apply_settings (){
         }
     }
 
-
+    //set mic gain
+    settings.mic_gain &= 0xf;
+    control |= (settings.mic_gain << 24);
                                             //Mode Clock Divider   NCO Offset
     rx_frequency_correction[0] = -12207;     //AM    1   48828    -12207
     rx_frequency_correction[1] = -24414;     //NFM   1   97656    -24414

@@ -410,14 +410,14 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
       test
   );
   
-  assign leds[0] = control[0];
-  assign leds[1] = control[1];
-  assign leds[2] = control[2];
-  assign leds[3] = control[8];
-  assign leds[4] = control[9];
-  assign leds[5] = control[10];
-  assign leds[6] = control[11];
-  assign leds[7] = control[12];
+  assign leds[0] = control[24];
+  assign leds[1] = control[25];
+  assign leds[2] = control[26];
+  assign leds[3] = control[27];
+  //assign leds[4] = control[9];
+  //assign leds[5] = control[10];
+  //assign leds[6] = control[11];
+  //assign leds[7] = control[12];
   
   
 

@@ -313,9 +313,10 @@ void mic_level(){
     while(1){
 
 	gain += get_position_change();
-	gain %= 10;
+	if(gain > 9) gain=9;
+	if(gain < 0) gain=0;
 	
-	raw = read_adc_chan(CHAN_MICROPHONE)-2047;
+	raw = read_adc_chan(CHAN_MICROPHONE)-2048;
 	if (max > raw){
 		max = max*4/5;
 	} else {

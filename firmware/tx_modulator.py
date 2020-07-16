@@ -7,8 +7,8 @@ def register(clk, *signals):
 def pwm_modulator(clk, audio, frequency_multiplier):
 
     counter = audio.subtype.register(clk, init=0)
-    frequency_multiplier = counter.subtype.select(audio>1792, frequency_multiplier, 3)#reduce PWM period for small signals
-    frequency_multiplier = counter.subtype.select(audio<-1792, frequency_multiplier, 3)#reduce PWM period for small signals
+    #frequency_multiplier = counter.subtype.select(audio>1792, frequency_multiplier, 3)#reduce PWM period for small signals
+    #frequency_multiplier = counter.subtype.select(audio<-1792, frequency_multiplier, 3)#reduce PWM period for small signals
     counter.d(counter+frequency_multiplier)
     output = (counter < audio)
 

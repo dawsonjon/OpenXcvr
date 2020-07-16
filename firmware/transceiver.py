@@ -24,8 +24,8 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
         speaker_stb, 
         audio_out,
         audio_out_stb,
-        tx_i, 
-        tx_q, 
+        tx_mag, 
+        tx_phase, 
         tx_stb, 
         power, 
         capture_i, 
@@ -47,9 +47,9 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
     ###########################################################################
 
     frequency, _ = slow_to_fast(cpu_clk, clk, frequency)
-    data_bits = tx_i.subtype.bits
-    data, tx_stb = slow_to_fast(cpu_clk, clk, tx_i.cat(tx_q), tx_stb)
-    tx_i, tx_q = data[2*data_bits-1:data_bits], data[data_bits-1:0]
+    data_bits = tx_mag.subtype.bits
+    data, tx_stb = slow_to_fast(cpu_clk, clk, tx_mag.cat(tx_phase), tx_stb)
+    tx_mag, tx_phase = data[2*data_bits-1:data_bits], data[data_bits-1:0]
     rx_tx = meta_chain(clk, settings.rx_tx)
     enable_test_signal = meta_chain(clk, settings.enable_test_signal)
 
@@ -58,8 +58,8 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
     rf, lo_i, lo_q = rf_section(
         clk, 
         frequency = frequency, 
-        audio_i = tx_i,
-        audio_q = tx_q,
+        audio_mag = tx_mag,
+        audio_phase = tx_phase,
         audio_stb = tx_stb,
         interpolation_factor = 3000, #from 300000000 to 9180
         lut_bits = 9,
@@ -94,6 +94,7 @@ def generate():
     settings.volume             = control[13:8]
     usb_audio                   = control[20]
     settings.band               = control[23:21]
+    settings.mic_gain           = control[27:24]
     frequency                   = Unsigned(32).input("frequency_in")
     audio_in                    = Signed(8).input("audio_in_in")
     audio_in_stb                = Boolean().input("audio_in_stb_in")
@@ -150,13 +151,13 @@ def generate():
     ########################
 
     #select usb audio input
-    mic = Signed(8).select(usb_audio, mic[11:4], audio_in)
-    mic_stb = Signed(8).select(usb_audio, mic_stb, audio_in_stb)
+    mic = Signed(12).select(usb_audio, mic, audio_in.resize(12))
+    mic_stb = Boolean().select(usb_audio, mic_stb, audio_in_stb)
     speaker, speaker_stb, audio_out, audio_out_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings)
     capture = capture_i[17:2].cat(capture_q[17:2])#capture data for debug via CPU
 
-    leds =settings.enable_test_signal.cat(adc_stb.cat(mic_stb))
+    leds = settings.mic_gain
 
     # Create Audio DAC
     ##################

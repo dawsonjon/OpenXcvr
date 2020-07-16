@@ -160,11 +160,16 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     #compress microphone dynamic range
     tx_bits = tx_audio.subtype.bits
-    tx_audio, mic_compression(clk, tx_audio, tx_audio_stb)
+    gain = Signed(5).constant(0)+settings.mic_gain
+    tx_audio = tx_audio.resize(tx_bits+16) << gain
+    tx_audio = tx_audio.subtype.register(clk, d=tx_audio)
+    tx_audio_stb = tx_audio_stb.subtype.register(clk, d=tx_audio_stb)
+    tx_audio, tx_audio_stb  = clamp(clk, tx_audio, tx_audio_stb, tx_bits)
+    #tx_audio, mic_compression(clk, tx_audio, tx_audio_stb)
 
     #modulator
     #=========
-    tx_i, tx_q, tx_stb = modulator(clk, tx_audio, tx_audio_stb, settings)
+    tx_mag, tx_phase, tx_stb = modulator(clk, tx_audio, tx_audio_stb, settings)
 
     #output to transmitter
     #=====================
@@ -173,16 +178,16 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #if the test tone is enabled in the transmitter, the tone
     #is swept at the receive frequency and can be used as a crude
     #analyser.
-    test_i, test_q, test_stb = test_signal(clk, tx_audio_stb)
-    tx_i = tx_i.subtype.select(settings.rx_tx, test_i, tx_i)
-    tx_q = tx_q.subtype.select(settings.rx_tx, test_q, tx_q)
+    #test_i, test_q, test_stb = test_signal(clk, tx_audio_stb)
+    #tx_mag = tx_mag.subtype.select(settings.rx_tx, test_i, tx_mag)
+    #tx_phase = tx_phase.subtype.select(settings.rx_tx, test_q, tx_phase)
 
     #resize tx clamp if necessary
-    tx_i, stb = clamp(clk, tx_i, tx_stb, 8)
-    tx_q, _   = clamp(clk, tx_q, tx_stb, 8)
-    tx_stb = stb
+    #tx_mag, stb   = clamp(clk, tx_mag, tx_stb, 8)
+    #tx_phase, _   = clamp(clk, tx_q, tx_stb, 8)
+    #tx_stb = stb
 
-    return rx, rx_stb, rx_USB, rx_USB_stb, tx_i, tx_q, tx_stb, power, capture_i, capture_q, capture_stb, overflow
+    return rx, rx_stb, rx_USB, rx_USB_stb, tx_mag, tx_mag, tx_stb, power, capture_i, capture_q, capture_stb, overflow
 
 def test_transceiver(stimulus, mode, rx_tx):
     settings = Settings()
