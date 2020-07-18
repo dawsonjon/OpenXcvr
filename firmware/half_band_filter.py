@@ -42,7 +42,7 @@ def multiply(clk, data, kernel):
 
 def half_band_filter(clk, data_i, data_q, stb):
 
-    taps = 127 #choose a power of 2 - 1
+    taps = 255 #choose a power of 2 - 1
     kernel_bits = 18
     kernel_type = Signed(kernel_bits)
     kernel = make_kernel(taps, kernel_bits)
@@ -104,7 +104,7 @@ def test_filter(stimulus):
     settings = Settings()
     settings.filter_kernel_bits = 18 
 
-    taps = 255
+    taps = 127
 
     clk = Clock("clk")
     stb_in = Boolean().input("stb")

@@ -191,6 +191,7 @@ void main(){
     while(1){
 
 
+        /*
         if(ready(stdin)){ 
             cmd = getc();
             switch(cmd){
@@ -293,6 +294,7 @@ void main(){
                     break;
             }
        }
+    */
 
        
        if(timer_low() - wake_time > 2000000){ 

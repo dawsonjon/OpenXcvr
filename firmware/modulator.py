@@ -3,6 +3,7 @@ from math import pi, sin, cos
 import sys
 from scale import scale
 from settings import *
+from ssb import ssb_polar
 
 
 
@@ -28,15 +29,11 @@ def modulator(clk, audio, audio_stb, settings):
 
     fm_stb = Boolean().register(clk, d=audio_stb, init=0)
 
-    #lsb modulation
-    lsb_mag   = Unsigned(12).constant(0)
-    lsb_phase = Signed(32).constant(0)
-    lsb_stb   = audio_stb
-
-    #usb modulation
-    usb_mag   = Unsigned(12).constant(0)
-    usb_phase = Signed(32).constant(0)
-    usb_stb   = audio_stb
+    #ssb
+    ssb_mag, ssb_phase, ssb_stb = ssb_polar(clk, audio, audio_stb, settings.mode==LSB)
+    ssb_mag <<= 1
+    ssb_phase = Signed(32).constant(0) + ssb_phase
+    ssb_phase <<= (32 - audio_bits)
 
     #cw modulation
     cw_mag   = Unsigned(12).constant(0)
@@ -44,9 +41,9 @@ def modulator(clk, audio, audio_stb, settings):
     cw_stb   = audio_stb
 
     #mode switching
-    magnitude     = Unsigned(12).select(settings.mode, am_mag,   fm_mag,    fm_mag,    lsb_mag,     usb_mag,     cw_mag)
-    phase         = Signed(32).select(settings.mode,   am_phase, nfm_phase, fm_phase,  lsb_phase,   usb_phase,   cw_phase)
-    stb           = Boolean().select(settings.mode,    am_stb,   fm_stb,    fm_stb,    lsb_stb,     usb_stb,     cw_stb)
+    magnitude     = Unsigned(12).select(settings.mode, am_mag,   fm_mag,    fm_mag,   ssb_mag,   ssb_mag,   cw_mag)
+    phase         = Signed(32).select(settings.mode,   am_phase, nfm_phase, fm_phase, ssb_phase, ssb_phase, cw_phase)
+    stb           = Boolean().select(settings.mode,    am_stb,   fm_stb,    fm_stb,   ssb_stb,   ssb_stb,   cw_stb)
 
 
     return magnitude, phase, audio_stb
@@ -71,13 +68,15 @@ def test_modulator(stimulus, mode):
 
     response = []
     for data in stimulus:
-        for j in range(5):
-            audio_stb_in.set(j==4)
+        for j in range(200):
+            audio_stb_in.set(j==199)
             audio_in.set(data)
             clk.tick()
             if stb.get():
                 print i.get(), q.get()
-                response.append(i.get()+1j*q.get())
+                if i.get() is None or q.get() is None:
+                    continue
+                response.append(i.get()*(2**20)+1j*q.get())
 
     response = np.array(response)
     plt.title("Modulator")
@@ -85,7 +84,7 @@ def test_modulator(stimulus, mode):
     plt.ylabel("Value")
     a, = plt.plot(np.real(response), label="I")
     b, = plt.plot(np.imag(response), label="Q")
-    c, = plt.plot(stimulus, label="Audio Input")
+    c, = plt.plot(stimulus*(2**20), label="Audio Input")
     plt.legend(handles=[a, b, c])
     plt.show()
 
@@ -96,9 +95,10 @@ if __name__ == "__main__" and "sim" in sys.argv:
 
     #mode am stim am
     stimulus=(
-        np.sin(np.arange(10000)*2.0*pi*0.01)*2047
+        np.sin(np.arange(1000)*2.0*pi*0.02)*1023+
+        np.sin(np.arange(1000)*2.0*pi*0.03)*1023
     )
-    test_modulator(stimulus, FM)
+    #test_modulator(stimulus, FM)
     #test_modulator(stimulus, FM)
     #test_modulator(stimulus, NBFM)
-    #test_modulator(stimulus, SSB)
+    test_modulator(stimulus, USB)

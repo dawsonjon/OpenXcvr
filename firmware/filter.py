@@ -83,19 +83,13 @@ def filter(clk, data_i, data_q, stb, settings):
     buf_q = data_q.subtype.ram(clk=clk, depth=taps)
 
     #write data into RAM
-    address = address.label("write_address")
-    data_i = data_i.label("write_data_i")
-    data_q = data_q.label("write_data_q")
-    write_enable = (~read & stb).label("write_enable")
+    write_enable = (~read & stb)
     buf_i.write(address, data_i, write_enable) 
     buf_q.write(address, data_q, write_enable) 
 
     #read_data_from_RAM
     data_i = buf_i.read(address)
     data_q = buf_q.read(address)
-    count = count.label("read_address")
-    data_i = data_i.label("read_data_i")
-    data_q = data_q.label("read_data_q")
     filter_select = Unsigned(2).select(settings.mode, 1, 0, 2, 1, 1, 3)#AM, FM, FM, LSB, USB, CW
     kernel = kernel_type.rom(filter_select.cat(count), *kernel)
 

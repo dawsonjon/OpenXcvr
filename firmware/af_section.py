@@ -83,7 +83,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     # |----------|----------|----------|----------|
     # -fs/2    -fs/4        DC        fs/4      fs/2
 
-    rx_i, rx_q, rx_stb = filter(clk, rx_i, rx_q, rx_stb, settings)
+    #rx_i, rx_q, rx_stb = filter(clk, rx_i, rx_q, rx_stb, settings)
 
     # decimate
     # ========
