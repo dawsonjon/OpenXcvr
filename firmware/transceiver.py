@@ -47,9 +47,10 @@ def transceiver(cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, setti
     ###########################################################################
 
     frequency, _ = slow_to_fast(cpu_clk, clk, frequency)
-    data_bits = tx_mag.subtype.bits
+    mag_bits = tx_mag.subtype.bits
+    phase_bits = tx_phase.subtype.bits
     data, tx_stb = slow_to_fast(cpu_clk, clk, tx_mag.cat(tx_phase), tx_stb)
-    tx_mag, tx_phase = data[2*data_bits-1:data_bits], data[data_bits-1:0]
+    tx_mag, tx_phase = data[mag_bits+phase_bits-1:phase_bits], data[phase_bits-1:0]
     rx_tx = meta_chain(clk, settings.rx_tx)
     enable_test_signal = meta_chain(clk, settings.enable_test_signal)
 

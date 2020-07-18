@@ -5,11 +5,12 @@ from accumulator import accumulator
 from dither import dither
 from math import sin, cos, pi
 
-def nco(clk, frequency, channels):
+def nco(clk, frequency, phase, channels):
     bits = frequency.subtype.bits
 
     lo = accumulator(clk, frequency, channels)
     lo = [i.subtype.register(clk, d=i) for i in lo]
+    lo = [i+phase for i in lo]
     lo = [i.subtype.register(clk, d=i) for i in lo]
 
     #add phase shift to I output

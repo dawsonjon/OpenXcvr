@@ -187,7 +187,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #tx_phase, _   = clamp(clk, tx_q, tx_stb, 8)
     #tx_stb = stb
 
-    return rx, rx_stb, rx_USB, rx_USB_stb, tx_mag, tx_mag, tx_stb, power, capture_i, capture_q, capture_stb, overflow
+    return rx, rx_stb, rx_USB, rx_USB_stb, tx_mag, tx_phase, tx_stb, power, capture_i, capture_q, capture_stb, overflow
 
 def test_transceiver(stimulus, mode, rx_tx):
     settings = Settings()
