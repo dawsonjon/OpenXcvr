@@ -4,31 +4,8 @@
 #define WAIT_100MS wait_clocks(5000000);
 #define WAIT_500MS wait_clocks(25000000);
 
-char * smeter[13];
-char * modes[6];
-void init_ui(){
-smeter[0]="s0               ";
-smeter[1]="s1-|             ";
-smeter[2]="s2--|            ";
-smeter[3]="s3---|           ";
-smeter[4]="s4----|          ";
-smeter[5]="s5-----|         ";
-smeter[6]="s6------|        ";
-smeter[7]="s7-------|       ";
-smeter[8]="s8--------|      ";
-smeter[9]="s9---------|     ";
-smeter[10]="s9---------+10dB";
-smeter[11]="s9---------+20dB";
-smeter[12]="s9---------+30dB";
-
-//Select Mode
-modes[0]="AM";
-modes[1]="NFM";
-modes[2]="FM";
-modes[3]="LSB";
-modes[4]="USB";
-modes[5]="CW";
-}
+#define SMETER "s0#s1-|#s2--|#s3---|#s4----|#s5-----|#s6------|#s7-------|#s8--------|#s9---------|#s9---------+10dB#s9---------+20dB#s9---------+30dB#"
+#define MODES "AM#NFM#FM#LSB#USB#CW"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Interogate buttons and encoder
@@ -40,6 +17,11 @@ get_position_change(){
     int change = new_position - position;
     position = new_position;
     return change;
+}
+void encoder_control(int *value, int min, int max){
+	*value += get_position_change();
+	if(*value > max) *value = min;
+	if(*value < min) *value = max;
 }
 unsigned get_button(unsigned button){
 	if(~fgetc(push_button_in) & button){
@@ -55,42 +37,41 @@ unsigned check_button(unsigned button){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Draw frequency XX.XXX.XXX 0 to 99.999999 MHz in 1Hz steps
-////////////////////////////////////////////////////////////////////////////////
-
-void print_frequency(int frequency){
-
-    int i;
-    int mask = 10000000;
-    LCD_LINE1()
-    for(i=0; i<8; i++){
-	lcd_write('0'+frequency/mask);
-	frequency %= mask;
-	mask /= 10;
-	if(i==1||i==4) lcd_write('.');
-    }
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // Generic menu item for an enumerated list of options
 ////////////////////////////////////////////////////////////////////////////////
 
-int get_enum(char * title, char * options[], int max, int *value){
+void print_option(char * options, int option){
+
+    char x;
+    int i, idx=0;
+
+    //find nth substring
+    for(i=0; i<option; i++){ 
+	while(options[idx++]!='#'){}
+    }
+
+    //print substring
+    while(1){
+        x = options[idx];
+	if(x==0 || x=='#') return;
+        lcd_write(x);
+	idx++;
+    }
+}
+
+
+int get_enum(char * title, char * options, int max, int *value){
 
     int select=*value;
 
-
     while(1){
-	select += get_position_change();
-	if(select > max) select = 0;
-	if(select < 0) select = max;
+	encoder_control(&select, 0, max);
 
 	//print selected menu item
 	LCD_CLEAR()
 	lcd_print(title);
 	LCD_LINE2()
-	lcd_print(options[select]);
+	print_option(options, select);
 
 	//select menu item
 	if(get_button(1)){
@@ -102,6 +83,8 @@ int get_enum(char * title, char * options[], int max, int *value){
 	if(get_button(2)){
 		return 0;
 	}
+
+	WAIT_100MS
 
     }
 }
@@ -120,42 +103,37 @@ int load_memory(){
     store_settings(&bus, 0);
 
     while(1){
-	i = get_position_change();
-		page += i;
-		if(page < 1) page = 499;
-		if(page > 499) page = 1;
+	encoder_control(&page, 1, 499);
 
-		//temporarily load settings
-		load_settings(&bus, page);
-		apply_settings();
+	//temporarily load settings
+	load_settings(&bus, page);
+	apply_settings();
 
-		//read the page into memory
-		eeprom_page_read(&bus, page, buffer);
+	//read the page into memory
+	eeprom_page_read(&bus, page, buffer);
 
-		//print memory content
-		LCD_CLEAR()
-		lcd_print("memory load: ");
-		lcd_write('0' + (page / 100));
-		lcd_write('0' + (page % 100) / 10);
-		lcd_write('0' + (page % 100) % 10);
-		LCD_LINE2()
+	//print memory content
+	LCD_CLEAR()
+	lcd_print("memory load: ");
+	lcd_print_udecimal(page, 3);
+	LCD_LINE2()
 
-		if(buffer[15]==0){
-			for(i=11; i<15; i++){
-				lcd_write(buffer[i]);
-				lcd_write(buffer[i]>>8);
-				lcd_write(buffer[i]>>16);
-				lcd_write(buffer[i]>>24);
-			}
-
-			//OK
-			if(get_button(1)){
-				return 1;
-			}
-
-		} else {
-			lcd_print("empty");
+	if(buffer[15]==0){
+		for(i=11; i<15; i++){
+			lcd_write(buffer[i]);
+			lcd_write(buffer[i]>>8);
+			lcd_write(buffer[i]>>16);
+			lcd_write(buffer[i]>>24);
 		}
+
+		//OK
+		if(get_button(1)){
+			return 1;
+		}
+
+	} else {
+		lcd_print("empty");
+	}
 
 
 
@@ -192,13 +170,9 @@ int get_frequency(){
     while(1){
 
 	if(edit_mode){
-            digits[digit] += get_position_change();
-	    if(digits[digit] > 9) digits[digit] = 0;
-	    if(digits[digit] < 0) digits[digit] = 9;
+	    encoder_control(&digits[digit], 0, 9);
 	} else {
-            digit += get_position_change();
-	    if(digit > 9) digit = 0;
-	    if(digit < 0) digit = 9;
+	    encoder_control(&digit, 0, 9);
 	}
 
 	LCD_CLEAR()
@@ -257,18 +231,7 @@ int get_frequency(){
 // Generic Menu item for a single digit parameter
 ////////////////////////////////////////////////////////////////////////////////
 int get_digit(char * title, int max, int *value){
-    char * options[10];
-    options[0] = "0";
-    options[1] = "1-|";
-    options[2] = "2--|";
-    options[3] = "3---|";
-    options[4] = "4----|";
-    options[5] = "5-----|";
-    options[6] = "6------|";
-    options[7] = "7-------|";
-    options[8] = "8--------|";
-    options[9] = "9---------|";
-    return get_enum(title, options, max, value);
+    return get_enum(title, "0#1#2#3#4#5#6#7#8#9#", max, value);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -292,10 +255,7 @@ void battery_voltage(){
 	LCD_LINE2()
 	raw_voltage = (raw_voltage*9 + read_adc_chan(CHAN_BATTERY))/10;
         voltage = (raw_voltage*33*11)/(4096);
-	lcd_write('0'+voltage/100); voltage %= 100;
-	lcd_write('0'+voltage/10); voltage %= 10;
-	lcd_write('.');
-	lcd_write('0'+voltage);
+	lcd_print_decimal(voltage, 2, 1);
 	lcd_write('V');
 	if(get_button(3)){
 		return;
@@ -312,10 +272,7 @@ void mic_level(){
     lcd_print("mic level");
     while(1){
 
-	gain += get_position_change();
-	if(gain > 9) gain=9;
-	if(gain < 0) gain=0;
-	
+	encoder_control(&gain, 0, 9);
 	raw = read_adc_chan(CHAN_MICROPHONE)-2048;
 	if (max > raw){
 		max = max*4/5;
@@ -368,7 +325,6 @@ void mic_level(){
 ////////////////////////////////////////////////////////////////////////////////
 
 int step_sizes[10] = {10, 50, 100, 1000, 5000, 10000, 12500, 25000, 50000, 100000};
-int position_change=0;
 
 int do_ui(){
 
@@ -378,28 +334,14 @@ int do_ui(){
 
     //top level menu
     char unsigned buttons;
-    char * options[13];
     unsigned setting = 0;
-    char * title;
-
-    options[0] = "frequency";
-    options[1] = "volume";
-    options[2] = "load memory";
-    options[3] = "mode";
-    options[4] = "AGC";
-    options[5] = "squelch";
-    options[6] = "step";
-    options[7] = "check battery";
-    options[8] = "mic level";
-    options[9] = "factory reset";
-    if(!get_enum("menu:", options, 9, &setting)) return 1;
-    title = options[setting];
+    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#factory reset#", 9, &setting)) return 1;
 
     switch(setting){
 	case 0 : get_frequency();
 		 return 1;
 
-	case 1 : get_digit(title, 9, &settings.volume);
+	case 1 : get_digit("volume", 9, &settings.volume);
 		 return 1;
 
 	case 2 : 
@@ -407,35 +349,21 @@ int do_ui(){
 		return 1;
 
 	case 3 : 
-		get_enum(title, modes, 5, &settings.mode);
+		get_enum("mode", MODES, 5, &settings.mode);
 		return 1;
 
 	case 4 :
 		//Select AGC Speed
-		options[0]="fast";
-		options[1]="normal";
-		options[2]="slow";
-		options[3]="very slow";
-		get_enum(title, options, 3, &settings.agc_speed);
+		get_enum("AGC", "fast#normal#slow#very_slow#", 3, &settings.agc_speed);
 		return 1;
 
 	case 5 :
 		//Select Squelch
-		get_enum(title, smeter, 12, &settings.squelch);
+		get_enum("squelch", SMETER, 12, &settings.squelch);
 		return 1;
 
 	case 6 : 
-		options[0]="10Hz";
-		options[1]="50Hz";
-		options[2]="100Hz";
-		options[3]="1kHz";
-		options[4]="5kHz";
-		options[5]="10kHz";
-		options[6]="12.5kHz";
-		options[7]="25kHz";
-		options[8]="50kHz";
-		options[9]="100kHz";
-		get_enum(title, options, 9, &settings.step);
+		get_enum("step", "10Hz#50Hz#100Hz#1kHz#5kHz#10kHz#12.5kHz#25kHz#50kHz#100kHz#", 9, &settings.step);
 
 		//round frequency to the nearest step size
 		settings.frequency -= settings.frequency%step_sizes[settings.step];
@@ -450,9 +378,7 @@ int do_ui(){
 		return 1;
 
 	case 9 : 
-		options[0]="No";
-		options[1]="Yes";
-		get_enum("confirm", options, 2, &setting);
+		get_enum("confirm", "No#Yes#", 2, &setting);
 		if(setting) factory_reset(&bus);
 		return 1;
 

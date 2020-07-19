@@ -104,4 +104,44 @@ void lcd_print(char * string)
   }
 }
 
+
+void lcd_print_udecimal(unsigned x, unsigned digits)
+{
+
+    unsigned digitval = 1000000000;
+    unsigned digitpos = 10;
+    unsigned digit;
+    unsigned leading = 0;
+
+    while(digitpos){
+
+        if(digitpos == digits){
+            leading = 1;
+        }
+
+	digit = x/digitval;
+	if(digit || leading){
+	    lcd_write('0' + digit);
+	    if(digitpos==4){
+	        lcd_write(',');
+	    }
+	    leading = 1;
+	}
+
+
+       	x %= digitval;
+	digitval /= 10;
+	digitpos --;
+
+    }
+
+}
+
+void lcd_print_decimal(unsigned x, unsigned digits, unsigned decimals){
+    unsigned significance[3] = {10, 100, 1000};
+    lcd_print_udecimal(x/significance[decimals-1], digits);
+    lcd_write('.');
+    lcd_print_udecimal(x%significance[decimals-1], decimals);
+}
+
 #endif

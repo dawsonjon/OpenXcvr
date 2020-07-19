@@ -60,7 +60,7 @@ def multiply(clk, data, kernel):
 
 def filter(clk, data_i, data_q, stb, settings):
 
-    taps = 255 #chose a power of 2 - 1
+    taps = 127 #chose a power of 2 - 1
     kernel_type = Signed(settings.filter_kernel_bits)
     kernel = np.concatenate([
         make_kernel(taps, settings.filter_kernel_bits, 0.09375), [0], #Narrow
@@ -288,5 +288,5 @@ if __name__ == "__main__":
         f.write(netlist.generate())
 
     if "plot" in sys.argv:
-        plot_kernel(127, 18)
+        plot_kernel(255, 18)
 

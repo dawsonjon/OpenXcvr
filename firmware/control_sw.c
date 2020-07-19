@@ -161,11 +161,11 @@ void update_lcd(){
     //update display status
     LCD_CLEAR()
     LCD_LINE1()
-    print_frequency(settings.frequency);
+    lcd_print_decimal(settings.frequency, 5, 3);
     lcd_print("   ");
-    lcd_print(modes[settings.mode]);
+    print_option(MODES, settings.mode);
     LCD_LINE2()
-    lcd_print(smeter[read_smeter()]);
+    print_option(SMETER, read_smeter());
 }
 
 void main(){
@@ -178,10 +178,10 @@ void main(){
     unsigned wake_time = 0;
     int audio;
     int capture[16], temp;
+    int position_change=0;
     
     //initialise peripherals
     lcdInit();
-    init_ui();
 
     i2c_init(&bus, i2c_in, i2c_out);
     load_settings(&bus, 0);//page 0 contains power up settings
@@ -328,8 +328,7 @@ void main(){
             
 
             if(last_smeter != read_smeter()){
-                LCD_LINE2()
-                lcd_print(smeter[read_smeter()]);
+                update_lcd();
                 last_smeter = read_smeter();
             }
 

@@ -95,20 +95,14 @@ void transmit(){
 
 	LCD_LINE2()
 	lcd_write(126);
-	lcd_write('0'+fwd_power/1000); fwd_power %= 1000; //Watts
-	lcd_write('.');
-	lcd_write('0'+fwd_power/100);//100mW
+	lcd_print_decimal(fwd_power/100, 1, 1);
 	lcd_write(' ');
 	lcd_write(127);
-	lcd_write('0'+rev_power/1000); rev_power %= 1000; //Watts
-	lcd_write('.');
-	lcd_write('0'+rev_power/100);//100mW
+	lcd_print_decimal(rev_power/100, 1, 1);
 	lcd_write(' ');
 	lcd_write('1');
 	lcd_write(':');
-	lcd_write('0'+vswr/10); vswr %= 10; //Watts
-	lcd_write('.');
-	lcd_write('0'+vswr);//100mW
+	lcd_print_decimal(vswr, 1, 1);
 
 
 	WAIT_100MS
