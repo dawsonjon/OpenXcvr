@@ -11,14 +11,19 @@ unsigned to_dB(unsigned x){
     return dB;
 }
 
-//clamp a number between two values
-unsigned clamp(unsigned a, unsigned b, unsigned c){
-    if(a < b) return b;
-    if(a > c) return c;
-    return a;
+unsigned max(unsigned x, unsigned y){
+    if(x > y) return x;
+    return y;
 }
-#define MAX(a, b) a>b?a:b
-#define MIN(a, b) a<b?a:b
-#define clamp(a, b, c) MIN(c, MAX(a, b))
+unsigned min(unsigned x, unsigned y){
+    if(x < y) return x;
+    return y;
+}
+
+unsigned clamp(unsigned x, unsigned min, unsigned max){
+    if(x < min) return min;
+    if(x > max) return max;
+    return x;
+}
 
 #endif

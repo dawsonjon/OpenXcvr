@@ -36,6 +36,7 @@ typedef struct{
     unsigned mute;
     unsigned step;
     unsigned mic_gain;
+    unsigned cw_speed;
 } struct_settings;
 struct_settings settings;
 

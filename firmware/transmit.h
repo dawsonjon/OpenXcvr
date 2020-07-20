@@ -36,8 +36,8 @@ void transmit(){
         if(timer_low() - start_time > 5000000) break;
 
 	//leaky max hold to obtain peak voltage
-	pk_fwd_voltage = MAX(FWD, pk_fwd_voltage*999/1000);
-	pk_rev_voltage = MAX(REV, pk_rev_voltage*999/1000);
+	pk_fwd_voltage = max(FWD, pk_fwd_voltage*999/1000);
+	pk_rev_voltage = max(REV, pk_rev_voltage*999/1000);
 
 	//compensate for diode drop
 	rms_fwd_voltage = pk_fwd_voltage + 150;
@@ -61,7 +61,7 @@ void transmit(){
 	while(p*p < ratio){
 		p++;
 	}
-	vswr = (1000+p)/(100-p);
+	vswr = clamp((1000+p)/(100-p), 10, 99);
 
 	LCD_LINE2()
 	lcd_write(126);
@@ -69,6 +69,7 @@ void transmit(){
 	lcd_write(' ');
 	lcd_write(127);
 	lcd_print_decimal(rev_power/100, 1, 1);
+	lcd_write(' ');
 	lcd_write(' ');
 	lcd_write('1');
 	lcd_write(':');

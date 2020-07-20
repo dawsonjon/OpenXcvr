@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 int position;
-get_position_change(){
+int get_position_change(){
     int new_position = fgetc(position_in);
     int change = new_position - position;
     position = new_position;
@@ -270,12 +270,21 @@ void mic_level(){
 
 	encoder_control(&gain, 0, 9);
 	raw = MIC-2048;
-	max = MAX(raw, max*4/5);
-	min = MIN(raw, min*4/5);
+	if(raw > max){
+		max = raw;
+	} else {
+		max = max*4/5;
+	}
+	if(raw < min){
+	    min = raw;
+	} else {
+	    min = min*4/5;
+	}
 	amplitude = (max-min)/2;
 	
 	level = (to_dB(amplitude)/6)-3;
-	level = clamp(level, 0, 9);
+	level += gain;
+	level = clamp(level, 0, 12);
 
 	LCD_LINE2()
 	lcd_write('<');
@@ -319,7 +328,7 @@ int do_ui(){
     //top level menu
     char unsigned buttons;
     unsigned setting = 0;
-    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#factory reset#", 9, &setting)) return 1;
+    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#CW speed#factory reset#", 10, &setting)) return 1;
 
     switch(setting){
 	case 0 : get_frequency();
@@ -361,7 +370,18 @@ int do_ui(){
 		mic_level();
 		return 1;
 
-	case 9 : 
+	case 9 :
+		while(1){
+                    LCD_CLEAR()
+                    lcd_print("CW speed (wpm)");
+                    LCD_LINE2()
+		    encoder_control(&settings.cw_speed, 1, 99);
+	            lcd_print_udecimal(settings.cw_speed, 2);
+                    if(get_button(3)) return 1;
+		    WAIT_100MS
+		}
+
+	case 10 : 
 		get_enum("confirm", "No#Yes#", 2, &setting);
 		if(setting) factory_reset(&bus);
 		return 1;
