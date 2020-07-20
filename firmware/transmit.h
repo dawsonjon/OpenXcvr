@@ -2,35 +2,14 @@
 #define TRANSMIT_H
 #define WAIT_100MS wait_clocks(5000000);
 
-void read_adc(int *fwd, int *rev, int *dit, int *dah, int *ptt ){
-    unsigned int raw, i;
-    unsigned buf[10];
-    for(i=0; i<10; i++){
-	    buf[i] = fgetc(adc_in);
-    }
-    for(i=0; i<10; i++){
-        raw = buf[i];
-	switch(raw >> 16){
-	    case 1: *fwd = (raw & 0xffff)*3300/4096; break; //convert to mV
-	    case 5: *rev = (raw & 0xffff)*3300/4096; break; //convert to mV
-	    case 3: *ptt = (raw & 0xffff)<0x7ff; break; //convert to boolean
-	    case 7: *dit = (raw & 0xffff)<0x7ff; break; //convert to boolean
-	    case 4: *dah = (raw & 0xffff)<0x7ff; break; //convert to boolean
-	    default: break;
-	}
-    }
-}
+#include "adc.h"
 
 unsigned check_ptt(){
-    int fwd, rev, dit, dah, ptt;
-    read_adc(&fwd, &rev, &dit, &dah, &ptt);
-
-    if(ptt||dit||dah) return 1;
-    return 0;
+    return PTT||DIT||DAH;
 }
 
 void transmit(){
-    unsigned int fwd, rev, dit, dah, ptt, hang_timer=0, vswr, start_time, frame, ratio,
+    unsigned int hang_timer=0, vswr, start_time, frame, ratio,
     pk_fwd_voltage=0, pk_rev_voltage=0, rms_fwd_voltage, rms_rev_voltage, fwd_power, rev_power, p;
 
     //switch on the transmitter
@@ -48,8 +27,7 @@ void transmit(){
 	frame %= 7;
 
 	//Add a hang time for partial break-in
-	read_adc(&fwd, &rev, &dit, &dah, &ptt);
-	if(ptt||dit||dah){
+	if(PTT||DIT||DAH){
             start_time = timer_low();
 	}
 
@@ -58,16 +36,8 @@ void transmit(){
         if(timer_low() - start_time > 5000000) break;
 
 	//leaky max hold to obtain peak voltage
-	if (fwd > pk_fwd_voltage){
-		pk_fwd_voltage = fwd;
-	} else {
-		pk_fwd_voltage = pk_fwd_voltage*999/1000;
-	}
-	if (rev > pk_rev_voltage){
-		pk_rev_voltage = rev;
-	} else {
-		pk_rev_voltage = pk_rev_voltage*999/1000;
-	}
+	pk_fwd_voltage = MAX(FWD, pk_fwd_voltage*999/1000);
+	pk_rev_voltage = MAX(REV, pk_rev_voltage*999/1000);
 
 	//compensate for diode drop
 	rms_fwd_voltage = pk_fwd_voltage + 150;

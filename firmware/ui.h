@@ -1,4 +1,6 @@
 #include "lcd.h"
+#include "adc.h"
+#include "utils.h"
 
 #define WAIT_10MS wait_clocks(500000);
 #define WAIT_100MS wait_clocks(5000000);
@@ -237,23 +239,13 @@ int get_digit(char * title, int max, int *value){
 ////////////////////////////////////////////////////////////////////////////////
 // Procedure to read and display battery voltage
 ////////////////////////////////////////////////////////////////////////////////
-#define CHAN_BATTERY 2
-#define CHAN_MICROPHONE 8
-unsigned read_adc_chan(unsigned chan){
-    unsigned int raw;
-    while(1){
-        raw = fgetc(adc_in);
-        if(raw >> 16 == chan) return raw & 0xffff;
-    }
-}
-
 void battery_voltage(){
     unsigned int i, voltage, raw_voltage=0;
     LCD_CLEAR()
     lcd_print("battery voltage");
     while(1){
 	LCD_LINE2()
-	raw_voltage = (raw_voltage*9 + read_adc_chan(CHAN_BATTERY))/10;
+	raw_voltage = (raw_voltage*9 + BATTERY)/10;
         voltage = (raw_voltage*33*11)/(4096);
 	lcd_print_decimal(voltage, 2, 1);
 	lcd_write('V');
@@ -264,6 +256,10 @@ void battery_voltage(){
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Procedure to set microphone gain and display live level indicator
+////////////////////////////////////////////////////////////////////////////////
+
 void mic_level(){
     int raw, amplitude, max = 0, min=4095, level;
     int gain=settings.mic_gain, i;
@@ -273,25 +269,13 @@ void mic_level(){
     while(1){
 
 	encoder_control(&gain, 0, 9);
-	raw = read_adc_chan(CHAN_MICROPHONE)-2048;
-	if (max > raw){
-		max = max*4/5;
-	} else {
-		max = raw;
-	}
-	if (min < raw){
-		min = min*4/5;
-	} else {
-		min = raw;
-	}
+	raw = MIC-2048;
+	max = MAX(raw, max*4/5);
+	min = MIN(raw, min*4/5);
 	amplitude = (max-min)/2;
 	
-	level = 0;
-	while(amplitude > 3){
-		level++;
-		amplitude >>= 1;
-	}
-	level += gain;
+	level = (to_dB(amplitude)/6)-3;
+	level = clamp(level, 0, 9);
 
 	LCD_LINE2()
 	lcd_write('<');
@@ -354,7 +338,7 @@ int do_ui(){
 
 	case 4 :
 		//Select AGC Speed
-		get_enum("AGC", "fast#normal#slow#very_slow#", 3, &settings.agc_speed);
+		get_enum("AGC", "fast#normal#slow#very slow#", 3, &settings.agc_speed);
 		return 1;
 
 	case 5 :

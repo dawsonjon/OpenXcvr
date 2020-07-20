@@ -47,6 +47,7 @@ i2c bus;
 #include "load_store.h"
 #include "ui.h"
 #include "transmit.h"
+#include "utils.h"
 
 //convert a frequency in Hertz into a frequency in NCO step size.
 unsigned convert_to_steps(unsigned x){
@@ -57,17 +58,7 @@ unsigned convert_to_steps(unsigned x){
     return y;
 }
 
-//crude conversion to dBs
-unsigned to_dB(unsigned x){
-    unsigned dB = 0;
-    while(x > 1){
-        x >>= 1;
-        dB += 6;
-    }
-    return dB;
-}
-
-//crude conversion to dBs
+//convert dBs to s-meter scale
 int read_smeter(){
 
     unsigned power = to_dB(fgetc(power_in));

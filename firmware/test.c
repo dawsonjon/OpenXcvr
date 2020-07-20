@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include "utils.h"
 
-void main(){
-    report("asdfasdf"[0]);
+int main(){
+printf("%u\n", to_dB(4096));
+printf("%u\n", to_dB(2));
 }
