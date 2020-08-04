@@ -8,7 +8,7 @@ from scipy import signal
 import sys
 
 def make_kernel(taps, kernel_bits):
-    kernel = signal.firwin(taps, 0.5, window="blackman")
+    kernel = signal.firwin(taps, 6.0/100, window="blackman")
     kernel = np.round(kernel * (2.0**(kernel_bits-1.0)))
     return kernel
 
@@ -24,11 +24,10 @@ def plot_kernel(taps, kernel_bits):
     plt.figure()
 
     plt.grid(True)
-    plt.title("Narrow")
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-12.5, 12.5, len(response_0)), 
+            np.linspace(-50.0, 50.0, len(response_0)), 
             response_0
     )
     plt.show()
@@ -40,7 +39,7 @@ def multiply(clk, data, kernel):
     product = product.subtype.register(clk, d=product)
     return product
 
-def half_band_filter(clk, data_i, data_q, stb):
+def audio_filter(clk, data, stb):
 
     taps = 255 #choose a power of 2 - 1
     kernel_bits = 18
@@ -58,72 +57,59 @@ def half_band_filter(clk, data_i, data_q, stb):
     eop = count == taps-1
 
     #create RAM
-    buf_i = data_i.subtype.ram(clk=clk, depth=taps)
-    buf_q = data_q.subtype.ram(clk=clk, depth=taps)
+    buf = data.subtype.ram(clk=clk, depth=taps)
 
     #write data into RAM
-    address = address.label("write_address")
-    data_i = data_i.label("write_data_i")
-    data_q = data_q.label("write_data_q")
-    write_enable = (~read & stb).label("write_enable")
-    buf_i.write(address, data_i, write_enable) 
-    buf_q.write(address, data_q, write_enable) 
+    write_enable = (~read & stb)
+    buf.write(address, data, write_enable) 
 
     #read_data_from_RAM
-    data_i = buf_i.read(address)
-    data_q = buf_q.read(address)
+    data = buf.read(address)
     kernel = kernel_type.rom(count, *kernel)
 
-    data_i = data_i.subtype.register(clk, d=data_i)
-    data_q = data_q.subtype.register(clk, d=data_q)
+    data = data.subtype.register(clk, d=data)
     kernel = kernel.subtype.register(clk, d=kernel)
     sop = sop.subtype.register(clk, d=sop)
     eop = eop.subtype.register(clk, d=eop)
 
     #multiply kernel by data
-    product_i = multiply(clk, data_i, kernel)
-    product_q = multiply(clk, data_q, kernel)
+    product = multiply(clk, data, kernel)
     sop = sop.subtype.register(clk, d=sop)
     eop = eop.subtype.register(clk, d=eop)
 
     #accumulate products
-    s = Signed(product_i.subtype.bits+int(ceil(log(taps, 2))))
-    accumulator_i = s.register(clk, init=0)
-    accumulator_q = s.register(clk, init=0)
-    accumulator_i.d(s.select(sop, accumulator_i+product_i, product_i))
-    accumulator_q.d(s.select(sop, accumulator_q+product_q, product_q))
+    s = Signed(product.subtype.bits+int(ceil(log(taps, 2))))
+    accumulator = s.register(clk, init=0)
+    accumulator.d(s.select(sop, accumulator+product, product))
     eop = eop.subtype.register(clk, d=eop)
 
     #remove excess bits
-    accumulator_i = (accumulator_i>>kernel_bits-2).resize(data_i.subtype.bits)
-    accumulator_q = (accumulator_q>>kernel_bits-2).resize(data_q.subtype.bits)
-    return  accumulator_i, accumulator_q, eop
+    accumulator = (accumulator>>kernel_bits-2).resize(data.subtype.bits)
+    return  accumulator, eop
 
 def test_filter(stimulus):
 
     settings = Settings()
     settings.filter_kernel_bits = 18 
 
-    taps = 127
+    taps = 255
 
     clk = Clock("clk")
     stb_in = Boolean().input("stb")
     data_i_in = Signed(16).input("data_i_in")
     data_q_in = Signed(16).input("data_q_in")
-    data_i_out, data_q_out, stb_out = half_band_filter(clk, data_i_in, data_q_in, stb_in)
+    data_out, stb_out = audio_filter(clk, data_in, stb_in)
 
     plt.plot(np.real(stimulus))
     plt.plot(np.imag(stimulus))
     plt.show()
-    stimulus_i = iter(np.real(stimulus))
-    stimulus_q = iter(np.imag(stimulus))
+    stimulus = iter(stimulus)
 
     #simulate
     clk.initialise()
 
     input_value = 0
-    data_i_in.set(next(stimulus_i))
-    data_q_in.set(next(stimulus_q))
+    data_in.set(next(stimulus))
     stb_in.set(0)
     output_i = []
     output_q = []
@@ -132,29 +118,24 @@ def test_filter(stimulus):
         for j in range(taps+2):
 
             if j == taps+1:
-                data_i_in.set(next(stimulus_i))
-                data_q_in.set(next(stimulus_q))
+                data_in.set(next(stimulus))
                 input_value += 1
 
             if stb_out.get():
-                print(data_i_out.get(), data_q_out.get())
-                sample_i = data_i_out.get()
-                sample_q = data_q_out.get()
-                if sample_i is not None:
-                    output_i.append(sample_i)
-                    output_q.append(sample_q)
+                print(data_i_out.get())
+                sample = data_out.get()
+                if sample is not None:
+                    output.append(sample)
 
             clk.tick()
             stb_in.set(int(j==taps+1))
 
-    plt.plot(output_i)
-    plt.plot(output_q)
+    plt.plot(output)
     plt.show()
 
-    output_i = np.array(output_i[500:])
-    output_q = np.array(output_q[500:])
+    output = np.array(output[500:])
     stimulus = np.array(stimulus[500:])
-    stimulus = stimulus[:len(output_i)]
+    stimulus = stimulus[:len(output)]
 
     plt.plot(
         np.linspace(-6, 6, len(response_1)), 
@@ -162,7 +143,7 @@ def test_filter(stimulus):
     )
     plt.plot(
         np.linspace(-6, 6, len(response_1)), 
-        20*np.log10(abs(np.fft.fftshift(np.fft.fft(output_i + 1.0j*output_q))))
+        20*np.log10(abs(np.fft.fftshift(np.fft.fft(output))))
     )
     plt.show()
 
@@ -180,22 +161,6 @@ if __name__ == "__main__":
         )
         test_filter(stimulus)
 
-
-    if "gen" in sys.argv:
-
-        data_i_out = data_i_out.subtype.output("data_i_out", data_i_out)
-        data_q_out = data_q_out.subtype.output("data_q_out", data_q_out)
-        stb_out = stb_out.subtype.output("stb_out", stb_out)
-
-        netlist = Netlist(
-            "filter",
-            [clk], 
-            [data_i_in, data_q_in, stb_in],
-            [data_i_out, data_q_out, stb_out],
-        )
-        f = open("filter.v", "w")
-        f.write(netlist.generate())
-
     if "plot" in sys.argv:
-        plot_kernel(511, 18)
+        plot_kernel(255, 18)
 

@@ -137,6 +137,17 @@ void lcd_print_udecimal(unsigned x, unsigned digits)
 
 }
 
+void lcd_print_sdecimal(unsigned x, unsigned digits)
+{
+    if (x < 0){
+	    lcd_write('-');
+	    lcd_print_udecimal(-x, digits);
+    } else {
+	    lcd_write('+');
+	    lcd_print_udecimal(x, digits);
+    }
+}
+
 void lcd_print_decimal(unsigned x, unsigned digits, unsigned decimals){
     unsigned significance[3] = {10, 100, 1000};
     lcd_print_udecimal(x/significance[decimals-1], digits);

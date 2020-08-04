@@ -10,6 +10,7 @@ void store_settings(i2c *bus, unsigned page){
     buffer[7] = settings.min_frequency;
     buffer[8] = settings.mic_gain;
     buffer[9] = settings.cw_speed;
+    buffer[10] = settings.pps_count;
    
     //program to 0 to indicate that data has been stored
     buffer[15] = 0;
@@ -37,6 +38,7 @@ void load_settings(i2c *bus, unsigned page){
     if(page==0){
         settings.volume = buffer[5];
         settings.cw_speed = buffer[9];
+        settings.pps_count = buffer[10];
     }
 }
 
@@ -54,6 +56,7 @@ void factory_reset(i2c *bus){
     buffer[7] = 100;
     buffer[8] = 0;
     buffer[9] = 12;
+    buffer[10] = 150000000;
 
     settings.frequency = 1215000;
     settings.mode      = 0; //AM
@@ -65,6 +68,7 @@ void factory_reset(i2c *bus){
     settings.min_frequency = 100;
     settings.mic_gain = 0;
     settings.cw_speed = 12;
+    settings.pps_count = 150000000;
     buffer[15] = 0;
     eeprom_page_write(bus, 0, buffer);
 

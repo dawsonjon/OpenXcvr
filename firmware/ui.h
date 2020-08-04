@@ -328,7 +328,8 @@ int do_ui(){
     //top level menu
     char unsigned buttons;
     unsigned setting = 0;
-    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#CW speed#factory reset#", 10, &setting)) return 1;
+    unsigned pps_count, ppm;
+    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#CW speed#calibrate#factory reset#", 11, &setting)) return 1;
 
     switch(setting){
 	case 0 : get_frequency();
@@ -381,7 +382,31 @@ int do_ui(){
 		    WAIT_100MS
 		}
 
-	case 10 : 
+	case 10 :
+		while(1){
+                    LCD_CLEAR()
+                    lcd_print("frequency error");
+                    LCD_LINE2()
+                    pps_count = fgetc(pps_count_in);
+		    if(140000000 < pps_count < 160000000){
+			    ppm = pps_count/150;
+			    lcd_print_sdecimal(ppm-1000000, 1);
+			    lcd_print(" ppm");
+			    if(get_button(1)){
+				    settings.pps_count = pps_count;
+				    return 1;
+			    }
+		    } else {
+			    if(get_button(1)){
+				    return 1;
+			    }
+			    lcd_write('X');
+		    }
+                    if(get_button(2)) return 1;
+		    WAIT_100MS
+		}
+
+	case 11 : 
 		get_enum("confirm", "No#Yes#", 2, &setting);
 		if(setting) factory_reset(&bus);
 		return 1;

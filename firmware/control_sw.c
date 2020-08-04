@@ -19,7 +19,6 @@ unsigned i2c_out = output("i2c_out");
 
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
-#define FREQUENCY_CALIBRATION 4294860440ul
 
 typedef struct{
     unsigned volume;
@@ -37,6 +36,7 @@ typedef struct{
     unsigned step;
     unsigned mic_gain;
     unsigned cw_speed;
+    unsigned pps_count;
 } struct_settings;
 struct_settings settings;
 
@@ -54,8 +54,8 @@ i2c bus;
 unsigned convert_to_steps(unsigned x){
     unsigned long long y = x * FREQUENCY_STEP_MULTIPLIER;
     y >>= 32;
-    y *= FREQUENCY_CALIBRATION;
-    y >>= 32;
+    y *= 150000000;
+    y /= settings.pps_count;
     return y;
 }
 

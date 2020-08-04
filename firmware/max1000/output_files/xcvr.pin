@@ -172,7 +172,7 @@ sda                          : H10       : bidir  : 3.3-V LVTTL       :         
 VCCIO5                       : H11       : power  :                   : 3.3V    : 5         :                
 GND                          : H12       : gnd    :                   :         :           :                
 lo_i                         : H13       : output : 3.3-V LVTTL       :         : 5         : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : J1        :        :                   :         : 2         :                
+pps                          : J1        : input  : 3.3-V LVTTL       :         : 2         : Y              
 speaker                      : J2        : output : 3.3-V LVTTL       :         : 2         : Y              
 VCCIO2                       : J3        : power  :                   : 3.3V    : 2         :                
 GND                          : J4        : gnd    :                   :         :           :                

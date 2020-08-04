@@ -1,10 +1,12 @@
 module max1000 (clk_in, reset_in, leds, rf, lo_i, lo_q, speaker, rs232_tx, 
 rs232_cts, rs232_rx, rs232_rtr, bclk_in, lrclk_in, dout_in, sclk_out,  
-band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_pu);
+band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_pu,
+pps);
 
   input clk_in;
   input reset_in;
   input rs232_rx;
+  input pps;
   output rs232_cts;
   input bclk_in;
   input lrclk_in;
@@ -329,7 +331,7 @@ band, tx_enable, lcd_data, lcd_e, lcd_rs, quad_a, quad_b, sda, scl, sda_pu, scl_
   .cpu_clk(clk_50),
   
   //GPS 1pps counter input
-  .pps_in(0),
+  .pps_in(pps),
   
   //Transceiver Control
   .control_in(control),
