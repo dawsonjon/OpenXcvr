@@ -388,19 +388,14 @@ int do_ui(){
                     lcd_print("frequency error");
                     LCD_LINE2()
                     pps_count = fgetc(pps_count_in);
-		    if(140000000 < pps_count < 160000000){
-			    ppm = pps_count/150;
-			    lcd_print_sdecimal(ppm-1000000, 1);
-			    lcd_print(" ppm");
-			    if(get_button(1)){
-				    settings.pps_count = pps_count;
-				    return 1;
-			    }
-		    } else {
-			    if(get_button(1)){
-				    return 1;
-			    }
-			    lcd_write('X');
+		    //if gps reading is out of range default to exact clock frequency
+		    if(140000000 > pps_count || pps_count > 160000000) pps_count = 150000000;
+	            ppm = pps_count/150;
+		    lcd_print_sdecimal(ppm-1000000, 1);
+		    lcd_print(" ppm");
+		    if(get_button(1)){
+	        	    settings.pps_count = pps_count;
+			    return 1;
 		    }
                     if(get_button(2)) return 1;
 		    WAIT_100MS

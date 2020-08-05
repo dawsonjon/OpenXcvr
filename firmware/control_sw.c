@@ -55,7 +55,7 @@ unsigned convert_to_steps(unsigned x){
     unsigned long long y = x * FREQUENCY_STEP_MULTIPLIER;
     y >>= 32;
     y *= 150000000;
-    y /= settings.pps_count;
+    y = divide(y, settings.pps_count);
     return y;
 }
 

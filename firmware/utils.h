@@ -26,4 +26,14 @@ unsigned clamp(unsigned x, unsigned min, unsigned max){
     return x;
 }
 
+unsigned long long divide(unsigned long long x, unsigned long long y){
+    unsigned long long guess = 0x0000000000000000ul;
+    unsigned long long p = 0x8000000000000000ul;
+    while(p){
+	    if((guess+p)*y <= x) guess += p;
+	    p>>=1;
+    }
+    return guess;
+}
+
 #endif

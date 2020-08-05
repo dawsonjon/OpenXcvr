@@ -159,7 +159,9 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     #          +-----------+ +---------+
 
 
-    #compress microphone dynamic range
+    #Microphone gain
+    #===============
+    #microphone gain is user programmable
     tx_bits = tx_audio.subtype.bits
     gain = Signed(5).constant(0)+settings.mic_gain
     tx_audio = tx_audio.resize(tx_bits+16) << gain
@@ -170,7 +172,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
 
     #audio filter
     #============
-    #tx_audio, tx_audio_stb = audio_filter(clk, tx_audio, tx_audio_stb)
+    tx_audio, tx_audio_stb = audio_filter(clk, tx_audio, tx_audio_stb)
 
     #modulator
     #=========
