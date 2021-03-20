@@ -69,7 +69,8 @@ class Xcvr:
         assert len(data) == 64
         assert location >= 1 <= 499
         self.port.write("S")
-        self.port.write(chr(location))
+        self.port.write(chr(location>>8))
+        self.port.write(chr(location&0xff))
         self.port.write(data)
         print self.port.read(1)
 

@@ -174,28 +174,25 @@ void main(){
     
     //initialise peripherals
     lcdInit();
-
     i2c_init(&bus, i2c_in, i2c_out);
     load_settings(&bus, 0);//page 0 contains power up settings
     apply_settings();
     update_lcd();
 
     while(1){
-
-
-        /*
+  
         if(ready(stdin)){ 
             cmd = getc();
             switch(cmd){
-                case 'f': settings.frequency   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'm': settings.mode        = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'b': settings.band        = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 't': settings.tx          = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'T': settings.test_signal = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'v': settings.volume      = scan_udecimal(); apply_settings(); update_lcd(); break;
-                case 'q': settings.squelch     = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'f': settings.frequency   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'm': settings.mode        = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'b': settings.band        = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 't': settings.tx          = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'T': settings.test_signal = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'v': settings.volume      = scan_udecimal(); apply_settings(); update_lcd(); break;
+                //case 'q': settings.squelch     = scan_udecimal(); apply_settings(); update_lcd(); break;
                 //case 'h':
                 //print help
                     //euts("fxxxxxxxx: frequency\n");
@@ -217,46 +214,48 @@ void main(){
                     //puts("\n");
                     //break;
 
-                case 'x':
-                    pps_count = fgetc(pps_count_in);
-                    print_uhex(pps_count);
-                    puts("\n");
-                    break;
+                //case 'x':
+                    //pps_count = fgetc(pps_count_in);
+                    //print_uhex(pps_count);
+                    //puts("\n");
+                    //break;
 
-                case 'a':
-                    for(i=0; i<10; i++){
-                        capture[i] = fgetc(adc_in);
-                    }
-                    for(i=0; i<10; i++){
-                        print_uhex(capture[i]);
-                        puts("\n");
-                    }
-                    break;
+                //case 'a':
+                    //for(i=0; i<10; i++){
+                        //capture[i] = fgetc(adc_in);
+                    //}
+                    //for(i=0; i<10; i++){
+                        //print_uhex(capture[i]);
+                        //puts("\n");
+                    //}
+                    //break;
 
-                case 'p':
+                //case 'p':
                 //print rx magnitude (post filter)
-                    power = fgetc(power_in);
-                    print_uhex(power);
-                    puts("\n");
-                    break;
+                    //power = fgetc(power_in);
+                    //print_uhex(power);
+                    //puts("\n");
+                    //break;
 
-                case 's':
+                //case 's':
                 //read smeter
-                    puts(smeter[read_smeter()]);
-                    puts("\n");
-                    break;
+                    //puts(smeter[read_smeter()]);
+                    //puts("\n");
+                    //break;
 
-                case 'c':
-                    for(i=0;i<4000;i++){
-                        temp = fgetc(capture_in);
-                        putc(temp & 0xff);
-                        putc(temp >> 8  & 0xff);
-                        putc(temp >> 16 & 0xff);
-                        putc(temp >> 24 & 0xff);
-                    }
-                    break;
+                //case 'c':
+                    //for(i=0;i<4000;i++){
+                        //temp = fgetc(capture_in);
+                        //putc(temp & 0xff);
+                        //putc(temp >> 8  & 0xff);
+                        //putc(temp >> 16 & 0xff);
+                        //putc(temp >> 24 & 0xff);
+                    //}
+                    //break;
                 case 'S':
                     page = getc();
+                    page <<= 8;
+                    page |= getc();
                     for(i=0;i<16;i++){
                         temp = getc();
                         temp |= getc() << 8;
@@ -267,30 +266,30 @@ void main(){
                     eeprom_page_write(&bus, page, capture);
                     putc('k');//send acknowledgement
                     break;
-                case 'O':
-                    for(i=0;i<1000;i++){
-                        audio =  fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio += fgetc(audio_in);
-                        audio >>= 4;
-                        putc(audio);
-                        putc(audio>>8);
-                    }
-                    break;
-                case 'I':
-                    for(i=0;i<1000;i++){
-                        audio = getc();
-                        fputc(audio, audio_out);
-                    }
-                    break;
+                //case 'O':
+                    //for(i=0;i<1000;i++){
+                        //audio =  fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio += fgetc(audio_in);
+                        //audio >>= 4;
+                        //putc(audio);
+                        //putc(audio>>8);
+                    //}
+                    //break;
+                //case 'I':
+                    //for(i=0;i<1000;i++){
+                        //audio = getc();
+                        //fputc(audio, audio_out);
+                    //}
+                    //break;
             }
        }
-    */
+   
 
        
        if(timer_low() - wake_time > 2000000){ 
-           wake_time = timer_low();
+            wake_time = timer_low();
             settings.mute = read_smeter() < settings.squelch;
 
             //check transmit button
@@ -303,7 +302,13 @@ void main(){
             //don't store this in EEPROM to avoid wear
             position_change = get_position_change();
             if(position_change){
-               settings.frequency += position_change * step_sizes[settings.step];
+               if(check_button(4)){
+                 settings.frequency += position_change * step_sizes[settings.step] * 10;
+               } else if(check_button(8)){
+                 settings.frequency += position_change * step_sizes[settings.step] / 10;
+               } else {
+                 settings.frequency += position_change * step_sizes[settings.step];
+               }
                if (settings.frequency > settings.max_frequency) settings.frequency = settings.min_frequency;
                if ((int)settings.frequency < (int)settings.min_frequency) settings.frequency = settings.max_frequency;
                apply_settings();
