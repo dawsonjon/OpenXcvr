@@ -20,10 +20,12 @@ int get_position_change(){
     position = new_position;
     return change;
 }
-void encoder_control(int *value, int min, int max){
-	*value += get_position_change();
+int encoder_control(int *value, int min, int max){
+	int position_change = get_position_change();
+	*value += position_change;
 	if(*value > max) *value = min;
 	if(*value < min) *value = max;
+	return position_change;
 }
 unsigned get_button(unsigned button){
 	if(~fgetc(push_button_in) & button){
@@ -104,12 +106,16 @@ int load_memory(){
     //store current settings
     store_settings(&bus, 0);
 
-    while(1){
-	encoder_control(&page, 1, 499);
+    //temporarily load setting
+    load_settings(&bus, page);
+    apply_settings();
 
-	//temporarily load settings
-	load_settings(&bus, page);
-	apply_settings();
+    while(1){
+	if(encoder_control(&page, 1, 499)){
+		//temporarily load setting
+		load_settings(&bus, page);
+		apply_settings();
+	}
 
 	//read the page into memory
 	eeprom_page_read(&bus, page, buffer);
@@ -144,6 +150,8 @@ int load_memory(){
 		load_settings(&bus, 0);
 		return 0;
 	}
+
+	WAIT_100MS
 
     }
 }

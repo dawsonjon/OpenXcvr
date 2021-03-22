@@ -65,10 +65,10 @@ int read_smeter(){
     unsigned power = to_dB(fgetc(power_in));
 
     //ADC has 1.5Vpk = 1.06Vrms = 0.0225W into 50ohm = 22.5mW = 13.5dBm
-    //Receiver has a gain of 1+(2*2k2/150) = 30.33.. = 29.6dB
-    //so full scale pk magnitude = 13.5 - 29.6 = -16.1dBm at input connector
+    //Receiver has a gain of (220/50)*(3300/100) = 145.2 = 43dB
+    //so full scale pk magnitude = 13.5 - 43 = -29.5dBm at input connector
 
-    int power_dbm = -16-(102-power);
+    int power_dbm = -29-(102-power);
     int s_scale;
 
     if(power_dbm < -63){
