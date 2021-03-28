@@ -8,7 +8,7 @@ from scipy import signal
 import sys
 
 def make_kernel(taps, kernel_bits):
-    kernel = signal.firwin(taps, 6.0/100, window="blackman")
+    kernel = signal.firwin(taps, 6.0/50, window="blackman")
     kernel = np.round(kernel * (2.0**(kernel_bits-1.0)))
     return kernel
 
@@ -27,7 +27,7 @@ def plot_kernel(taps, kernel_bits):
     plt.xlabel("Frequency (kHz)")
     plt.ylabel("Gain (dB)")
     plt.plot(
-            np.linspace(-50.0, 50.0, len(response_0)), 
+            np.linspace(-25.0, 25.0, len(response_0)), 
             response_0
     )
     plt.show()

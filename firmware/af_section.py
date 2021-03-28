@@ -168,7 +168,7 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     tx_audio = tx_audio.subtype.register(clk, d=tx_audio)
     tx_audio_stb = tx_audio_stb.subtype.register(clk, d=tx_audio_stb)
     tx_audio, tx_audio_stb  = clamp(clk, tx_audio, tx_audio_stb, tx_bits)
-    #tx_audio, mic_compression(clk, tx_audio, tx_audio_stb)
+    tx_audio, mic_compression(clk, tx_audio, tx_audio_stb)
 
     #audio filter
     #============
