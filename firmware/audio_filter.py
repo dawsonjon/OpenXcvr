@@ -8,7 +8,7 @@ from scipy import signal
 import sys
 
 def make_kernel(taps, kernel_bits):
-    kernel = signal.firwin(taps, 6.0/50, window="blackman")
+    kernel = signal.firwin(taps, [0.6/50, 6.0/50], window="blackman", pass_zero=False)
     kernel = np.round(kernel * (2.0**(kernel_bits-1.0)))
     return kernel
 
