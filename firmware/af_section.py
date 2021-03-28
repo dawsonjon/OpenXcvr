@@ -57,12 +57,12 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     # MODE      Fs kHz  Filter 
     #                   Bandwidth
     # ====      ======  ==========
-    # AM        24.4      Fs/4           ~+/-3
-    # NFM       39.0      Fs/4           ~+/-5
-    # FM        65.2      Fs/4           ~+/-8
-    # USB       24.4      Fs/8           ~+/-1.5
-    # LSB       24.4      Fs/8           ~+/-1.5
-    # CW        24.4      Fs/80          ~+/-0.15 (300Hz)
+    # AM        48.8      Fs*0.15        ~7kHz
+    # NFM       97.7      Fs*0.09        ~9Khz
+    # FM        97.7      Fs*0.15        ~15kHz
+    # USB       48.8      Fs*0.06        ~3kHz  
+    # LSB       48.8      Fs*0.06        ~3kHz  
+    # CW        32.5      Fs*0.01        ~300Hz
     # 
     # In all cases symmetrical filters are used. This means that the real and
     # imaginary parts of the filter kernel are the same, reducing filter

@@ -1,5 +1,6 @@
 from baremetal import *
 from settings import *
+from decimate import decimate
 
 from math import log, pi, ceil
 from matplotlib import pyplot as plt
@@ -19,9 +20,9 @@ def frequency_response(kernel, kernel_bits):
     return response
 
 def plot_kernel(taps, kernel_bits):
-    response_0 = frequency_response(make_kernel(taps, kernel_bits, 0.0935), kernel_bits)  #Narrow
-    response_1 = frequency_response(make_kernel(taps, kernel_bits, 0.125), kernel_bits)   #Medium
-    response_2 = frequency_response(make_kernel(taps, kernel_bits, 0.15625), kernel_bits) #Wide
+    response_0 = frequency_response(make_kernel(taps, kernel_bits, 0.09), kernel_bits)  #Narrow
+    response_1 = frequency_response(make_kernel(taps, kernel_bits, 0.15), kernel_bits)   #Medium
+    response_2 = frequency_response(make_kernel(taps, kernel_bits, 0.0625), kernel_bits) #Wide
     response_3 = frequency_response(make_kernel(taps, kernel_bits, 0.01), kernel_bits)    #CW
 
     plt.grid(True)
@@ -63,10 +64,10 @@ def filter(clk, data_i, data_q, stb, settings):
     taps = 127 #chose a power of 2 - 1
     kernel_type = Signed(settings.filter_kernel_bits)
     kernel = np.concatenate([
-        make_kernel(taps, settings.filter_kernel_bits, 0.09375), [0], #Narrow
-        make_kernel(taps, settings.filter_kernel_bits, 0.125),   [0], #Normal
-        make_kernel(taps, settings.filter_kernel_bits, 0.05625), [0], #Wide
-        make_kernel(taps, settings.filter_kernel_bits, 0.001),   [0]  #CW
+        make_kernel(taps, settings.filter_kernel_bits, 0.1),     [0], #N-FM
+        make_kernel(taps, settings.filter_kernel_bits, 0.15),    [0], #FM, AM
+        make_kernel(taps, settings.filter_kernel_bits, 0.0625),    [0], #SSB
+        make_kernel(taps, settings.filter_kernel_bits, 0.01),   [0]  #CW
     ])
 
     #generate addresses
@@ -90,7 +91,7 @@ def filter(clk, data_i, data_q, stb, settings):
     #read_data_from_RAM
     data_i = buf_i.read(address)
     data_q = buf_q.read(address)
-    filter_select = Unsigned(2).select(settings.mode, 1, 0, 2, 1, 1, 3)#AM, FM, FM, LSB, USB, CW
+    filter_select = Unsigned(2).select(settings.mode, 1, 0, 1, 2, 2, 3)#AM, FM, FM, LSB, USB, CW
     kernel = kernel_type.rom(filter_select.cat(count), *kernel)
 
     data_i = data_i.subtype.register(clk, d=data_i)

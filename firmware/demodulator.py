@@ -1,5 +1,6 @@
 from baremetal import *
 from cordic import rectangular_to_polar
+from decimate import decimate
 import numpy as np
 
 def demodulator(clk, i, q, stb, settings):
@@ -15,12 +16,13 @@ def demodulator(clk, i, q, stb, settings):
     am_fm_stb = Boolean().register(clk, d=magnitude_phase_stb, init=0)
 
     #Add/Subtract Fs/4 ~1.5kHz
-    quadrant, last = counter(clk, 0, 3, 1, en=stb)
-    usb     = i.subtype.select(quadrant, q, i, -q, -i)
-    usb     = i.subtype.register(clk, d=usb, en=stb)
-    lsb     = i.subtype.select(quadrant, q, -i, -q, i)
-    lsb     = i.subtype.register(clk, d=lsb, en=stb)
-    ssb_stb = Boolean().register(clk, d=stb, init=0)
+    ssb_i, ssb_q, ssb_stb = decimate(clk, i, q, stb, 2)
+    quadrant, last = counter(clk, 0, 3, 1, en=ssb_stb)
+    usb     = i.subtype.select(quadrant, ssb_q, ssb_i, -ssb_q, -ssb_i)
+    usb     = i.subtype.register(clk, d=usb, en=ssb_stb)
+    lsb     = i.subtype.select(quadrant, ssb_q, -ssb_i, -ssb_q, ssb_i)
+    lsb     = i.subtype.register(clk, d=lsb, en=ssb_stb)
+    ssb_stb = Boolean().register(clk, d=ssb_stb, init=0)
 
     #CW demodulator (side tone)
     #Add Fs/8 ~ 750Hz to the frequency

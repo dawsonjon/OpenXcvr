@@ -131,8 +131,8 @@ void apply_settings (){
     rx_frequency_correction[0] = -12207;     //AM    2   48828    -12207
     rx_frequency_correction[1] = -24414;     //NFM   1   97656    -24414
     rx_frequency_correction[2] = -24414;     //FM    1   97656    -24414
-    rx_frequency_correction[4] = -4578;      //LSB   4   24414    -4578
-    rx_frequency_correction[3] = -7629;      //USB   4   24414    -7629
+    rx_frequency_correction[4] = -10681;     //LSB   4   24414    -10681
+    rx_frequency_correction[3] = -13732;     //USB   4   24414    -13732
     rx_frequency_correction[5] = -8138;      //CW    3   32552    -8138
 
     if(settings.tx)         control |= 0x00000008u;

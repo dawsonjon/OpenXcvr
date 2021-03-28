@@ -141,11 +141,11 @@ def generate():
     #  AM    2     48828
     #  NFM   1     97656
     #  FM    1     97656
-    #  LSB   4     24414
-    #  USB   4     24414
+    #  LSB   2     48828
+    #  USB   2     48828
     #  CW    3     32552
 
-    clock_divide = Unsigned(3).select(settings.mode, 2, 1, 1, 4, 4, 3)
+    clock_divide = Unsigned(3).select(settings.mode, 2, 1, 1, 2, 2, 3)
     rx_i, rx_q, iq_stb, sclk = pcm1802(cpu_clk, bclk, lrclk, dout, clock_divide)
 
     # Implement transceiver
