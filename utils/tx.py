@@ -14,7 +14,7 @@ from readchar import readkey
 
 xcvr = Xcvr("/dev/ttyUSB0")
 
-xcvr.set_frequency(29.6e6)
+xcvr.set_frequency(7.215e6)
 xcvr.set_mode(1)
 xcvr.set_USB_audio(1)
 xcvr.set_TX(1)

@@ -1,6 +1,9 @@
 #include "lcd.h"
 #include "adc.h"
 #include "utils.h"
+unsigned check_button(unsigned button);
+unsigned get_button(unsigned button);
+#include "cat.h"
 
 #define WAIT_10MS wait_clocks(500000);
 #define WAIT_100MS wait_clocks(5000000);
@@ -169,7 +172,7 @@ int get_frequency(){
     unsigned frequency;
 
     //convert to binary representation
-    frequency = settings.frequency;
+    frequency = settings[idx_frequency];
     digit_val = 10000000;
     for(i=0; i<8; i++){
         digits[i] = frequency / digit_val;
@@ -217,9 +220,9 @@ int get_frequency(){
 	        digit_val = 10000000;
 
 		//convert back to a binary representation
-		settings.frequency = 0;
+		settings[idx_frequency] = 0;
 		for(i=0; i<8; i++){
-	            settings.frequency += (digits[i] * digit_val);
+	            settings[idx_frequency] += (digits[i] * digit_val);
 		    digit_val /= 10;
 		}
 		return 1;
@@ -270,7 +273,7 @@ void battery_voltage(){
 
 void mic_level(){
     int raw, amplitude, max = 0, min=4095, level;
-    int gain=settings.mic_gain, i;
+    int gain=settings[idx_mic_gain], i;
 
     LCD_CLEAR()
     lcd_print("mic level");
@@ -314,7 +317,7 @@ void mic_level(){
 		}
 	}
 	if(get_button(3)){
-		settings.mic_gain=gain;
+		settings[idx_mic_gain]=gain;
 		return;
 	}
 	WAIT_100MS
@@ -337,13 +340,13 @@ int do_ui(){
     char unsigned buttons;
     unsigned setting = 0;
     unsigned pps_count, ppm;
-    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#CW speed#calibrate#factory reset#", 11, &setting)) return 1;
+    if(!get_enum("menu:", "frequency#volume#load memory#mode#AGC#squelch#step#check battery#mic level#CW speed#calibrate#cat#factory reset#", 12, &setting)) return 1;
 
     switch(setting){
 	case 0 : get_frequency();
 		 return 1;
 
-	case 1 : get_digit("volume", 9, &settings.volume);
+	case 1 : get_digit("volume", 9, &settings[idx_volume]);
 		 return 1;
 
 	case 2 : 
@@ -351,24 +354,24 @@ int do_ui(){
 		return 1;
 
 	case 3 : 
-		get_enum("mode", MODES, 5, &settings.mode);
+		get_enum("mode", MODES, 5, &settings[idx_mode]);
 		return 1;
 
 	case 4 :
 		//Select AGC Speed
-		get_enum("AGC", "fast#normal#slow#very slow#", 3, &settings.agc_speed);
+		get_enum("AGC", "fast#normal#slow#very slow#", 3, &settings[idx_agc_speed]);
 		return 1;
 
 	case 5 :
 		//Select Squelch
-		get_enum("squelch", SMETER, 12, &settings.squelch);
+		get_enum("squelch", SMETER, 12, &settings[idx_squelch]);
 		return 1;
 
 	case 6 : 
-		get_enum("step", "10Hz#50Hz#100Hz#1kHz#5kHz#10kHz#12.5kHz#25kHz#50kHz#100kHz#", 9, &settings.step);
+		get_enum("step", "10Hz#50Hz#100Hz#1kHz#5kHz#10kHz#12.5kHz#25kHz#50kHz#100kHz#", 9, &settings[idx_step]);
 
 		//round frequency to the nearest step size
-		settings.frequency -= settings.frequency%step_sizes[settings.step];
+		settings[idx_frequency] -= settings[idx_frequency]%step_sizes[settings[idx_step]];
 		return 1;
 
 	case 7 :
@@ -384,8 +387,8 @@ int do_ui(){
                     LCD_CLEAR()
                     lcd_print("CW speed (wpm)");
                     LCD_LINE2()
-		    encoder_control(&settings.cw_speed, 1, 99);
-	            lcd_print_udecimal(settings.cw_speed, 2);
+		    encoder_control(&settings[idx_cw_speed], 1, 99);
+	            lcd_print_udecimal(settings[idx_cw_speed], 2);
                     if(get_button(3)) return 1;
 		    WAIT_100MS
 		}
@@ -402,7 +405,7 @@ int do_ui(){
 		    lcd_print_sdecimal(ppm-1000000, 1);
 		    lcd_print(" ppm");
 		    if(get_button(1)){
-	        	    settings.pps_count = pps_count;
+	        	    settings[idx_pps_count] = pps_count;
 			    return 1;
 		    }
                     if(get_button(2)) return 1;
@@ -410,6 +413,13 @@ int do_ui(){
 		}
 
 	case 11 : 
+	        LCD_CLEAR()
+	        lcd_print("cat mode");
+	        LCD_LINE2()
+		cat();
+		return 1;
+
+	case 12 : 
 		get_enum("confirm", "No#Yes#", 2, &setting);
 		if(setting) factory_reset(&bus);
 		return 1;

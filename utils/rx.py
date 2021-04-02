@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
-import serial
 import struct
 import numpy as np
 import math
@@ -10,17 +10,30 @@ from scipy import signal
 import matplotlib.pyplot as plt
 from openxcvr import Xcvr
 import sys
-from readchar import readkey
+import time
+
+frequency = 1.125e6
+mode = "AM"
+
+sample_rate_for_modes = {
+        "AM" : 12207,
+        "LSB" : 6103,
+        "USB" : 6103,
+        "FM" : 24414,
+        "NFM" : 24414,
+        "CW" : 8138,
+}
+
 
 xcvr = Xcvr("/dev/ttyUSB0")
-
-xcvr.set_frequency(1.215e6)
-xcvr.set_mode(1)
+xcvr.set_frequency(frequency)
+xcvr.set_mode(mode)
+xcvr.set_volume(1)
 xcvr.set_squelch(0)
-xcvr.set_gain(0)
-xcvr.set_band(4)
-xcvr.set_AGC(3)
+xcvr.enable_audio_output()
 
 while 1:
     data = xcvr.get_audio()
     sys.stdout.write(data)
+    #print(len(data), time.time()-t0, len(data)/(time.time()-t0), max(values), file=sys.stderr)
+

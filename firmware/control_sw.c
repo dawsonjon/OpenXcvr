@@ -20,25 +20,28 @@ unsigned i2c_out = output("i2c_out");
 //int(round((2**32)*(2**32)/300e6))
 #define FREQUENCY_STEP_MULTIPLIER 61489146912ul
 
-typedef struct{
-    unsigned volume;
-    unsigned frequency;
-    unsigned max_frequency;
-    unsigned min_frequency;
-    unsigned squelch;
-    unsigned mode;
-    unsigned band;
-    unsigned agc_speed;
-    unsigned test_signal;
-    unsigned USB_audio;
-    unsigned tx;
-    unsigned mute;
-    unsigned step;
-    unsigned mic_gain;
-    unsigned cw_speed;
-    unsigned pps_count;
-} struct_settings;
-struct_settings settings;
+
+//settings that get stored in eeprom
+#define idx_frequency 0
+#define idx_mode 1
+#define idx_agc_speed 2
+#define idx_step 3
+#define idx_squelch 4
+#define idx_volume 5
+#define idx_max_frequency 6
+#define idx_min_frequency 7
+#define idx_mic_gain 8
+#define idx_cw_speed 9
+#define idx_pps_count 10
+
+//settings that are transient
+#define idx_band 11
+#define idx_test_signal 12
+#define idx_USB_audio 13
+#define idx_tx 14
+#define idx_mute 15
+
+unsigned settings[16];
 
 void apply_settings();
 
@@ -55,7 +58,7 @@ unsigned convert_to_steps(unsigned x){
     unsigned long long y = x * FREQUENCY_STEP_MULTIPLIER;
     y >>= 32;
     y *= 150000000;
-    y = divide(y, settings.pps_count);
+    y = divide(y, settings[idx_pps_count]);
     return y;
 }
 
@@ -90,34 +93,34 @@ void apply_settings (){
     int rx_frequency_correction[6];
 
     //set volume
-    attenuation = attenuation_settings[settings.volume];
-    if(settings.mute) {
+    attenuation = attenuation_settings[settings[idx_volume]];
+    if(settings[idx_mute]) {
         attenuation = 17;
     }
     control |= (attenuation << 8);
 
     //set mode
-    settings.mode &= 0x7;
-    control |= settings.mode;
+    settings[idx_mode] &= 0x7;
+    control |= settings[idx_mode];
 
     //set agc speed
-    settings.agc_speed &= 0x3;
-    control |= (settings.agc_speed << 4);
+    settings[idx_agc_speed] &= 0x3;
+    control |= (settings[idx_agc_speed] << 4);
 
-    if(settings.test_signal) control |= 0x00000040u;
-    if(settings.USB_audio)  control |= 0x00100000u;
+    if(settings[idx_test_signal]) control |= 0x00000040u;
+    if(settings[idx_USB_audio])  control |= 0x00100000u;
 
     //force a band
-    if(settings.band & 0x8){
-        control |= ((settings.band & 0x7) << 21);
+    if(settings[idx_band] & 0x8){
+        control |= ((settings[idx_band] & 0x7) << 21);
     } else {
-        if(settings.frequency >= 2000000 && settings.frequency <4000000){
+        if(settings[idx_frequency] >= 2000000 && settings[idx_frequency] <4000000){
             control |= (3 << 21);
-        } else if(settings.frequency >= 4000000 && settings.frequency < 8000000){
+        } else if(settings[idx_frequency] >= 4000000 && settings[idx_frequency] < 8000000){
             control |= (2 << 21);
-        } else if(settings.frequency >= 8000000 && settings.frequency < 16000000){
+        } else if(settings[idx_frequency] >= 8000000 && settings[idx_frequency] < 16000000){
             control |= (1 << 21);
-        } else if(settings.frequency >= 16000000 && settings.frequency < 30000000){
+        } else if(settings[idx_frequency] >= 16000000 && settings[idx_frequency] < 30000000){
             control |= (0 << 21);
         } else {
             control |= (4 << 21);
@@ -125,8 +128,8 @@ void apply_settings (){
     }
 
     //set mic gain
-    settings.mic_gain &= 0xf;
-    control |= (settings.mic_gain << 24);
+    settings[idx_mic_gain] &= 0xf;
+    control |= (settings[idx_mic_gain] << 24);
                                             //Mode Clock Divider   NCO Offset
     rx_frequency_correction[0] = -12207;     //AM    2   48828    -12207
     rx_frequency_correction[1] = -24414;     //NFM   1   97656    -24414
@@ -135,13 +138,13 @@ void apply_settings (){
     rx_frequency_correction[3] = -13732;     //USB   4   24414    -13732
     rx_frequency_correction[5] = -8138;      //CW    3   32552    -8138
 
-    if(settings.tx)         control |= 0x00000008u;
-    if(settings.tx){
+    if(settings[idx_tx])         control |= 0x00000008u;
+    if(settings[idx_tx]){
         //TX is direct conversion
-        fputc(convert_to_steps(settings.frequency), frequency_out);
+        fputc(convert_to_steps(settings[idx_frequency]), frequency_out);
     } else {
         //Rx uses Fs/4 IF
-        fputc(convert_to_steps(settings.frequency+rx_frequency_correction[settings.mode]), frequency_out);
+        fputc(convert_to_steps(settings[idx_frequency]+rx_frequency_correction[settings[idx_mode]]), frequency_out);
     }
 
     fputc(control, control_out);
@@ -153,9 +156,9 @@ void update_lcd(){
     //update display status
     LCD_CLEAR()
     LCD_LINE1()
-    lcd_print_decimal(settings.frequency, 5, 3);
+    lcd_print_decimal(settings[idx_frequency], 5, 3);
     lcd_print("   ");
-    print_option(MODES, settings.mode);
+    print_option(MODES, settings[idx_mode]);
     LCD_LINE2()
     print_option(SMETER, read_smeter());
 }
@@ -166,10 +169,9 @@ void main(){
     stdin = debug_in;
     puts("FPGA transceiver v 0.01\n");
 
-    unsigned int cmd, power, i, page, pps_count, last_smeter=0;
+    unsigned int power, i, pps_count, last_smeter=0;
     unsigned wake_time = 0;
     int audio;
-    int capture[16], temp;
     int position_change=0;
     
     //initialise peripherals
@@ -181,116 +183,9 @@ void main(){
 
     while(1){
   
-        if(ready(stdin)){ 
-            cmd = getc();
-            switch(cmd){
-                //case 'f': settings.frequency   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'm': settings.mode        = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'b': settings.band        = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'A': settings.agc_speed   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 't': settings.tx          = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'U': settings.USB_audio   = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'T': settings.test_signal = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'v': settings.volume      = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'q': settings.squelch     = scan_udecimal(); apply_settings(); update_lcd(); break;
-                //case 'h':
-                //print help
-                    //euts("fxxxxxxxx: frequency\n");
-                    //puts("mx: mode 0=LSB, 1=AM, 2=FM, 3=NBFM, 4=USB\n");
-                    //puts("b: set band (decimal)\n");
-                    //puts("p: read power (hex)\n");
-                    //puts("s: read smeter\n");
-                    //puts("v: set volume (0-9)\n");
-                    //puts("q: set squelch (0-12)\n");
-                    //puts("t: TX (0, 1)\n");
-                    //puts("x: get GPS 1pps count\n");
-                    //puts("a: adc\n");
-                    //puts("A: AGC speed (0-3)\n");
-                    //puts("T: test signal, (0, 1)\n");
-                    //puts("O: get audio\n");
-                    //puts("I: put audio\n");
-                    //puts("U: set_usb_audio\n");
-                    //puts("S: memory store\n");
-                    //puts("\n");
-                    //break;
-
-                //case 'x':
-                    //pps_count = fgetc(pps_count_in);
-                    //print_uhex(pps_count);
-                    //puts("\n");
-                    //break;
-
-                //case 'a':
-                    //for(i=0; i<10; i++){
-                        //capture[i] = fgetc(adc_in);
-                    //}
-                    //for(i=0; i<10; i++){
-                        //print_uhex(capture[i]);
-                        //puts("\n");
-                    //}
-                    //break;
-
-                //case 'p':
-                //print rx magnitude (post filter)
-                    //power = fgetc(power_in);
-                    //print_uhex(power);
-                    //puts("\n");
-                    //break;
-
-                //case 's':
-                //read smeter
-                    //puts(smeter[read_smeter()]);
-                    //puts("\n");
-                    //break;
-
-                //case 'c':
-                    //for(i=0;i<4000;i++){
-                        //temp = fgetc(capture_in);
-                        //putc(temp & 0xff);
-                        //putc(temp >> 8  & 0xff);
-                        //putc(temp >> 16 & 0xff);
-                        //putc(temp >> 24 & 0xff);
-                    //}
-                    //break;
-                case 'S':
-                    page = getc();
-                    page <<= 8;
-                    page |= getc();
-                    for(i=0;i<16;i++){
-                        temp = getc();
-                        temp |= getc() << 8;
-                        temp |= getc() << 16;
-                        temp |= getc() << 24;
-                        capture[i] = temp;
-                    }
-                    eeprom_page_write(&bus, page, capture);
-                    putc('k');//send acknowledgement
-                    break;
-                //case 'O':
-                    //for(i=0;i<1000;i++){
-                        //audio =  fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio += fgetc(audio_in);
-                        //audio >>= 4;
-                        //putc(audio);
-                        //putc(audio>>8);
-                    //}
-                    //break;
-                //case 'I':
-                    //for(i=0;i<1000;i++){
-                        //audio = getc();
-                        //fputc(audio, audio_out);
-                    //}
-                    //break;
-            }
-       }
-   
-
-       
        if(timer_low() - wake_time > 2000000){ 
             wake_time = timer_low();
-            settings.mute = read_smeter() < settings.squelch;
+            settings[idx_mute] = read_smeter() < settings[idx_squelch];
 
             //check transmit button
             if(check_ptt()){
@@ -303,14 +198,14 @@ void main(){
             position_change = get_position_change();
             if(position_change){
                if(check_button(4)){
-                 settings.frequency += position_change * step_sizes[settings.step] * 10;
+                 settings[idx_frequency] += position_change * step_sizes[settings[idx_step]] * 10;
                } else if(check_button(8)){
-                 settings.frequency += position_change * step_sizes[settings.step] / 10;
+                 settings[idx_frequency] += position_change * step_sizes[settings[idx_step]] / 10;
                } else {
-                 settings.frequency += position_change * step_sizes[settings.step];
+                 settings[idx_frequency] += position_change * step_sizes[settings[idx_step]];
                }
-               if (settings.frequency > settings.max_frequency) settings.frequency = settings.min_frequency;
-               if ((int)settings.frequency < (int)settings.min_frequency) settings.frequency = settings.max_frequency;
+               if (settings[idx_frequency] > settings[idx_max_frequency]) settings[idx_frequency] = settings[idx_min_frequency];
+               if ((int)settings[idx_frequency] < (int)settings[idx_min_frequency]) settings[idx_frequency] = settings[idx_max_frequency];
                apply_settings();
                update_lcd();
             }

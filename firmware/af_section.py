@@ -43,8 +43,8 @@ def af_section(clk, rx_i, rx_q, rx_stb, tx_audio, tx_audio_stb, settings, debug=
     # |----------|----------|----------|----------|
     # -fs/2    -fs/4        DC        fs/4      fs/2
 
-    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
     rx_i, rx_q, rx_stb = downconverter(clk, rx_i, rx_q, rx_stb)
+    capture_i, capture_q, capture_stb = rx_i, rx_q, rx_stb
 
     # Filter
     # ======

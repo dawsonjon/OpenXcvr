@@ -1,76 +1,58 @@
 void store_settings(i2c *bus, unsigned page){
-    unsigned buffer[16];
-    buffer[0] = settings.frequency;
-    buffer[1] = settings.mode;
-    buffer[2] = settings.agc_speed;
-    buffer[3] = settings.step;
-    buffer[4] = settings.squelch;
-    buffer[5] = settings.volume;
-    buffer[6] = settings.max_frequency;
-    buffer[7] = settings.min_frequency;
-    buffer[8] = settings.mic_gain;
-    buffer[9] = settings.cw_speed;
-    buffer[10] = settings.pps_count;
-   
+    unsigned buffer[16], i;
+    
+    for(i=0; i<11; i++){
+        buffer[i] = settings[i];
+    }
+
     //program to 0 to indicate that data has been stored
     buffer[15] = 0;
     eeprom_page_write(bus, page, buffer);
 }
 
 void load_settings(i2c *bus, unsigned page){
-    unsigned buffer[16];
+    unsigned buffer[16], i;
     eeprom_page_read(bus, page, buffer);
-    int i;
 
-    settings.frequency = buffer[0];
-    settings.mode      = buffer[1];
-    settings.agc_speed = buffer[2];
-    settings.step      = buffer[3];
-    settings.squelch   = buffer[4];
-    settings.max_frequency = buffer[6];
-    settings.min_frequency = buffer[7];
-    settings.mic_gain = buffer[8];
-    settings.tx=0;
-    settings.mute=0;
-
-    //page 0 contains power up settings
-    //load things like volume which wouldn't normally be stored
-    if(page==0){
-        settings.volume = buffer[5];
-        settings.cw_speed = buffer[9];
-        settings.pps_count = buffer[10];
+    //copy settings from eeprom
+    for(i=0; i<11; i++){
+	    //These settings are retained between power ups, but not stored
+	    if(page){
+		    if(i==idx_volume)    continue;
+		    if(i==idx_cw_speed)  continue;
+		    if(i==idx_pps_count) continue;
+	    }
+	    settings[i] = buffer[i];
     }
+
+    settings[idx_band]=0;
+    settings[idx_test_signal]=0;
+    settings[idx_USB_audio]=0;
+    settings[idx_tx]=0;
+    settings[idx_mute]=0;
 }
 
 void factory_reset(i2c *bus){
     unsigned buffer[16], i;
 
     //factory default settings (page 0)
-    buffer[0] = 1215000;
-    buffer[1] = 0; //AM
-    buffer[2] = 2; //normal
-    buffer[3] = 3; //1kHz
-    buffer[4] = 0; //Off
-    buffer[5] = 5; //mid way
-    buffer[6] = 29999999;
-    buffer[7] = 100;
-    buffer[8] = 0;
-    buffer[9] = 12;
-    buffer[10] = 150000000;
-
-    settings.frequency = 1215000;
-    settings.mode      = 0; //AM
-    settings.agc_speed = 2; //normal
-    settings.step      = 3; //1kHz
-    settings.squelch   = 0; //Off
-    settings.volume    = 5; //mid way
-    settings.max_frequency = 29999999;
-    settings.min_frequency = 100;
-    settings.mic_gain = 0;
-    settings.cw_speed = 12;
-    settings.pps_count = 150000000;
-    buffer[15] = 0;
-    eeprom_page_write(bus, 0, buffer);
+    settings[idx_frequency] = 1215000;
+    settings[idx_mode]      = 0; //AM
+    settings[idx_agc_speed] = 2; //normal
+    settings[idx_step]      = 3; //1kHz
+    settings[idx_squelch]   = 0; //Off
+    settings[idx_volume]    = 5; //mid way
+    settings[idx_max_frequency] = 29999999;
+    settings[idx_min_frequency] = 100;
+    settings[idx_mic_gain] = 0;
+    settings[idx_cw_speed] = 12;
+    settings[idx_pps_count] = 150000000;
+    settings[idx_band]=0;
+    settings[idx_test_signal]=0;
+    settings[idx_USB_audio]=0;
+    settings[idx_tx]=0;
+    settings[idx_mute]=0;
+    store_settings(bus, 0);//page 0 contains power up settings
 
     //clear all memories (page 1-511)
     for(i=0; i<16; i++) buffer[i] = 0xffffffffu;

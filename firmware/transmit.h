@@ -14,7 +14,7 @@ void transmit(){
 
     //switch on the transmitter
     //need a check here that the transmit frequency is valid
-    settings.tx = 1;
+    settings[idx_tx] = 1;
     apply_settings();
     start_time = timer_low();
 
@@ -83,7 +83,7 @@ void transmit(){
     lcd_instruction(0x8b);
     lcd_write(' ');
 
-    settings.tx = 0;
+    settings[idx_tx] = 0;
     apply_settings();
 
 }

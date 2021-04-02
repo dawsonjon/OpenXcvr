@@ -165,7 +165,6 @@ def generate():
 
     clk = Clock("clk")
     speaker = audio_dac(cpu_clk, speaker, speaker_stb) 
-    #speaker = audio_dac(cpu_clk, mic.resize(18)<<6, mic_stb) 
     
     # 1pps counter
     ##############
