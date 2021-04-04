@@ -14,7 +14,7 @@ def audio_agc(clk, data, stb, audio_attenuation, agc_speed):
 
     #when squelch is active blank the input to the AGC, so that the
     #noise in FM mode doesn't turn down the gain
-    squelch_active = (audio_attenuation == 17)
+    squelch_active = (audio_attenuation == 18)
 
     #calculate magnitude and DC
     magnitude = measure_magnitude(clk, data, stb, agc_speed, reset=squelch_active)

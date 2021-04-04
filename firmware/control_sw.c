@@ -95,7 +95,7 @@ void apply_settings (){
     //set volume
     attenuation = attenuation_settings[settings[idx_volume]];
     if(settings[idx_mute]) {
-        attenuation = 17;
+        attenuation = 18; //use a special value to indicate mute due to squelch
     }
     control |= (attenuation << 8);
 

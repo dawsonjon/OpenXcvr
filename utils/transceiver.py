@@ -59,6 +59,7 @@ class Transceiver:
         xcvr.set_mode(mode)
         xcvr.set_squelch(squelch)
         xcvr.set_AGC(agc)
+        xcvr.set_volume(0)
         self.xcvr = xcvr
 
         # start a tcp server listening for cat commands
@@ -123,10 +124,6 @@ class Transceiver:
 
             # send a block
             data = convert_16to8(self.recorder.stdout.read(2048))
-
-            # temporary test tone
-            # data=np.sin(np.arange(1024)*2.0*np.pi/64)*127
-            # data=data.astype("int8")
 
             samples_sent += len(data)
             elapsed = time.time() - t0
