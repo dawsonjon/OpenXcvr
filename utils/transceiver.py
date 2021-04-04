@@ -27,6 +27,7 @@ sample_rate_for_modes = {
     "FM": 24414,
     "NFM": 24414,
     "CW": 8138,
+    "CWR": 8138,
 }
 
 
@@ -54,7 +55,7 @@ class Transceiver:
     def __init__(self, port, mode, frequency, squelch, agc, server_host, server_port):
 
         # create an xcvr instance to communicate with the hardware
-        xcvr = openxcvr.Xcvr("/dev/ttyUSB0")
+        xcvr = openxcvr.Xcvr(port)
         xcvr.set_frequency(frequency)
         xcvr.set_mode(mode)
         xcvr.set_squelch(squelch)

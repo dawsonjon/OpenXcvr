@@ -32,27 +32,28 @@ address_idx = {
     "mute": b"\x0f",
 }
 modes = {
-    "AM": b"\x00",
-    "NFM": b"\x01",
-    "FM": b"\x02",
-    "LSB": b"\x03",
-    "USB": b"\x04",
-    "CW": b"\x05",
-    "PKTLSB": b"\x03",
-    "PKTUSB": b"\x04",
+    "AM": 0,
+    "NFM": 1,
+    "FM": 2,
+    "LSB": 3,
+    "USB": 4,
+    "CW": 5,
+    "CWR": 5,
+    "PKTLSB": 3,
+    "PKTUSB": 4,
 }
-agc_speeds = {"FAST": b"\x00", "NORMAL": b"\x01", "SLOW": b"\x02", "VERY_SLOW": b"\x03"}
+agc_speeds = {"FAST": 0, "NORMAL": 1, "SLOW": 2, "VERY_SLOW": 3}
 steps = {
-    "10Hz": b"\x00",
-    "50Hz": b"\x01",
-    "100Hz": b"\x02",
-    "1kHz": b"\x03",
-    "5kHz": b"\x04",
-    "10kHz": b"\x05",
-    "12.5kHz": b"\x06",
-    "25kHz": b"\x07",
-    "50kHz": b"\x08",
-    "100kHz": b"\x09",
+    "10Hz": 0,
+    "50Hz": 1,
+    "100Hz": 2,
+    "1kHz": 3,
+    "5kHz": 4,
+    "10kHz": 5,
+    "12.5kHz": 6,
+    "25kHz": 7,
+    "50kHz": 8,
+    "100kHz": 9,
 }
 
 
@@ -79,16 +80,19 @@ class Xcvr:
 
     def reset_cat(self):
         logging.info("openxcvr: resetting cat interface")
+
+        #if we were previously in the middle of a block, finish it off
         self.port.write(b"\x00" * 4000)
-        # read out anything that might be left in the receive buffer.
-        self.port.read(5000)
+
+        # Read out anything that might be left in the receive buffer.
         # keep issuing a command until we get a positive acknowledgement
         # This might happen by chance, so look for a few positive acknowledgements in a row
         acks_seen = 0
-        for i in range(10000):  # give up after this many failed attempts
+        for i in range(100):  # give up after this many failed attempts
             self.port.write(checksum(b"s" + address_idx["tx"] + b"\x00\x00\x00\x00"))
-            acknowledgement = self.port.read(1)
-            if acknowledgement == b"K":
+            acknowledgement = self.port.read(3)
+            logging.debug("openxcvr: ack=%s", acknowledgement)
+            if acknowledgement == b"U\x01K":
                 acks_seen += 1
                 if acks_seen == 10:
                     return
@@ -97,6 +101,30 @@ class Xcvr:
         self.port.flushInput()
         self.port.flushOutput()
         raise BadCatResponse
+
+    def get_status_message(self):
+        header = self.port.read(1)
+        length = self.port.read(1)[0]
+        payload = self.port.read(length)
+        return payload
+
+    def get_acknowledgement(self):
+        if self.get_status_message() != b"K":
+            raise CommandFailed
+
+    def change_setting(self, setting, value):
+        value = int(value)
+        value_string = bytes(
+            [
+                value & 0xFF,
+                value >> 8 & 0xFF,
+                value >> 16 & 0xFF,
+                value >> 24 & 0xFF,
+            ]
+        )
+        self.port.write(checksum(b"s" + setting + value_string))
+        self.get_acknowledgement()
+
 
     def capture(self):
         self.port.write(b"c")
@@ -110,16 +138,14 @@ class Xcvr:
         self.port.write(b"O")
 
     def get_audio(self):
-        buf = self.port.read(2048)
-        return buf
+        buf = self.port.read(2049)
+        return buf[1:]
 
     def put_audio(self, data):
         self.port.write(b"I" + data)
 
     def wait_audio_in_ack(self):
-        returncode = self.port.read(1)
-        if returncode != b"K":
-            raise CommandFailed
+        self.get_acknowledgement()
 
     def store_memory(self, location, data):
         assert len(data) == 64
@@ -131,137 +157,47 @@ class Xcvr:
 
     def set_frequency(self, frequency):
         logging.info("openxcvr: setting cat frequency %s", frequency)
-        frequency = int(frequency)
-        frequency_string = bytes(
-            [
-                frequency & 0xFF,
-                frequency >> 8 & 0xFF,
-                frequency >> 16 & 0xFF,
-                frequency >> 24 & 0xFF,
-            ]
-        )
-        self.port.write(checksum(b"s" + address_idx["frequency"] + frequency_string))
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["frequency"], frequency)
 
     def set_min_frequency(self, frequency):
-        frequency = int(frequency)
-        frequency_string = bytes(
-            [
-                frequency & 0xFF,
-                frequency >> 8 & 0xFF,
-                frequency >> 16 & 0xFF,
-                frequency >> 24 & 0xFF,
-            ]
-        )
-        self.port.write(
-            checksum(b"s" + address_idx["min_frequency"] + frequency_string)
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["min_frequency"], frequency)
 
     def set_max_frequency(self, frequency):
-        frequency = int(frequency)
-        frequency_string = bytes(
-            [
-                frequency & 0xFF,
-                frequency >> 8 & 0xFF,
-                frequency >> 16 & 0xFF,
-                frequency >> 24 & 0xFF,
-            ]
-        )
-        self.port.write(
-            checksum(b"s" + address_idx["max_frequency"] + frequency_string)
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["max_frequency"], frequency)
 
     def set_squelch(self, squelch):
-        self.port.write(
-            checksum(b"s" + address_idx["squelch"] + bytes([squelch]) + b"\x00\x00\x00")
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["squelch"], squelch)
 
     def set_test_signal(self, state):
-        self.port.write(
-            checksum("s" + address_idx["test_signal"] + chr(state) + "\x00\x00\x00")
-        )
-        if self.port.read(1) != "K":
-            raise CommandFailed
+        self.change_setting(address_idx["test_signal"], state)
 
     def set_TX(self, state):
-        logging.info("openxcvr: setting cat TX %s", state)
-        self.port.write(
-            checksum(b"s" + address_idx["tx"] + bytes([state]) + b"\x00\x00\x00")
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["tx"], state)
 
     def set_mode(self, mode):
         logging.info("openxcvr: setting cat mode %s", mode)
-        self.port.write(
-            checksum(b"s" + address_idx["mode"] + modes[mode] + b"\x00\x00\x00")
-        )
-        returncode = self.port.read(1)
-        if returncode != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["mode"], modes[mode])
 
     def set_force_band(self, state):
-        self.port.write(
-            checksum("s" + address_idx["band"] + chr(state) + "\x00\x00\x00")
-        )
-        if self.port.read(1) != "K":
-            raise CommandFailed
+        self.change_setting(address_idx["band"], state)
 
     def set_AGC(self, state):
-        logging.info("openxcvr: setting cat AGC speed %s", state)
-        self.port.write(
-            checksum(
-                b"s"
-                + address_idx["agc_speed"]
-                + agc_speeds[state.upper()]
-                + b"\x00\x00\x00"
-            )
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["agc_speed"], agc_speeds[state.upper()])
 
     def set_step(self, state):
-        self.port.write(
-            checksum("s" + address_idx["step"] + chr(steps[state]) + "\x00\x00\x00")
-        )
-        if self.port.read(1) != "K":
-            raise CommandFailed
+        self.change_setting(address_idx["step"], steps[state])
 
     def set_volume(self, state):
-        self.port.write(
-            checksum(b"s" + address_idx["volume"] + bytes([state]) + b"\x00\x00\x00")
-        )
-        if self.port.read(1) != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["volume"], state)
 
     def set_mic_gain(self, state):
-        self.port.write(
-            checksum("s" + address_idx["mic_gain"] + chr(steps[state]) + "\x00\x00\x00")
-        )
-        if self.port.read(1) != "K":
-            raise CommandFailed
+        self.change_setting(address_idx["mic_gain"], state)
 
     def set_cw_speed(self, state):
-        self.port.write(
-            checksum("s" + address_idx["cw_speed"] + chr(state) + "\x00\x00\x00")
-        )
-        if self.port.read(1) != "K":
-            raise CommandFailed
+        self.change_setting(address_idx["cw_speed"], state)
 
     def set_USB_audio(self, state):
-        self.port.write(
-            checksum(b"s" + address_idx["USB_audio"] + bytes([state]) + b"\x00\x00\x00")
-        )
-        returncode = self.port.read(1)
-        if returncode != b"K":
-            raise CommandFailed
+        self.change_setting(address_idx["USB_audio"], state)
 
     # def get_ADC(self):
     # self.port.write("a\n")

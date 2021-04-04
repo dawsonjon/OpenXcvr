@@ -9,6 +9,15 @@ char sumbyte() {
 
 int checkbyte() return getc() == checksum;
 
+void send_status(int len, char *data){
+  int i;
+  putc(0x55);
+  putc(len);
+  for(i=0; i<len; i++){
+    putc(data[i]);
+  }
+}
+
 void cat() {
   char cmd;
   int page, temp, i;
@@ -33,12 +42,15 @@ void cat() {
       temp |= sumbyte() << 16;
       temp |= sumbyte() << 24;
       if (!checkbyte()) {
-	putc('X');
+	send_status(1, "X");
 	break;
       }
       settings[page] = temp;
       apply_settings();
+      putc(0x55);
+      putc(1);
       putc('K');
+      //send_status(1, "K");
       break;
 
     // get a setting
@@ -46,20 +58,22 @@ void cat() {
       // value from 0 to 15
       page = getc() & 0xf;
       temp = settings[page];
-      putc(temp & 0xff);
-      putc(temp >> 8 & 0xff);
-      putc(temp >> 16 & 0xff);
-      putc(temp >> 24 & 0xff);
+      buffer[0] = temp & 0xff;
+      buffer[1] = temp >> 8 & 0xff;
+      buffer[2] = temp >> 16 & 0xff;
+      buffer[3] = temp >> 24 & 0xff;
+      send_status(4, buffer);
       break;
 
     //capture raw ADC data
     case 'c':
 	for(i=0;i<2048;i++){
 	    temp = fgetc(capture_in);
-	    putc(temp & 0xff);
-	    putc(temp >> 8  & 0xff);
-	    putc(temp >> 16 & 0xff);
-	    putc(temp >> 24 & 0xff);
+	    buffer[0] = temp & 0xff;
+	    buffer[1] = temp >> 8 & 0xff;
+	    buffer[2] = temp >> 16 & 0xff;
+	    buffer[3] = temp >> 24 & 0xff;
+	    send_status(4, buffer);
 	}
 	break;
 
@@ -80,12 +94,7 @@ void cat() {
 
     // output audio
     case 'O':
-      for (i = 0; i < 1024; i++) {
-	temp = fgetc(audio_in);
-	temp >>= 2;//audio output has 18 bits, discard bottom 2 bits 
-	putc(temp);
-	putc(temp >> 8);
-      }
+      putc(0xAA);
       break;
 
     // input audio
@@ -97,7 +106,7 @@ void cat() {
 	sample_time = timer_low();
 	fputc(temp<<4, audio_out);
       }
-      putc('K');
+      send_status(1, "K");
       break;
 
     }

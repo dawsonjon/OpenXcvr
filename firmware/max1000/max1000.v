@@ -118,15 +118,15 @@ pps);
     wire capture_ack;
     wire capture_stb;
 	 
-	 wire [31:0] audio_out;
+	wire [31:0] audio_out;
     wire audio_out_ack;
     wire audio_out_stb;
 	 
-	 wire [31:0] power_bus;
+	wire [31:0] power_bus;
     wire power_ack;
     wire power_stb;
 	 
-	 wire [31:0] pps_count_bus;
+	wire [31:0] pps_count_bus;
     wire pps_count_ack;
     wire pps_count_stb;
 	 
@@ -164,7 +164,7 @@ pps);
         .output_debug_out_ack(debug_tx_ack),
         .output_debug_out(debug_tx),
 		  
-		  .input_i2c_in(i2c_in_bus),
+		.input_i2c_in(i2c_in_bus),
         .input_i2c_in_stb(i2c_in_stb),
         .input_i2c_in_ack(i2c_in_ack),
 
@@ -176,7 +176,7 @@ pps);
         .output_frequency_out_ack(frequency_ack),
         .output_frequency_out_stb(frequency_stb),
 		  
-		  .output_audio_out(audio_in),
+		.output_audio_out(audio_in),
         .output_audio_out_ack(audio_in_ack),
         .output_audio_out_stb(audio_in_stb),
 
@@ -184,36 +184,31 @@ pps);
         .output_control_out_ack(control_ack),
         .output_control_out_stb(control_stb),
 		  
-		  .output_lcd_out(lcd_bus),
+		.output_lcd_out(lcd_bus),
         .output_lcd_out_ack(lcd_ack),
         .output_lcd_out_stb(lcd_stb),
 		  
-		  .input_pb_in(pb_bus),
+		.input_pb_in(pb_bus),
         .input_pb_in_ack(pb_ack),
         .input_pb_in_stb(pb_stb),
 		  
-		  .input_capture_in(capture_bus),
+		.input_capture_in(capture_bus),
         .input_capture_in_ack(capture_ack),
         .input_capture_in_stb(capture_stb),
 		  
-		  .input_audio_in(audio_out),
-        .input_audio_in_ack(audio_out_ack),
-        .input_audio_in_stb(audio_out_stb),
-		  
-		  
-		  .input_power_in(power_bus),
+		.input_power_in(power_bus),
         .input_power_in_ack(power_ack),
         .input_power_in_stb(power_stb),
 		  
-		  .input_pps_count_in(pps_count_bus),
+		.input_pps_count_in(pps_count_bus),
         .input_pps_count_in_ack(pps_count_ack),
         .input_pps_count_in_stb(pps_count_stb),
 		  
-		  .input_adc_in(adc_bus),
+		.input_adc_in(adc_bus),
         .input_adc_in_ack(adc_ack),
         .input_adc_in_stb(adc_stb),
 		  
-		  .input_position_in(position_bus),
+		.input_position_in(position_bus),
         .input_position_in_ack(position_ack),
         .input_position_in_stb(position_stb)
 		  
@@ -259,6 +254,26 @@ pps);
 	 assign pps_count_stb = 1;
 	 assign lcd_ack = 1;
 	 assign position_stb = 1;
+  
+     wire [7:0] serial_out;
+     wire serial_out_stb;
+     wire serial_out_ack;
+
+     serial_mux  serial_mux_0 (
+        .clk(clk_50),
+    
+        .audio_in(audio_out[17:2]),
+        .audio_in_stb(audio_out_stb),
+        .audio_in_ack(audio_out_ack),
+
+        .serial_out(serial_out),
+        .serial_out_stb(serial_out_stb),
+        .serial_out_ack(serial_out_ack),
+
+        .serial_in(debug_tx[7:0]),
+        .serial_in_stb(debug_tx_stb),
+        .serial_in_ack(debug_tx_ack)
+    );
 
     serial_output #(
         .clock_frequency(50000000),
@@ -268,11 +283,11 @@ pps);
         .clk(clk_50),
         .rst(rst),
         .tx(rs232_tx),
-		  .cts(rs232_cts),
+		.cts(rs232_cts),
        
-        .in1(debug_tx[7:0]),
-        .in1_stb(debug_tx_stb),
-        .in1_ack(debug_tx_ack)
+        .in1(serial_out),
+        .in1_stb(serial_out_stb),
+        .in1_ack(serial_out_ack)
     );
 
     serial_input #(
