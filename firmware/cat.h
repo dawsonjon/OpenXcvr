@@ -13,7 +13,7 @@ void cat() {
   char cmd;
   int page, temp, i;
   unsigned buffer[16];
-  unsigned sample_time;
+  unsigned sample_time=0;
 
   //clear any data already in the buffer.
   while (ready(stdin)) {
@@ -93,10 +93,11 @@ void cat() {
       //play back at 50kHz sample rate
       for (i = 0; i < 1024; i++) {
 	temp = getc();
-	fputc(temp, audio_out);
-        sample_time = timer_low();
-	while(timer_low()-sample_time < 1000){}
+	while(timer_low() - sample_time < 966){}
+	sample_time = timer_low();
+	fputc(temp<<4, audio_out);
       }
+      putc('K');
       break;
 
     }

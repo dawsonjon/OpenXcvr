@@ -97,7 +97,7 @@ def generate():
     settings.band               = control[23:21]
     settings.mic_gain           = control[27:24]
     frequency                   = Unsigned(32).input("frequency_in")
-    audio_in                    = Signed(8).input("audio_in_in")
+    audio_in                    = Signed(12).input("audio_in_in")
     audio_in_stb                = Boolean().input("audio_in_stb_in")
 
     #adc interface inputs
@@ -152,7 +152,7 @@ def generate():
     ########################
 
     #select usb audio input
-    mic = Signed(12).select(usb_audio, mic, audio_in.resize(12))
+    mic = Signed(12).select(usb_audio, mic, audio_in)
     mic_stb = Boolean().select(usb_audio, mic_stb, audio_in_stb)
     speaker, speaker_stb, audio_out, audio_out_stb, rf, lo_i, lo_q, capture_i, capture_q, capture_stb, power, overflow = transceiver(
             cpu_clk, clk, rx_i, rx_q, iq_stb, mic, mic_stb, frequency, settings)

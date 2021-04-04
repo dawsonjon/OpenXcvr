@@ -200,6 +200,7 @@ pps);
         .input_audio_in_ack(audio_out_ack),
         .input_audio_in_stb(audio_out_stb),
 		  
+		  
 		  .input_power_in(power_bus),
         .input_power_in_ack(power_ack),
         .input_power_in_stb(power_stb),
@@ -412,7 +413,7 @@ pps);
       test
   );
   
-  assign leds[0] = control[24];
+  assign leds[0] = rs232_rtr;
   assign leds[1] = control[25];
   assign leds[2] = control[26];
   assign leds[3] = control[27];

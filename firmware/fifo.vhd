@@ -25,6 +25,7 @@ end entity fifo;
 architecture rtl of fifo is
   signal s_output_stb, s_input_ack, full, empty, read, write, half_full : std_logic;
   signal a_out, a_in : integer range 0 to depth - 1 := 0;
+  signal s_rtr : std_logic;
   type memory_type is array (0 to depth - 1) of std_logic_vector(width -1 downto 0);
   signal memory : memory_type;
 begin
@@ -81,9 +82,31 @@ begin
           '0';
 
   half_full <= '1' when (a_out - a_in) > depth/2 else '0';
-  rtr <= half_full;
-
   empty <= '1' when a_out = a_in else '0';
+  
+  process
+  begin
+    wait until rising_edge(clk);
+	 
+	 if s_rtr = '1' then
+		
+		if empty = '1' then
+			s_rtr <= '0';
+		end if;
+		
+	 else
+	 
+		if half_full = '1' then
+			s_rtr <= '1';
+		end if;
+		
+	 end if;
+	 
+	 if rst = '1' then
+      s_rtr <= '0';
+    end if;
+	 
+  end process;
 
   s_input_ack <= not full;
   output_stb <= s_output_stb;
@@ -91,6 +114,7 @@ begin
 
   write <= s_input_ack and input_stb;
   read  <= ((not s_output_stb) or output_ack) and (not empty);
+  rtr <= not empty;
 
 
 end rtl;
