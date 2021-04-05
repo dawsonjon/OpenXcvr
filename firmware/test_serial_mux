@@ -1,0 +1,6 @@
+ghdl -a serial_mux.vhd
+ghdl -a serial_out.vhd
+ghdl -a serial_mux_tb.vhd
+ghdl -e serial_mux_tb
+ghdl -r serial_mux_tb --wave=wave.ghw
+

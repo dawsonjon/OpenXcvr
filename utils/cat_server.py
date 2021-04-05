@@ -30,6 +30,8 @@ dump2 = """ 0
 
 
 command_queue = Queue() #use a queue to send updates to the radio hardware
+request_queue = Queue() #use a queue to send updates to the radio hardware
+response_queue = Queue() #use a queue to send updates to the radio hardware
 def cat_server(frequency, mode, host="0.0.0.0", port=4532):
 
     VFO = "VFOA"
@@ -59,11 +61,17 @@ def cat_server(frequency, mode, host="0.0.0.0", port=4532):
                     elif command.startswith("v") or command.startswith("get_vfo"):
                         conn.send(("%s\n"%VFO).encode("utf8"))
                     elif command.startswith("f") or command.startswith("get_freq"):
+                        request_queue.put("frequency")
+                        frequency=response_queue.get()
                         conn.send(("%s\n"%frequency).encode("utf8"))
                     elif command.startswith("m") or command.startswith("get_mode"):
+                        request_queue.put("mode")
+                        mode=response_queue.get()
                         conn.send(("%s\n"%mode).encode("utf8"))
                         conn.send("0\n".encode("utf8"))
                     elif command.startswith("t") or command.startswith("get_ptt"):
+                        request_queue.put("tx")
+                        tx=response_queue.get()
                         conn.send(("%s\n"%tx).encode("utf8"))
 
                     #set commands

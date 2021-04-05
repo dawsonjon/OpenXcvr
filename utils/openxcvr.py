@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import time
 import sys
 import logging
+import struct
 
 address_idx = {
     "frequency": b"\x00",
@@ -38,10 +39,8 @@ modes = {
     "LSB": 3,
     "USB": 4,
     "CW": 5,
-    "CWR": 5,
-    "PKTLSB": 3,
-    "PKTUSB": 4,
 }
+rmodes = {v: k for k, v in modes.items()}
 agc_speeds = {"FAST": 0, "NORMAL": 1, "SLOW": 2, "VERY_SLOW": 3}
 steps = {
     "10Hz": 0,
@@ -125,6 +124,13 @@ class Xcvr:
         self.port.write(checksum(b"s" + setting + value_string))
         self.get_acknowledgement()
 
+    def request_setting(self, setting):
+        self.port.write(b"g" + setting)
+
+    def get_setting(self):
+        settings = self.get_status_message()
+        settings = struct.unpack("<i", settings)[0]
+        return settings
 
     def capture(self):
         self.port.write(b"c")
@@ -159,6 +165,15 @@ class Xcvr:
         logging.info("openxcvr: setting cat frequency %s", frequency)
         self.change_setting(address_idx["frequency"], frequency)
 
+    def request_frequency(self):
+        logging.info("openxcvr: getting cat frequency")
+        self.request_setting(address_idx["frequency"])
+
+    def get_frequency(self):
+        value = self.get_setting()
+        logging.info("openxcvr: got %s", value)
+        return value
+
     def set_min_frequency(self, frequency):
         self.change_setting(address_idx["min_frequency"], frequency)
 
@@ -174,9 +189,28 @@ class Xcvr:
     def set_TX(self, state):
         self.change_setting(address_idx["tx"], state)
 
+    def request_TX(self):
+        logging.info("openxcvr: getting cat tx_rx")
+        self.request_setting(address_idx["tx"])
+
+    def get_TX(self):
+        logging.info("openxcvr: getting cat tx_rx")
+        tx_rx = self.get_setting()
+        logging.info("openxcvr: got %s", tx_rx)
+        return tx_rx
+
     def set_mode(self, mode):
         logging.info("openxcvr: setting cat mode %s", mode)
         self.change_setting(address_idx["mode"], modes[mode])
+
+    def request_mode(self):
+        logging.info("openxcvr: getting cat mode")
+        self.request_setting(address_idx["mode"])
+
+    def get_mode(self):
+        mode = self.get_setting()
+        logging.info("openxcvr: got %s", mode)
+        return rmodes[mode]
 
     def set_force_band(self, state):
         self.change_setting(address_idx["band"], state)
