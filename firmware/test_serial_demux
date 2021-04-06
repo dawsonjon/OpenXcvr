@@ -1,0 +1,5 @@
+ghdl -a serial_demux.vhd
+ghdl -a serial_demux_tb.vhd
+ghdl -e serial_demux_tb
+ghdl -r serial_demux_tb --wave=wave.ghw
+

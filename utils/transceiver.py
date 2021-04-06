@@ -40,12 +40,12 @@ def terminate_process(p):
     p.terminate()
     try:
         outs, errs = p.communicate(timeout=1)
-        logging.info("process exited %s %s", outs, errs)
+        logging.debug("process exited %s %s", outs, errs)
     except subprocess.TimeoutExpired:
         # if that doesn't work quite by force
         p.kill()
         outs, errs = p.communicate()
-        logging.info("process killed %s %s", outs, errs)
+        logging.debug("process killed %s %s", outs, errs)
 
 
 class Transceiver:
@@ -101,7 +101,6 @@ class Transceiver:
         self.xcvr.request_audio_output()
         while 1:
 
-
             if not self.command_queue.empty():
                 break
 
@@ -149,64 +148,46 @@ class Transceiver:
         """
 
         logging.info("transceiver: start transmitting")
+        self.xcvr.set_USB_audio(1)
+        self.xcvr.set_TX(1)
         self.recorder = subprocess.Popen(
             ["arecord", "-t", "raw", "--format=S16_LE", "--rate=50000"],
             stdout=subprocess.PIPE,
         )
-        self.xcvr.set_USB_audio(1)
-        self.xcvr.set_TX(1)
-
-        # send an extra block of data to prevent pipeline emptying
-        data = convert_16to8(
-            self.recorder.stdout.read(2048)
-        )  # 2048bytes = 1024 samples
-        self.xcvr.put_audio(data.tobytes())  # 1024 samples
-
         t0 = time.time()
         samples_sent = 0
+
+        #transmit can be jittery to start presumably while buffers are filling up
+        #adding a bit of silence at the start of each transmission seems to help
+        silence = b"\x00"*1024
+        for i in range(20):
+            self.xcvr.put_audio(silence)
+
         while 1:
 
             if not self.command_queue.empty():
                 break
 
-            request = None
+            #In TX mode, settings can't be changed, so just echo local copies
             if not self.request_queue.empty():
                 request = self.request_queue.get()
                 if request == "frequency" : 
-                    self.xcvr.request_frequency()
-                elif request == "mode" : 
-                    self.xcvr.request_mode()
-                elif request == "tx" : 
-                    self.xcvr.request_TX()
-
-            # send a block
-            data = convert_16to8(self.recorder.stdout.read(2048))
-
-            samples_sent += len(data)
-            elapsed = time.time() - t0
-            logging.debug(samples_sent / elapsed)
-
-            self.xcvr.put_audio(data.tobytes())
-            self.xcvr.wait_audio_in_ack()
-
-            if request is not None:
-                if request == "frequency" : 
-                    self.frequency = self.xcvr.get_frequency()
                     self.response_queue.put(self.frequency)
                 elif request == "mode" : 
-                    mode = self.xcvr.get_mode()
-                    self.response_queue.put(mode)
-                    if mode != self.mode:
-                        self.mode = mode
-                        break
+                    self.response_queue.put(self.mode)
                 elif request == "tx" : 
-                    tx_rx = self.xcvr.get_TX()
-                    self.response_queue.put(tx_rx)
-                    if tx_rx != self.tx_rx:
-                        self.tx_rx = tx_rx
-                        break
+                    self.response_queue.put(self.tx_rx)
 
-        self.xcvr.wait_audio_in_ack()
+
+            # send a block
+            data = convert_16to8(self.recorder.stdout.read(1024*2))
+            #data = np.sin(np.arange(1024)*2.0*np.pi/32)*127
+            #data = data.astype("int8")
+            #samples_sent += len(data)
+            #elapsed = time.time() - t0
+            #logging.info(samples_sent / elapsed)
+            self.xcvr.put_audio(data.tobytes())
+
         self.xcvr.set_USB_audio(0)
         self.xcvr.set_TX(0)
         terminate_process(self.recorder)
@@ -231,7 +212,6 @@ class Transceiver:
             stdin=subprocess.PIPE,
         )
         self.receive()
-        # self.transmit()
 
         while 1:
             while not self.command_queue.empty():
@@ -328,9 +308,8 @@ if __name__ == "__main__":
         help="IP address to bind rigctld compatible server",
     )
     args = parser.parse_args()
-    print(args)
 
-    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 
     trx = Transceiver(
         args.port,

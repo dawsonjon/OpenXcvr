@@ -71,11 +71,15 @@ class CommandFailed(Exception):
 class BadCatResponse(Exception):
     pass
 
+class InvalidMode(Exception):
+    pass
 
 class Xcvr:
     def __init__(self, device="/dev/ttyUSB0"):
-        self.port = serial.Serial(device, 2000000, timeout=1, rtscts=True)
+        self.audio_sent_times = []
+        self.port = serial.Serial(device, 1000000, timeout=1, rtscts=True)
         self.reset_cat()
+        self.data_buffer = b""
 
     def reset_cat(self):
         logging.info("openxcvr: resetting cat interface")
@@ -88,17 +92,15 @@ class Xcvr:
         # This might happen by chance, so look for a few positive acknowledgements in a row
         acks_seen = 0
         for i in range(100):  # give up after this many failed attempts
-            self.port.write(checksum(b"s" + address_idx["tx"] + b"\x00\x00\x00\x00"))
+            self.send_command_message(checksum(b"s" + address_idx["tx"] + b"\x00\x00\x00\x00"))
             acknowledgement = self.port.read(3)
-            logging.debug("openxcvr: ack=%s", acknowledgement)
+            logging.info("openxcvr: ack=%s", acknowledgement)
             if acknowledgement == b"U\x01K":
                 acks_seen += 1
                 if acks_seen == 10:
                     return
             else:
                 acks_seen = 0
-        self.port.flushInput()
-        self.port.flushOutput()
         raise BadCatResponse
 
     def get_status_message(self):
@@ -106,6 +108,10 @@ class Xcvr:
         length = self.port.read(1)[0]
         payload = self.port.read(length)
         return payload
+
+    def send_command_message(self, message):
+        assert len(message) < 256
+        self.port.write(b"\x55"+bytes([len(message)])+message)
 
     def get_acknowledgement(self):
         if self.get_status_message() != b"K":
@@ -121,11 +127,11 @@ class Xcvr:
                 value >> 24 & 0xFF,
             ]
         )
-        self.port.write(checksum(b"s" + setting + value_string))
+        self.send_command_message(checksum(b"s" + setting + value_string))
         self.get_acknowledgement()
 
     def request_setting(self, setting):
-        self.port.write(b"g" + setting)
+        self.send_command_message(b"g" + setting)
 
     def get_setting(self):
         settings = self.get_status_message()
@@ -133,7 +139,7 @@ class Xcvr:
         return settings
 
     def capture(self):
-        self.port.write(b"c")
+        self.port.send_command_message(b"c")
         buf = self.port.read(2048 * 4)
         values = np.frombuffer(buf, dtype="int16")
         i_values = values[::2]
@@ -141,14 +147,15 @@ class Xcvr:
         return i_values, q_values
 
     def request_audio_output(self):
-        self.port.write(b"O")
+        self.send_command_message(b"O")
 
     def get_audio(self):
         buf = self.port.read(2049)
         return buf[1:]
 
     def put_audio(self, data):
-        self.port.write(b"I" + data)
+        assert len(data) == 1024
+        self.port.write(b"\xAA"+data)
 
     def wait_audio_in_ack(self):
         self.get_acknowledgement()
@@ -156,10 +163,7 @@ class Xcvr:
     def store_memory(self, location, data):
         assert len(data) == 64
         assert location >= 1 <= 499
-        self.port.write("S")
-        self.port.write(chr(location >> 8))
-        self.port.write(chr(location & 0xFF))
-        self.port.write(data)
+        self.send_command_message(b"S"+bytes([location>>8, location & 0xff])+data)
 
     def set_frequency(self, frequency):
         logging.info("openxcvr: setting cat frequency %s", frequency)
@@ -201,7 +205,10 @@ class Xcvr:
 
     def set_mode(self, mode):
         logging.info("openxcvr: setting cat mode %s", mode)
-        self.change_setting(address_idx["mode"], modes[mode])
+        try:
+            self.change_setting(address_idx["mode"], modes[mode])
+        except KeyError:
+            raise InvalidMode
 
     def request_mode(self):
         logging.info("openxcvr: getting cat mode")

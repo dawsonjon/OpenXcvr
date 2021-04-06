@@ -3,7 +3,6 @@ unsigned control_out = output("control_out");
 unsigned debug_out = output("debug_out");
 unsigned debug_in = input("debug_in");
 unsigned capture_in = input("capture_in");
-unsigned audio_out = output("audio_out");
 unsigned power_in = input("power_in");
 unsigned pps_count_in = input("pps_count_in");
 unsigned adc_in = input("adc_in");

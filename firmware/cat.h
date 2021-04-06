@@ -94,19 +94,7 @@ void cat() {
 
     // output audio
     case 'O':
-      putc(0xAA);
-      break;
-
-    // input audio
-    case 'I':
-      //play back at 50kHz sample rate
-      for (i = 0; i < 1024; i++) {
-	temp = getc();
-	while(timer_low() - sample_time < 966){}
-	sample_time = timer_low();
-	fputc(temp<<4, audio_out);
-      }
-      send_status(1, "K");
+      putc(0xAA); //gets replaces by actual audio in serial mux.
       break;
 
     }

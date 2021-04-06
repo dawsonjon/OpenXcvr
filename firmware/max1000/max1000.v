@@ -101,13 +101,12 @@ pps);
     wire frequency_stb;
     wire frequency_ack;
 	 
-	 wire [31:0] audio_in;
-	 wire audio_in_stb;
-	 wire audio_in_ack;	 
+	wire [11:0] audio_in;
+	wire audio_in_stb;
 	 
-	 wire [31:0] pb_bus;
-	 wire pb_stb;
-	 wire pb_ack;
+	wire [31:0] pb_bus;
+	wire pb_stb;
+	wire pb_ack;
 	 
     wire [31:0] control_bus;
     reg [31:0] control;
@@ -164,7 +163,7 @@ pps);
         .output_debug_out_ack(debug_tx_ack),
         .output_debug_out(debug_tx),
 		  
-		.input_i2c_in(i2c_in_bus),
+		  .input_i2c_in(i2c_in_bus),
         .input_i2c_in_stb(i2c_in_stb),
         .input_i2c_in_ack(i2c_in_ack),
 
@@ -176,10 +175,6 @@ pps);
         .output_frequency_out_ack(frequency_ack),
         .output_frequency_out_stb(frequency_stb),
 		  
-		.output_audio_out(audio_in),
-        .output_audio_out_ack(audio_in_ack),
-        .output_audio_out_stb(audio_in_stb),
-
         .output_control_out(control_bus),
         .output_control_out_ack(control_ack),
         .output_control_out_stb(control_stb),
@@ -277,7 +272,7 @@ pps);
 
     serial_output #(
         .clock_frequency(50000000),
-        .baud_rate(2000000)
+        .baud_rate(1000000)
     )
     serial_output_0(
         .clk(clk_50),
@@ -290,19 +285,38 @@ pps);
         .in1_ack(serial_out_ack)
     );
 
+    wire [7:0] serial_in;
+    wire serial_in_stb;
+    wire serial_in_ack;
+
+    serial_demux serial_demux_0(
+        .clk(clk_50),
+
+        .serial_in(serial_in),
+        .serial_in_stb(serial_in_stb),
+        .serial_in_ack(serial_in_ack),
+
+        .serial_out(debug_rx[7:0]),
+        .serial_out_stb(debug_rx_stb),
+        .serial_out_ack(debug_rx_ack),
+
+        .audio_out(audio_in),
+        .audio_out_stb(audio_in_stb)
+    );
+
     serial_input #(
         .clock_frequency(50000000),
-        .baud_rate(2000000)
+        .baud_rate(1000000)
     )
     serial_input_0(
         .clk(clk_50),
         .rst(rst),
         .rx(rs232_rx),
-		  .rtr(rs232_rtr),
+		.rtr(rs232_rtr),
        
-        .out1(debug_rx[7:0]),
-        .out1_stb(debug_rx_stb),
-        .out1_ack(debug_rx_ack)
+        .out1(serial_in),
+        .out1_stb(serial_in_stb),
+        .out1_ack(serial_in_ack)
     );
 	 
 	 i2c #(

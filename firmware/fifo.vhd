@@ -114,7 +114,7 @@ begin
 
   write <= s_input_ack and input_stb;
   read  <= ((not s_output_stb) or output_ack) and (not empty);
-  rtr <= not empty;
+  rtr <= s_rtr;
 
 
 end rtl;
