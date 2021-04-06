@@ -15,14 +15,14 @@ def quantize(z, fraction_bits):
     return z
 
 a = np.arange(256)
-print function_to_approximate(a)
 
-z = np.polyfit(a, function_to_approximate(a), 3)
+z = np.polyfit(a, function_to_approximate(a), 4)
 
 
 p = np.poly1d(z)
 z = quantize(z, 18)
 q = np.poly1d(z)
+print(z * 2**18)
 
 
 plt.plot(function_to_approximate(a))

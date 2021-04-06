@@ -41,6 +41,7 @@ unsigned i2c_out = output("i2c_out");
 unsigned settings[16];
 
 void apply_settings();
+void update_lcd(unsigned cat_mode);
 
 #include "i2c.h"
 i2c bus;
@@ -141,10 +142,10 @@ void apply_settings() {
   rx_frequency_correction[3] = -13732; // USB   4   24414    -13732
   rx_frequency_correction[5] = -8138;  // CW    3   32552    -8138
 
-  if (settings[idx_tx] && settings[idx_frequency] >= 3500000 &&
+  if (tx_on && settings[idx_frequency] >= 3500000 &&
       settings[idx_frequency] <= 29700000)
     control |= 0x00000008u;
-  if (settings[idx_tx]) {
+  if (tx_on) {
     // TX is direct conversion
     fputc(convert_to_steps(settings[idx_frequency]), frequency_out);
   } else {
@@ -157,12 +158,16 @@ void apply_settings() {
   fputc(control, control_out);
 }
 
-void update_lcd() {
+void update_lcd(unsigned cat_mode) {
   // update display status
-  LCD_CLEAR()
+  LCD_CLEAR() //this takes a long time, so might need to reivew
   LCD_LINE1()
   lcd_print_decimal(settings[idx_frequency], 5, 3);
-  lcd_print("   ");
+  if(cat_mode){
+    lcd_print(" C ");
+  } else {
+    lcd_print("   ");
+  }
   print_option(MODES, settings[idx_mode]);
   LCD_LINE2()
   print_option(SMETER, read_smeter());
@@ -174,7 +179,7 @@ void main() {
   stdin = debug_in;
   puts("FPGA transceiver v 0.01\n");
 
-  unsigned int power, i, pps_count, last_smeter = 0;
+  unsigned int power, i, pps_count;
   unsigned wake_time = 0;
   int audio;
   int position_change = 0;
@@ -184,54 +189,74 @@ void main() {
   i2c_init(&bus, i2c_in, i2c_out);
   load_settings(&bus, 0); // page 0 contains power up settings
   apply_settings();
-  update_lcd();
+  update_lcd(cat_mode);
 
   while (1) {
 
-    if (timer_low() - wake_time > 2000000) {
-      wake_time = timer_low();
-      settings[idx_mute] = read_smeter() < settings[idx_squelch];
+    if(cat_mode && ready(stdin)){
+      cat();
+    }
 
-      // check transmit button
-      if (check_ptt()) {
-        transmit();
-        last_smeter = 1234567; // force smeter to be updated straight away.
-      }
 
-      // If knob is turned adjust frequency
-      // don't store this in EEPROM to avoid wear
-      position_change = get_position_change();
-      if (position_change) {
-        if (check_button(4)) {
-          settings[idx_frequency] +=
-              position_change * step_sizes[settings[idx_step]] * 10;
-        } else if (check_button(8)) {
-          settings[idx_frequency] +=
-              position_change * step_sizes[settings[idx_step]] / 10;
-        } else {
-          settings[idx_frequency] +=
-              position_change * step_sizes[settings[idx_step]];
+    if(tx_on){
+
+        if (timer_low() - wake_time > 500000) {
+          wake_time = timer_low();
+          transmit();
         }
-        if (settings[idx_frequency] > settings[idx_max_frequency])
-          settings[idx_frequency] = settings[idx_min_frequency];
-        if ((int)settings[idx_frequency] < (int)settings[idx_min_frequency])
-          settings[idx_frequency] = settings[idx_max_frequency];
-        apply_settings();
-        update_lcd();
-      }
 
-      // if the menu was entered, update settings and
-      // store them in EEPROM
-      if (do_ui()) {
-        apply_settings();
-        update_lcd();
-        store_settings(&bus, 0);
-      }
+    } else {
 
-      if (last_smeter != read_smeter()) {
-        update_lcd();
-        last_smeter = read_smeter();
+        if (timer_low() - wake_time > 5000000) {
+          wake_time = timer_low();
+
+          settings[idx_mute] = read_smeter() < settings[idx_squelch];
+
+          // If knob is turned adjust frequency
+          // don't store this in EEPROM to avoid wear
+          position_change = get_position_change();
+          if (position_change) {
+            if (check_button(4)) {
+              settings[idx_frequency] +=
+                  position_change * step_sizes[settings[idx_step]] * 10;
+            } else if (check_button(8)) {
+              settings[idx_frequency] +=
+                  position_change * step_sizes[settings[idx_step]] / 10;
+            } else {
+              settings[idx_frequency] +=
+                  position_change * step_sizes[settings[idx_step]];
+            }
+            if (settings[idx_frequency] > settings[idx_max_frequency])
+              settings[idx_frequency] = settings[idx_min_frequency];
+            if ((int)settings[idx_frequency] < (int)settings[idx_min_frequency])
+              settings[idx_frequency] = settings[idx_max_frequency];
+            apply_settings();
+          }
+
+          //pressing any key cancels cat mode
+          if(cat_mode){
+            if(check_button(3)){
+              get_button(3);
+              cat_mode = 0;
+              settings[idx_tx] = 0;
+            }
+          }
+          // if the menu was entered, update settings and
+          // store them in EEPROM
+          else{
+            if (do_ui()) {
+              apply_settings();
+              store_settings(&bus, 0);
+            }
+          }
+
+          update_lcd(cat_mode);
+
+          // check transmit button etc
+          check_ptt();
+
       }
     }
   }
 }
+

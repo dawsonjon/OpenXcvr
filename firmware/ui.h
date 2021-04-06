@@ -3,6 +3,7 @@
 #include "utils.h"
 unsigned check_button(unsigned button);
 unsigned get_button(unsigned button);
+unsigned cat_mode = 0;
 #include "cat.h"
 
 #define WAIT_10MS wait_clocks(500000);
@@ -256,7 +257,8 @@ void battery_voltage(){
     lcd_print("battery voltage");
     while(1){
 	LCD_LINE2()
-	raw_voltage = (raw_voltage*9 + BATTERY)/10;
+	read_adc_values();
+	raw_voltage = (raw_voltage*9 + adc_values[CHAN_BATTERY])/10;
         voltage = (raw_voltage*33*11)/(4096);
 	lcd_print_decimal(voltage, 2, 1);
 	lcd_write('V');
@@ -280,7 +282,8 @@ void mic_level(){
     while(1){
 
 	encoder_control(&gain, 0, 9);
-	raw = MIC-2048;
+	read_adc_values();
+	raw = adc_values[CHAN_MICROPHONE]-2048;
 	if(raw > max){
 		max = raw;
 	} else {
@@ -413,10 +416,8 @@ int do_ui(){
 		}
 
 	case 11 : 
-	        LCD_CLEAR()
-	        lcd_print("cat mode");
-	        LCD_LINE2()
-		cat();
+		while(ready(stdin)) getc();
+		cat_mode = 1;
 		return 1;
 
 	case 12 : 
